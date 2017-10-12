@@ -1,0 +1,8 @@
+node_modules
+dist
+.*
+
+!.gitignore
+!.eslintrc.json
+!.stylelintrc.json
+!.eslintignore

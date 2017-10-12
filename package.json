@@ -1,0 +1,32 @@
+{
+  "name": "volunteering-peel",
+  "version": "0.0.1",
+  "description": "Volunteering Peel Website",
+  "main": "dist/index.js",
+  "author": "RetroCraft <retrocraft314@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src --out-dir dist --ignore src/app --presets env --watch & webpack --watch"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-lodash": "^3.2.11",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.7",
+    "eslint": "^3.6.0",
+    "eslint-config-airbnb": "^11.2.0",
+    "eslint-plugin-import": "^1.16.0",
+    "eslint-plugin-jsx-a11y": "^2.2.2",
+    "eslint-plugin-react": "^6.3.0",
+    "html-webpack-plugin": "^2.30.1",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.19.0",
+    "webpack": "^3.6.0"
+  }
+}
