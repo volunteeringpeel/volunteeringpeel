@@ -6,7 +6,8 @@
   "author": "RetroCraft <retrocraft314@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "babel src --out-dir dist --ignore src/app --presets env --watch & webpack --watch"
+    "build": "babel src --out-dir dist --ignore src/app --presets env --watch & webpack --watch",
+    "postinstall": "node scripts/fix-semantic.js"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -22,11 +23,31 @@
     "eslint-config-airbnb": "^11.2.0",
     "eslint-plugin-import": "^1.16.0",
     "eslint-plugin-jsx-a11y": "^2.2.2",
+    "eslint-plugin-lodash": "^2.4.5",
     "eslint-plugin-react": "^6.3.0",
+    "file-loader": "^1.1.5",
     "html-webpack-plugin": "^2.30.1",
-    "node-sass": "^4.5.3",
-    "sass-loader": "^6.0.6",
+    "less": "^2.3.1",
+    "less-loader": "^4.0.5",
+    "less-plugin-autoprefix": "^1.5.1",
     "style-loader": "^0.19.0",
+    "stylelint": "^8.2.0",
+    "stylelint-config-standard": "^17.0.0",
     "webpack": "^3.6.0"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "express": "^4.16.2",
+    "lodash": "^4.17.4",
+    "mysql": "^2.15.0",
+    "react": "^15",
+    "react-dom": "^15",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "semantic-ui-less": "^2.2.12",
+    "semantic-ui-react": "^0.74.2"
+  },
+  "stylelint": {
+    "extends": "stylelint-config-standard"
   }
 }

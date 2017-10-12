@@ -1,9 +1,5 @@
 {
-  "parser": "babel-eslint",
-  "extends": [
-    "airbnb",
-    "plugin:lodash/recommended"
-  ],
+  "extends": ["airbnb", "plugin:lodash/recommended"],
   "env": {
     "browser": true,
     "commonjs": true,
@@ -11,10 +7,8 @@
     "node": true
   },
   "rules": {
-    "linebreak-style": [
-      "warn",
-      "windows"
-    ]
+    "linebreak-style": ["warn", "windows"],
+    "lodash/import-scope": 0
   },
   "parserOptions": {
     "ecmaFeatures": {
@@ -22,12 +16,5 @@
     },
     "sourceType": "module"
   },
-  "plugins": [
-    "react",
-    "import",
-    "lodash"
-  ],
-  "settings": {
-    "import/resolver": "webpack"
-  }
+  "plugins": ["react", "import", "lodash"]
 }

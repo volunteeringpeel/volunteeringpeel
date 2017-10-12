@@ -6,3 +6,5 @@ dist
 !.eslintrc.json
 !.stylelintrc.json
 !.eslintignore
+
+passwords.json

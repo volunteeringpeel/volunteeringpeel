@@ -1,6 +1,8 @@
 const path = require('path');
 require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
+const LessPluginAutoPrefix = require('less-plugin-autoprefix');
+const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 'android 4'];
 
 module.exports = {
   context: path.resolve(__dirname, './src/app'),
@@ -21,7 +23,7 @@ module.exports = {
           {
             loader: 'babel-loader',
             options: {
-              presets: ['es2015', 'react'],
+              presets: ['env', 'react'],
               plugins: ['transform-object-rest-spread', 'lodash'],
             },
           },
@@ -29,7 +31,7 @@ module.exports = {
       },
 
       {
-        test: /\.(sass|scss)$/,
+        test: /\.less$/,
         use: [
           {
             loader: 'style-loader',
@@ -38,15 +40,14 @@ module.exports = {
             loader: 'css-loader',
             options: {
               sourceMap: true,
-              modules: true,
-              localIdentName: '[name]__[local]___[hash:base64:5]',
               importLoaders: 1,
             },
           },
           {
-            loader: 'sass-loader',
+            loader: 'less-loader',
             options: {
               sourceMap: true,
+              plugins: [new LessPluginAutoPrefix({ browsers: autoprefixerBrowsers })],
             },
           },
         ],
@@ -58,7 +59,7 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              name: 'dist/app/fonts/[name].[ext]',
+              name: './dist/app/fonts/[name].[ext]',
             },
           },
         ],
@@ -70,7 +71,7 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              name: 'dist/app/img/[name].[ext]',
+              name: './dist/app/img/[name].[ext]',
             },
           },
         ],
@@ -81,18 +82,19 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './dist/app'),
     filename: '[name].js',
+    publicPath: '/',
   },
 
   plugins: [
     new HTMLWebpackPlugin({
       title: 'Volunteering Peel',
       chunks: ['app'],
-      filename: 'index.html'
+      filename: 'index.html',
     }),
     new HTMLWebpackPlugin({
       title: 'Volunteering Peel Admin',
       chunks: ['admin'],
-      filename: 'admin.html'
+      filename: 'admin.html',
     }),
   ],
 
