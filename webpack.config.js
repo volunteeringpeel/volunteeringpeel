@@ -7,6 +7,7 @@ module.exports = {
 
   entry: {
     app: './app.jsx',
+    admin: './admin.jsx',
   },
 
   devtool: 'source-map',
@@ -79,12 +80,19 @@ module.exports = {
 
   output: {
     path: path.resolve(__dirname, './dist/app'),
-    filename: 'bundle.js',
+    filename: '[name].js',
   },
 
   plugins: [
     new HTMLWebpackPlugin({
-      title: 'The Network of Insanity',
+      title: 'Volunteering Peel',
+      chunks: ['app'],
+      filename: 'index.html'
+    }),
+    new HTMLWebpackPlugin({
+      title: 'Volunteering Peel Admin',
+      chunks: ['admin'],
+      filename: 'admin.html'
     }),
   ],
 
