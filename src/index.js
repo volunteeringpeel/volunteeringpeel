@@ -4,7 +4,7 @@ import path from 'path';
 require('babel-polyfill');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 19847;
 
 app.use(express.static(path.resolve(__dirname, 'app')));
 
