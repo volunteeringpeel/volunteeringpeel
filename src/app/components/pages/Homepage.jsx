@@ -14,23 +14,22 @@ import {
 } from 'semantic-ui-react';
 
 export default () => (
-  <div>
+  <div className="large text">
     <Container style={{ paddingTop: '2em' }}>
       <Message>
         <Grid container doubling columns={2}>
           <Grid.Row>
-            <Message.Header as="h3" style={{ fontSize: '2em' }}>
-              Apply to be part of the exec team!
-            </Message.Header>
-          </Grid.Row>
-          <Grid.Row>
             <Grid.Column>
-              <p style={{ fontSize: '1.33em' }}>
+              <Header as="h3">Apply to be part of the exec team!</Header>
+              <p>
                 Volunteering Peel Committee Member applications are out now! If you're a grade 9 or
                 10 student who enjoys volunteering and leading volunteers, meeting new people and
                 getting involved, then apply for the Volunteering Peel Executive team. Applications
                 are due on October 15th!
               </p>
+              <a href="https://drive.google.com/file/d/0B4u62qfSypkPeVBVNWdLYzJVUVU/view">
+                <Button primary>Apply Now</Button>
+              </a>
             </Grid.Column>
             <Grid.Column>
               <Embed
@@ -40,11 +39,6 @@ export default () => (
               />
             </Grid.Column>
           </Grid.Row>
-          <Grid.Row>
-            <a href="https://drive.google.com/file/d/0B4u62qfSypkPeVBVNWdLYzJVUVU/view">
-              <Button primary>Apply Now</Button>
-            </a>
-          </Grid.Row>
         </Grid>
       </Message>
     </Container>
@@ -53,10 +47,8 @@ export default () => (
       <Grid stackable container verticalAlign="middle">
         <Grid.Row>
           <Grid.Column width={8}>
-            <Header as="h3" style={{ fontSize: '2em' }}>
-              Lending a Helping Hand!
-            </Header>
-            <p style={{ fontSize: '1.33em' }}>
+            <Header as="h3">Lending a Helping Hand!</Header>
+            <p>
               You know that warm, fuzzy feeling you get in the pit of your stomach when you know
               you've done some good for the world? Yeah, we do too. We figured that high school
               students should experience that feeling of self-fulfillment more often, and what
@@ -93,12 +85,14 @@ export default () => (
 
     <Segment vertical>
       <Container textAlign="center">
-        <Header as="h3" style={{ fontSize: '2em' }}>
+        <Header as="h3">
           Subscribe to our monthly news letter to get updates on the latest volunteering events!
         </Header>
         <Form>
           <Form.Input placeholder="Email Address" />
-          <Button type="submit">Subscribe</Button>
+          <Button size="large" type="submit">
+            Subscribe
+          </Button>
         </Form>
       </Container>
     </Segment>
@@ -107,21 +101,16 @@ export default () => (
       <Grid celled="internally" columns="equal" verticalAlign="middle" stackable container>
         <Grid.Row textAlign="center">
           <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-            <Header as="h3" style={{ fontSize: '2em' }}>
-              Have a question?
-            </Header>
-            <p style={{ fontSize: '1.33em' }}>
-              <p>
-                If you have any questions or concerns, please get in touch a member of our executive
-                team. You can use the <Link to="/contact">contact form</Link>, or you can email us
-                directly at <a href="mailto:info@volunteeringpeel.org">
-                  info@volunteeringpeel.org
-                </a>, and we will get back to you as soon as possible.
-              </p>
+            <Header as="h3">Have a question?</Header>
+            <p>
+              If you have any questions or concerns, please get in touch a member of our executive
+              team. You can use the <Link to="/contact">contact form</Link>, or you can email us
+              directly at <a href="mailto:info@volunteeringpeel.org">info@volunteeringpeel.org</a>,
+              and we will get back to you as soon as possible.
             </p>
           </Grid.Column>
           <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
-            <Header as="h3" style={{ fontSize: '2em' }}>
+            <Header as="h3">
               Follow us on Twitter at <a href="http://www.twitter.com/volunpeel">@VolunPeel</a> for
               updates.
             </Header>

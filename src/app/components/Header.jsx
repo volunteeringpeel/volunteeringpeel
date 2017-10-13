@@ -38,7 +38,6 @@ export default class HeaderComponent extends React.Component {
                     as="h1"
                     inverted
                     style={{
-                      fontSize: '4em',
                       fontWeight: 'normal',
                       marginBottom: 0,
                       margin: '3em 0',
