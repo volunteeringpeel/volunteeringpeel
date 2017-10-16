@@ -48,7 +48,7 @@ create table if not exists user_shift (
 
 create table if not exists faq (
   faq_id      int           not null auto_increment primary key comment 'Unique FAQ id',
-  priority    int           not null                            comment 'Position on screen',
+  priority    int           not null default 100                comment 'Position on screen',
   question    text          not null,
   answer      text          not null
 );

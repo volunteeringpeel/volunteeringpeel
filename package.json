@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
+    "bcrypt": "^1.0.3",
     "express": "^4.16.2",
     "lodash": "^4.17.4",
     "mysql": "^2.15.0",
