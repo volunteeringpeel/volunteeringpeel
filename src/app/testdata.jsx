@@ -3,34 +3,34 @@ import React from 'react';
 export default {
   pages: [
     {
-      id: 'home',
+      id: '/home',
       title: 'Home',
       display: 'Volunteering Peel',
     },
     {
-      id: 'about',
+      id: '/about',
       title: 'About',
     },
     {
-      id: 'team',
+      id: '/about/team',
       title: 'Team',
       display: 'Meet the Team',
     },
     {
-      id: 'events',
+      id: '/events',
       title: 'Events',
     },
     {
-      id: 'sponsors',
+      id: '/about/sponsors',
       title: 'Sponsors',
     },
     {
-      id: 'faq',
+      id: '/about/faq',
       title: 'FAQ',
       display: 'Frequently Asked Questions',
     },
     {
-      id: 'contact',
+      id: '/about/contact',
       title: 'Contact',
     },
   ],

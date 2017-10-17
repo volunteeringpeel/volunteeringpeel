@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Container, Header, Menu, Segment } from 'semantic-ui-react';
+import { Container, Header, Menu, Segment, Dropdown } from 'semantic-ui-react';
 import { Route, Link, Redirect } from 'react-router-dom';
 
 import testdata from '../testdata';
@@ -10,27 +10,52 @@ export default class HeaderComponent extends React.Component {
     return (
       <div>
         <Segment inverted textAlign="center" vertical>
-          <Menu inverted pointing secondary size="large" widths={testdata.pages.length}>
+          <Menu inverted pointing secondary size="large" widths={3}>
             <Container textAlign="center">
-              {_.map(testdata.pages, (page) => {
-                const to = `/${page.id}`;
-                return (
-                  <Route path={to} key={page.id}>
-                    {({ match }) => (
-                      <Menu.Item active={!!match}>
-                        <Link to={to}>{page.title}</Link>
-                      </Menu.Item>
-                    )}
-                  </Route>
-                );
-              })}
+              <Route path="/home">
+                {({ match }) => (
+                  <Menu.Item active={!!match}>
+                    <Link to="/home">Home</Link>
+                  </Menu.Item>
+                )}
+              </Route>
+              <Route path="/about">
+                {({ match }) => (
+                  <Dropdown item text="About" className={match ? 'active' : ''}>
+                    <Dropdown.Menu>
+                      <Link to="/about">
+                        <Dropdown.Item>About</Dropdown.Item>
+                      </Link>
+                      <Link to="/about/team">
+                        <Dropdown.Item>Meet the Team</Dropdown.Item>
+                      </Link>
+                      <Link to="/about/faq">
+                        <Dropdown.Item>FAQ</Dropdown.Item>
+                      </Link>
+                      <Link to="/about/sponsors">
+                        <Dropdown.Item>Sponsors</Dropdown.Item>
+                      </Link>
+                      <Link to="/about/contact">
+                        <Dropdown.Item>Contact</Dropdown.Item>
+                      </Link>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                )}
+              </Route>
+              <Route path="/events">
+                {({ match }) => (
+                  <Menu.Item active={!!match}>
+                    <Link to="/events">Events</Link>
+                  </Menu.Item>
+                )}
+              </Route>
             </Container>
           </Menu>
 
           <Route
-            path="/:page"
+            path="/:page/:subpage?"
             render={({ match }) => {
-              const page = _.find(testdata.pages, ['id', match.params.page]);
+              const page = _.find(testdata.pages, ['id', match.url]);
               if (!page) return <Redirect to="/home" />;
               return (
                 <Container text>

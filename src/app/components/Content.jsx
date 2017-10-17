@@ -10,7 +10,20 @@ export default class Content extends React.Component {
       <Route
         path="/:page"
         render={({ match }) => {
-          const pages = { home: <Homepage />, about: <About />, faq: <FAQ /> };
+          const pages = {
+            home: <Homepage />,
+            about: (
+              <Route
+                path="/about/:subpage"
+                children={({ match: subMatch }) => {
+                  const subpages = { faq: <FAQ /> };
+                  if (!subMatch) return <About />;
+                  if (subpages[subMatch.params.subpage]) return subpages[subMatch.params.subpage];
+                  return null;
+                }}
+              />
+            ),
+          };
 
           if (pages[match.params.page]) return pages[match.params.page];
           return null;
