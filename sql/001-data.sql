@@ -43,3 +43,22 @@ insert into faq (question, answer) values
 	("Can I bring my parents/friends/family? ", "If you would like to bring friends/family, please let your event executive know via email/phone call ahead of time so we can add their details to the list of volunteers. Generally speaking if they're within acceptable age (13-19 years old) then it shouldn't be a problem. We do not bring parents onto our buses or to the event, but if they would like to come with you, they must provide their own transportation, etc to go. We are not responsible for your parents!"),
 	("What if I missed your phone call? ", "That's not a problem! If you think/know that you missed your phone call to attend the event, please email us ASAP and we'll make sure you can come!"),
 	("What is the Waiver of Liability?", "The Waiver of Liability is a nonverbal consent that you must agree upon signing up for an event. By ticking the box, you willingly agree fully to all the terms in this waiver. To view this waiver, <a href=\"http://volunteeringpeel.org/waiver.php\">Click Here.</a>");
+    
+truncate table sponsors;
+insert into sponsors (name, website, priority) values
+	("Lions Club of Mississauga Credit Valley ", "http://www.mississaugacreditvalleylionsclub.com/", 0),
+	("Bonnie Crombie", "http://www.mayorcrombie.ca/", 100),
+	("Councillor Doug Whillans", "http://www.dougwhillans.com/", 200),
+	("Councillor Frank Dale", "http://www.peelregion.ca/council/councill/dale.htm", 300),
+	("Brampton Transit", "http://www.brampton.ca/EN/residents/transit/zum/Pages/welcome.aspx", 400),
+	("Krispy Kreme", "http://www.krispykreme.ca/", 500),
+	("Michael Angelos (Sandra Berardi)", "undefined", 600),
+	("Roots", "http://www.roots.com/", 700),
+	("Toronto and Region Conservation", "https://trca.ca/", 800),
+	("MP Raj Grewal", "http://rgrewal.liberal.ca/", 900),
+	("Councillor Matt Mahoney", "http://www.mississauga.ca/portal/cityhall/ward8", 1000),
+	("Mississauga Environment Division", "http://www.mississauga.ca/portal/residents/environment", 1100),
+	("Starbucks", "http://www.starbucks.ca/", 1200),
+	("Cineplex", "http://www.cineplex.com/", 1300),
+	("Tim Horton's", "http://www.timhortons.com/ca/en/index.php", 1400),
+	("Councillor Pat Saito", "http://www.ward9.ca/", 1500);

@@ -4,6 +4,7 @@ import Homepage from './pages/Homepage';
 import About from './pages/About';
 import FAQ from './pages/FAQ';
 import Team from './pages/Team';
+import Sponsors from './pages/Sponsors';
 
 export default class Content extends React.Component {
   render() {
@@ -17,7 +18,7 @@ export default class Content extends React.Component {
               <Route
                 path="/about/:subpage"
                 children={({ match: subMatch }) => {
-                  const subpages = { faq: <FAQ />, team: <Team /> };
+                  const subpages = { faq: <FAQ />, team: <Team />, sponsors: <Sponsors /> };
                   if (!subMatch) return <About />;
                   if (subpages[subMatch.params.subpage]) return subpages[subMatch.params.subpage];
                   return null;
