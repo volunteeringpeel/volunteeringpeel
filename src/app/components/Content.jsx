@@ -3,6 +3,7 @@ import { Route } from 'react-router-dom';
 import Homepage from './pages/Homepage';
 import About from './pages/About';
 import FAQ from './pages/FAQ';
+import Team from './pages/Team';
 
 export default class Content extends React.Component {
   render() {
@@ -16,7 +17,7 @@ export default class Content extends React.Component {
               <Route
                 path="/about/:subpage"
                 children={({ match: subMatch }) => {
-                  const subpages = { faq: <FAQ /> };
+                  const subpages = { faq: <FAQ />, team: <Team /> };
                   if (!subMatch) return <About />;
                   if (subpages[subMatch.params.subpage]) return subpages[subMatch.params.subpage];
                   return null;
