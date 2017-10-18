@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 import Header from './components/Header';
 import Content from './components/Content';

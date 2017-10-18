@@ -9,8 +9,8 @@ module.exports = {
   context: path.resolve(__dirname, './src/app'),
 
   entry: {
-    app: './app.jsx',
-    admin: './admin.jsx',
+    app: './app.tsx',
+    admin: './admin.tsx',
   },
 
   devtool: 'source-map',
@@ -18,14 +18,13 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.tsx?$/,
         exclude: [/node_modules/],
         use: [
           {
-            loader: 'babel-loader',
+            loader: 'awesome-typescript-loader',
             options: {
-              presets: [['env', { targets: autoprefixerBrowsers }], 'react'],
-              plugins: ['transform-object-rest-spread', 'transform-class-properties', 'lodash'],
+              useCache: true,
             },
           },
         ],
@@ -103,6 +102,6 @@ module.exports = {
   ],
 
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },
 };

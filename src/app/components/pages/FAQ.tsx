@@ -1,5 +1,5 @@
-import React from 'react';
-import _ from 'lodash';
+import * as React from 'react';
+import { map } from 'lodash-es';
 import { Link } from 'react-router-dom';
 import { Segment, Accordion, Container } from 'semantic-ui-react';
 
@@ -15,9 +15,9 @@ export default () => (
         </p>
         <Accordion
           defaultActiveIndex={0}
-          panels={_.map(testdata.faq, question => ({
+          panels={map(testdata.faq, question => ({
             title: question.question,
-            content: { content: question.answer },
+            content: { content: question.answer }
           }))}
         />
       </Container>

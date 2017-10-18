@@ -1,7 +1,7 @@
-import React from 'react';
-import _ from 'lodash';
-import moment from 'moment';
-import { Segment, Item, Container, Progress } from 'semantic-ui-react';
+import * as React from 'react';
+import { map, sumBy } from 'lodash-es';
+import * as moment from 'moment';
+import { Segment, Item, Container, Progress, SemanticCOLORS } from 'semantic-ui-react';
 
 import EventModal from '../modules/EventModal';
 
@@ -11,9 +11,9 @@ export default () => (
   <Segment style={{ padding: '8em 0em' }} vertical>
     <Container>
       <Item.Group>
-        {_.map(testdata.events, (event) => {
+        {map(testdata.events, (event: VPEvent) => {
           // Import dates into moment.js for easy comparison and formatting
-          const momentDates = _.map(event.shifts, shift => moment(shift.date));
+          const momentDates = map(event.shifts, shift => moment(shift.date));
           // Smallest date is start and largest is end
           const startDate = moment.min(momentDates);
           const endDate = moment.min(momentDates);
@@ -25,14 +25,14 @@ export default () => (
             : `${startDate.format(formatString)} - ${endDate.format(formatString)}`;
 
           // Calculate if event is full based on spots (sum up shift spots)
-          const maxSpots = _.sumBy(event.shifts, 'max_spots');
-          const spotsLeft = _.sumBy(event.shifts, 'spots');
+          const maxSpots = sumBy(event.shifts, 'max_spots');
+          const spotsLeft = sumBy(event.shifts, 'spots');
           const spotsTaken = maxSpots - spotsLeft;
           // Event is full if spotsLeft === 0
           const full = spotsLeft === 0;
 
           // Calculate colour for progress bar.
-          const colors = ['red', 'orange', 'yellow', 'olive', 'green'];
+          const colors: SemanticCOLORS[] = ['red', 'orange', 'yellow', 'olive', 'green'];
           const percentFull = spotsLeft / maxSpots;
           // Floor multiples of 20% so full is green, 99% - 80% is olive, etc.
           // Full bars are grey (disabled)

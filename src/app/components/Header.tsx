@@ -1,5 +1,5 @@
-import React from 'react';
-import _ from 'lodash';
+import * as React from 'react';
+import { find } from 'lodash-es';
 import { Container, Header, Menu, Segment, Dropdown } from 'semantic-ui-react';
 import { Route, Link, Redirect } from 'react-router-dom';
 
@@ -55,7 +55,7 @@ export default class HeaderComponent extends React.Component {
           <Route
             path="/:page/:subpage?"
             render={({ match }) => {
-              const page = _.find(testdata.pages, ['id', match.url]);
+              const page = find(testdata.pages, ['id', match.url]);
               if (!page) return <Redirect to="/home" />;
               return (
                 <Container text>
@@ -65,7 +65,7 @@ export default class HeaderComponent extends React.Component {
                     style={{
                       fontWeight: 'normal',
                       marginBottom: 0,
-                      margin: '3em 0',
+                      margin: '3em 0'
                     }}
                   >
                     {page.display ? page.display : page.title}

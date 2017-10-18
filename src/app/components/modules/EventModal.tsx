@@ -1,9 +1,30 @@
-import React from 'react';
-import _ from 'lodash';
-import moment from 'moment';
-import { Modal, Item, Button, Icon, Progress, Label, Header } from 'semantic-ui-react';
+import * as React from 'react';
+import { includes, sumBy, map, pull } from 'lodash-es';
+import * as moment from 'moment';
+import {
+  Modal,
+  Item,
+  Button,
+  Icon,
+  Progress,
+  Label,
+  Header,
+  SemanticCOLORS
+} from 'semantic-ui-react';
 
-class AreYouSureModal extends React.Component {
+interface AreYouSureModalProps {
+  event: VPEvent;
+  shift: Shift;
+  yes: Function;
+  selected: boolean;
+  full: boolean;
+}
+
+interface AreYouSureModalState {
+  modalOpen: boolean;
+}
+
+class AreYouSureModal extends React.Component<AreYouSureModalProps, AreYouSureModalState> {
   constructor() {
     super();
     this.state = { modalOpen: false };
@@ -25,7 +46,7 @@ class AreYouSureModal extends React.Component {
   }
 
   render() {
-    let buttonText = 'Sign up';
+    let buttonText: Renderable = 'Sign up';
     if (this.props.selected) {
       buttonText = (
         <span>
@@ -69,20 +90,28 @@ class AreYouSureModal extends React.Component {
   }
 }
 
-export default class EventModal extends React.Component {
+interface EventModalProps {
+  event: VPEvent;
+}
+
+interface EventModalState {
+  selectedShifts: number[];
+}
+
+export default class EventModal extends React.Component<EventModalProps, EventModalState> {
   constructor() {
     super();
 
     this.state = {
-      selectedShifts: [],
+      selectedShifts: []
     };
 
     this.selectShift = this.selectShift.bind(this);
   }
 
-  selectShift(shiftNum) {
-    if (_.includes(this.state.selectedShifts, shiftNum)) {
-      this.setState({ selectedShifts: _.pull(this.state.selectedShifts, shiftNum) });
+  selectShift(shiftNum: number) {
+    if (includes(this.state.selectedShifts, shiftNum)) {
+      this.setState({ selectedShifts: pull(this.state.selectedShifts, shiftNum) });
     } else {
       this.setState({ selectedShifts: this.state.selectedShifts.concat(shiftNum) });
     }
@@ -90,7 +119,7 @@ export default class EventModal extends React.Component {
 
   render() {
     // Event is full if no shifts have spots
-    const full = _.sumBy(this.props.event.shifts, 'spots') === 0;
+    const full = sumBy(this.props.event.shifts, 'spots') === 0;
     return (
       <Modal
         trigger={
@@ -106,12 +135,12 @@ export default class EventModal extends React.Component {
         <Modal.Header>Signup - {this.props.event.name}</Modal.Header>
         <Modal.Content>
           <Item.Group>
-            {_.map(this.props.event.shifts, (shift) => {
+            {map(this.props.event.shifts, (shift: Shift) => {
               // Calculate if event is full based on spots (sum up shift spots)
               const spotsTaken = shift.max_spots - shift.spots;
               const shiftFull = shift.spots === 0;
               // Calculate colour for progress bar.
-              const colors = ['red', 'orange', 'yellow', 'olive', 'green'];
+              const colors: SemanticCOLORS[] = ['red', 'orange', 'yellow', 'olive', 'green'];
               const percentFull = shift.spots / shift.max_spots;
               // Floor multiples of 20% so full is green, 99% - 80% is olive, etc.
               // Full bars are grey (disabled)
@@ -121,7 +150,7 @@ export default class EventModal extends React.Component {
               const startTime = moment(`2017-03-16 ${shift.start_time}`).format('hh:mm A');
               const endTime = moment(`2017-03-16 ${shift.end_time}`).format('hh:mm A');
               // Has shift already been signed up for
-              const selected = _.includes(this.state.selectedShifts, shift.num);
+              const selected = includes(this.state.selectedShifts, shift.num);
               return (
                 <Item key={shift.num}>
                   <Item.Content>
@@ -131,7 +160,7 @@ export default class EventModal extends React.Component {
                     <Item.Meta>{moment(shift.date).format('MMM D, YYYY')}</Item.Meta>
                     <Item.Description>
                       <p>{shift.notes}</p>
-                      {_.map(shift.meals, meal => <Label key={meal}>{meal} provided</Label>)}
+                      {map(shift.meals, meal => <Label key={meal}>{meal} provided</Label>)}
                     </Item.Description>
                     <Item.Extra>
                       <Progress
