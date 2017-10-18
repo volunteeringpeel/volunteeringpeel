@@ -1,7 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import { Segment, Item, Container, Button, Icon, Progress } from 'semantic-ui-react';
+import { Segment, Item, Container, Progress } from 'semantic-ui-react';
+
+import EventModal from '../modules/EventModal';
 
 import testdata from '../../testdata';
 
@@ -52,12 +54,7 @@ export default () => (
                     size="small"
                     color={color}
                   />
-                  <Button animated disabled={full} floated="right" primary={!full}>
-                    <Button.Content visible>{full ? 'FULL :(' : 'Shifts'}</Button.Content>
-                    <Button.Content hidden>
-                      <Icon name="right arrow" />
-                    </Button.Content>
-                  </Button>
+                  <EventModal event={event} />
                 </Item.Extra>
               </Item.Content>
             </Item>

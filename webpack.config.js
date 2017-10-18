@@ -24,8 +24,8 @@ module.exports = {
           {
             loader: 'babel-loader',
             options: {
-              presets: ['env', 'react'],
-              plugins: ['transform-object-rest-spread', 'lodash'],
+              presets: [['env', { targets: autoprefixerBrowsers }], 'react'],
+              plugins: ['transform-object-rest-spread', 'transform-class-properties', 'lodash'],
             },
           },
         ],
