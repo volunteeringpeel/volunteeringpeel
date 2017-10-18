@@ -1,7 +1,8 @@
 const path = require('path');
-require('webpack');
+const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const LessPluginAutoPrefix = require('less-plugin-autoprefix');
+
 const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 'android 4'];
 
 module.exports = {
@@ -98,6 +99,7 @@ module.exports = {
       filename: 'admin.html',
       template: 'index.ejs',
     }),
+    new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
   ],
 
   resolve: {

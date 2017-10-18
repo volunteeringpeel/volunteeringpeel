@@ -5,6 +5,7 @@ import About from './pages/About';
 import FAQ from './pages/FAQ';
 import Team from './pages/Team';
 import Sponsors from './pages/Sponsors';
+import Events from './pages/Events';
 
 export default class Content extends React.Component {
   render() {
@@ -25,6 +26,7 @@ export default class Content extends React.Component {
                 }}
               />
             ),
+            events: <Events />,
           };
 
           if (pages[match.params.page]) return pages[match.params.page];
