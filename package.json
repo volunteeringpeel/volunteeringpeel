@@ -6,8 +6,11 @@
   "author": "RetroCraft <retrocraft314@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "tsc-dev": "tsc src/index.ts --outDir dist --watch",
+    "webpack-dev": "webpack --watch",
+    "nodemon-dev": "nodemon dist/index.js",
     "build":
-      "concurrently --kill-all --names \"TypeScript,Webpack\" \"tsc src/index.ts --outDir dist --watch\" \"webpack --watch\"",
+      "concurrently --kill-all --names \"TypeScript,Webpack,Nodemon\" \"yarn run tsc-dev\" \"yarn run webpack-dev\" \"yarn run nodemon-dev\"",
     "postinstall": "node scripts/fix-semantic.js"
   },
   "devDependencies": {
@@ -27,6 +30,7 @@
     "less": "^2.3.1",
     "less-loader": "^4.0.5",
     "less-plugin-autoprefix": "^1.5.1",
+    "nodemon": "^1.12.1",
     "style-loader": "^0.19.0",
     "stylelint": "^8.2.0",
     "stylelint-config-standard": "^17.0.0",
