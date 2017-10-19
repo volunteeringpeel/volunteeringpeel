@@ -1,14 +1,14 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter, Route, Redirect } from 'react-router-dom';
-import Header from './components/Header';
+import { BrowserRouter, Redirect, Route } from 'react-router-dom';
 import Content from './components/Content';
 import Footer from './components/Footer';
+import Header from './components/Header';
 
 import './css/style.less';
 
 export default class App extends React.Component {
-  render() {
+  public render() {
     return (
       <BrowserRouter>
         <div>

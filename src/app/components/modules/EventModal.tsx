@@ -1,21 +1,21 @@
-import * as React from 'react';
-import { includes, sumBy, map, pull } from 'lodash-es';
+import { includes, map, pull, sumBy } from 'lodash-es';
 import * as moment from 'moment';
+import * as React from 'react';
 import {
-  Modal,
-  Item,
   Button,
-  Icon,
-  Progress,
-  Label,
   Header,
-  SemanticCOLORS
+  Icon,
+  Item,
+  Label,
+  Modal,
+  Progress,
+  SemanticCOLORS,
 } from 'semantic-ui-react';
 
 interface AreYouSureModalProps {
   event: VPEvent;
   shift: Shift;
-  yes: Function;
+  yes: () => void;
   selected: boolean;
   full: boolean;
 }
@@ -32,20 +32,7 @@ class AreYouSureModal extends React.Component<AreYouSureModalProps, AreYouSureMo
     this.yes = this.yes.bind(this);
   }
 
-  handleOpen() {
-    this.setState({ modalOpen: true });
-  }
-
-  handleClose() {
-    this.setState({ modalOpen: false });
-  }
-
-  yes() {
-    this.props.yes();
-    this.handleClose();
-  }
-
-  render() {
+  public render() {
     let buttonText: Renderable = 'Sign up';
     if (this.props.selected) {
       buttonText = (
@@ -88,6 +75,19 @@ class AreYouSureModal extends React.Component<AreYouSureModalProps, AreYouSureMo
       </Modal>
     );
   }
+
+  private handleOpen() {
+    this.setState({ modalOpen: true });
+  }
+
+  private handleClose() {
+    this.setState({ modalOpen: false });
+  }
+
+  private yes() {
+    this.props.yes();
+    this.handleClose();
+  }
 }
 
 interface EventModalProps {
@@ -103,21 +103,13 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
     super();
 
     this.state = {
-      selectedShifts: []
+      selectedShifts: [],
     };
 
     this.selectShift = this.selectShift.bind(this);
   }
 
-  selectShift(shiftNum: number) {
-    if (includes(this.state.selectedShifts, shiftNum)) {
-      this.setState({ selectedShifts: pull(this.state.selectedShifts, shiftNum) });
-    } else {
-      this.setState({ selectedShifts: this.state.selectedShifts.concat(shiftNum) });
-    }
-  }
-
-  render() {
+  public render() {
     // Event is full if no shifts have spots
     const full = sumBy(this.props.event.shifts, 'spots') === 0;
     return (
@@ -186,5 +178,13 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
         </Modal.Content>
       </Modal>
     );
+  }
+
+  private selectShift(shiftNum: number) {
+    if (includes(this.state.selectedShifts, shiftNum)) {
+      this.setState({ selectedShifts: pull(this.state.selectedShifts, shiftNum) });
+    } else {
+      this.setState({ selectedShifts: this.state.selectedShifts.concat(shiftNum) });
+    }
   }
 }

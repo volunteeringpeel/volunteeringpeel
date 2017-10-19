@@ -1,12 +1,12 @@
-import * as React from 'react';
 import { find } from 'lodash-es';
-import { Container, Header, Menu, Segment, Dropdown } from 'semantic-ui-react';
-import { Route, Link, Redirect } from 'react-router-dom';
+import * as React from 'react';
+import { Link, Redirect, Route } from 'react-router-dom';
+import { Container, Dropdown, Header, Menu, Segment } from 'semantic-ui-react';
 
 import testdata from '../testdata';
 
 export default class HeaderComponent extends React.Component {
-  render() {
+  public render() {
     return (
       <div>
         <Segment inverted textAlign="center" vertical>
@@ -64,8 +64,8 @@ export default class HeaderComponent extends React.Component {
                     inverted
                     style={{
                       fontWeight: 'normal',
+                      margin: '3em 0',
                       marginBottom: 0,
-                      margin: '3em 0'
                     }}
                   >
                     {page.display ? page.display : page.title}

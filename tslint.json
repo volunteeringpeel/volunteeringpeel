@@ -1,0 +1,11 @@
+{
+  "extends": ["tslint:latest", "tslint-config-airbnb", "tslint-react", "tslint-config-prettier"],
+  "rules": {
+    "jsx-no-multiline-js": false,
+    "jsx-boolean-value": ["never"],
+    "jsx-no-lambda": false,
+    "curly": [true, "ignore-same-line"],
+    "interface-name": false,
+    "object-literal-sort-keys": [true, "match-declaration-order"]
+  }
+}

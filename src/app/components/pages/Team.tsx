@@ -1,6 +1,6 @@
-import * as React from 'react';
 import { map } from 'lodash-es';
-import { Segment, Card, Container, Image } from 'semantic-ui-react';
+import * as React from 'react';
+import { Card, Container, Image, Segment } from 'semantic-ui-react';
 
 import testdata from '../../testdata';
 

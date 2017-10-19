@@ -1,16 +1,16 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Segment,
+  Button,
+  Container,
+  Embed,
+  Form,
   Grid,
   Header,
-  Button,
-  Image,
   Icon,
-  Form,
-  Container,
+  Image,
   Message,
-  Embed
+  Segment,
 } from 'semantic-ui-react';
 
 export default () => (

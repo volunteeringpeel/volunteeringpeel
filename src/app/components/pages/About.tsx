@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { Segment, Grid, Header, Button, Icon } from 'semantic-ui-react';
+import { Button, Grid, Header, Icon, Segment } from 'semantic-ui-react';
 
 export default () => (
   <div className="large text">

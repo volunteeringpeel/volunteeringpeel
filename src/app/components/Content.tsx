@@ -1,28 +1,27 @@
 import * as React from 'react';
 import { Route } from 'react-router-dom';
-import Homepage from './pages/Homepage';
 import About from './pages/About';
-import FAQ from './pages/FAQ';
-import Team from './pages/Team';
-import Sponsors from './pages/Sponsors';
 import Events from './pages/Events';
+import FAQ from './pages/FAQ';
+import Homepage from './pages/Homepage';
+import Sponsors from './pages/Sponsors';
+import Team from './pages/Team';
 
 export default class Content extends React.Component {
-  render() {
+  public render() {
     return (
       <Route
         path="/:page"
         render={({ match }) => {
           const pages: { [key: string]: JSX.Element } = {
-            home: <Homepage />,
             about: (
               <Route
                 path="/about/:subpage"
                 children={({ match: subMatch }) => {
                   const subpages: { [key: string]: JSX.Element } = {
                     faq: <FAQ />,
+                    sponsors: <Sponsors />,
                     team: <Team />,
-                    sponsors: <Sponsors />
                   };
                   if (!subMatch) return <About />;
                   if (subpages[subMatch.params.subpage]) return subpages[subMatch.params.subpage];
@@ -30,7 +29,8 @@ export default class Content extends React.Component {
                 }}
               />
             ),
-            events: <Events />
+            events: <Events />,
+            home: <Homepage />,
           };
 
           if (pages[match.params.page]) return pages[match.params.page];

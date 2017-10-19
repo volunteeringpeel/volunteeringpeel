@@ -1,7 +1,7 @@
-import * as React from 'react';
 import { map, sumBy } from 'lodash-es';
 import * as moment from 'moment';
-import { Segment, Item, Container, Progress, SemanticCOLORS } from 'semantic-ui-react';
+import * as React from 'react';
+import { Container, Item, Progress, Segment, SemanticCOLORS } from 'semantic-ui-react';
 
 import EventModal from '../modules/EventModal';
 

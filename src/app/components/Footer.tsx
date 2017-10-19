@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Segment, Divider, Menu, Container, Icon } from 'semantic-ui-react';
+import { Container, Divider, Icon, Menu, Segment } from 'semantic-ui-react';
 
 export default () => (
   <Segment inverted vertical style={{ padding: '5em 0em' }}>
