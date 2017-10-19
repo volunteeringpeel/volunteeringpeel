@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const LessPluginAutoPrefix = require('less-plugin-autoprefix');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 'android 4'];
 
@@ -32,25 +33,19 @@ module.exports = {
 
       {
         test: /\.less$/,
-        use: [
-          {
-            loader: 'style-loader',
-          },
-          {
-            loader: 'css-loader',
-            options: {
-              sourceMap: true,
-              importLoaders: 1,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            { loader: 'css-loader', options: { sourceMap: true } },
+            {
+              loader: 'less-loader',
+              options: {
+                sourceMap: true,
+                plugins: [new LessPluginAutoPrefix({ browsers: autoprefixerBrowsers })],
+              },
             },
-          },
-          {
-            loader: 'less-loader',
-            options: {
-              sourceMap: true,
-              plugins: [new LessPluginAutoPrefix({ browsers: autoprefixerBrowsers })],
-            },
-          },
-        ],
+          ],
+        }),
       },
 
       {
@@ -99,6 +94,7 @@ module.exports = {
       template: 'index.ejs',
     }),
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
+    new ExtractTextPlugin('style.css'),
   ],
 
   resolve: {
