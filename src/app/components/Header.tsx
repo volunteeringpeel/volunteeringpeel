@@ -65,7 +65,6 @@ export default class HeaderComponent extends React.Component {
                     style={{
                       fontWeight: 'normal',
                       margin: '3em 0',
-                      marginBottom: 0,
                     }}
                   >
                     {page.display ? page.display : page.title}
