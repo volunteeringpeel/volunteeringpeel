@@ -1,7 +1,7 @@
-import express from 'express';
-import path from 'path';
+import * as express from 'express';
+import * as path from 'path';
 
-require('babel-polyfill');
+import 'babel-polyfill';
 
 const app = express();
 const port = process.env.PORT || 19847;
