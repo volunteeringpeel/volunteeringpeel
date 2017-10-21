@@ -16,6 +16,7 @@ module.exports = {
         test: /\.tsx?$/,
         exclude: [/node_modules/],
         use: [
+          { loader: 'react-hot-loader/webpack' },
           {
             loader: 'awesome-typescript-loader',
             options: {
@@ -62,18 +63,15 @@ module.exports = {
       title: 'Volunteering Peel',
       chunks: ['app'],
       filename: 'index.html',
-      template: 'index.ejs',
+      // template: 'index.ejs',
     }),
     new HTMLWebpackPlugin({
       title: 'Volunteering Peel Admin',
       chunks: ['admin'],
       filename: 'admin.html',
-      template: 'index.ejs',
+      // template: 'index.ejs',
     }),
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
-    new webpack.HotModuleReplacementPlugin({
-      multiStep: true,
-    }),
   ],
 
   resolve: {

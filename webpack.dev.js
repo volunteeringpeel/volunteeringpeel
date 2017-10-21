@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
 const LessPluginAutoPrefix = require('less-plugin-autoprefix');
@@ -5,7 +6,7 @@ const LessPluginAutoPrefix = require('less-plugin-autoprefix');
 const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 'android 4'];
 
 module.exports = merge(common, {
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
 
   module: {
     rules: [
@@ -30,7 +31,7 @@ module.exports = merge(common, {
     contentBase: './dist/app',
     historyApiFallback: true,
     hot: true,
-    inline: true,
+    progress: true,
 
     port: 3000,
     proxy: {
@@ -40,4 +41,6 @@ module.exports = merge(common, {
       },
     },
   },
+
+  plugins: [new webpack.HotModuleReplacementPlugin()],
 });
