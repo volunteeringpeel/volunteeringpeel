@@ -1,10 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
-const LessPluginAutoPrefix = require('less-plugin-autoprefix');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-
-const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 'android 4'];
 
 module.exports = {
   context: path.resolve(__dirname, './src/app'),
@@ -13,8 +9,6 @@ module.exports = {
     app: './app.tsx',
     admin: './admin.tsx',
   },
-
-  devtool: 'source-map',
 
   module: {
     rules: [
@@ -29,23 +23,6 @@ module.exports = {
             },
           },
         ],
-      },
-
-      {
-        test: /\.less$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            { loader: 'css-loader', options: { sourceMap: true } },
-            {
-              loader: 'less-loader',
-              options: {
-                sourceMap: true,
-                plugins: [new LessPluginAutoPrefix({ browsers: autoprefixerBrowsers })],
-              },
-            },
-          ],
-        }),
       },
 
       {
@@ -94,7 +71,9 @@ module.exports = {
       template: 'index.ejs',
     }),
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
-    new ExtractTextPlugin('style.css'),
+    new webpack.HotModuleReplacementPlugin({
+      multiStep: true,
+    }),
   ],
 
   resolve: {

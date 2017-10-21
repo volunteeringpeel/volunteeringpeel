@@ -6,10 +6,11 @@
   "author": "RetroCraft <retrocraft314@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "tsc-dev": "tsc src/index.ts --outDir dist --watch",
-    "webpack-dev": "webpack --watch",
-    "nodemon-dev": "nodemon --watch src --ignore src/app -e ts dist/index.js",
-    "build": "concurrently --kill-all --names \"TypeScript,Webpack,Server\" \"yarn run tsc-dev\" \"yarn run webpack-dev\" \"yarn run nodemon-dev\"",
+    "build": "concurrently --kill-all --names \"TypeScript,Webpack,Server\" \"yarn run build:ts\" \"yarn run run:webpack\" \"yarn run run:nodemon\"",
+    "build:ts": "tsc src/index.ts --outDir dist --watch",
+    "build:webpack": "webpack -p --config webpack.prod.js",
+    "run:webpack": "webpack-dev-server --open --config webpack.dev.js",
+    "run:nodemon": "nodemon --watch src --ignore src/app -e ts dist/index.js",
     "postinstall": "node scripts/fix-semantic.js"
   },
   "devDependencies": {
@@ -41,7 +42,9 @@
     "tslint-config-prettier": "^1.6.0",
     "tslint-react": "^3.2.0",
     "typescript": "^2.5.3",
-    "webpack": "^3.6.0"
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.9.3",
+    "webpack-merge": "^4.1.0"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
