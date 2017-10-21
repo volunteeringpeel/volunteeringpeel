@@ -6,7 +6,8 @@
   "author": "RetroCraft <retrocraft314@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "concurrently --kill-all --names \"TypeScript,Webpack,Server\" \"yarn run build:ts\" \"yarn run run:webpack\" \"yarn run run:nodemon\"",
+    "build":
+      "concurrently --allow-restart -n \"TypeScript,Webpack,Server\" \"yarn run build:ts\" \"yarn run run:webpack\" \"yarn run run:nodemon\"",
     "build:ts": "tsc src/index.ts --outDir dist --watch",
     "build:webpack": "webpack -p --config webpack.prod.js",
     "run:webpack": "webpack-dev-server --open --config webpack.dev.js",

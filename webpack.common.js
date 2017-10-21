@@ -63,7 +63,7 @@ module.exports = {
       title: 'Volunteering Peel',
       chunks: ['app'],
       filename: 'index.html',
-      // template: 'index.ejs',
+      template: 'index.ejs',
     }),
     new HTMLWebpackPlugin({
       title: 'Volunteering Peel Admin',
