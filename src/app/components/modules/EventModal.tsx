@@ -1,17 +1,9 @@
 import { includes, map, pull, sumBy } from 'lodash-es';
 import * as moment from 'moment';
 import * as React from 'react';
-import {
-  Button,
-  Header,
-  Icon,
-  Item,
-  Label,
-  Modal,
-  Progress,
-  SemanticCOLORS,
-} from 'semantic-ui-react';
+import { Button, Header, Icon, Item, Label, Progress, SemanticCOLORS } from 'semantic-ui-react';
 
+import Modal from '../modules/Modal';
 import ConfirmModal from './ConfirmModal';
 
 interface EventModalProps {
