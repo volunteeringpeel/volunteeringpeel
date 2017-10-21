@@ -2,8 +2,8 @@ import * as React from 'react';
 import { Button, Header, Icon, Modal } from 'semantic-ui-react';
 
 interface ConfirmModalProps {
-  event: VPEvent;
-  shift: Shift;
+  header: Renderable;
+  content: Renderable;
   yes: () => void;
   selected: boolean;
   full: boolean;
@@ -18,6 +18,7 @@ export default class ConfirmModal extends React.Component<ConfirmModalProps, Con
     super();
     this.state = { modalOpen: false };
     this.handleOpen = this.handleOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
     this.yes = this.yes.bind(this);
   }
 
@@ -53,10 +54,8 @@ export default class ConfirmModal extends React.Component<ConfirmModalProps, Con
         size="small"
         closeIcon
       >
-        <Header content={`Sign Up for ${this.props.event.name} shift #${this.props.shift.num}`} />
-        <Modal.Content>
-          <p>Are you sure you want to sign up for this shift?</p>
-        </Modal.Content>
+        <Header content={this.props.header} />
+        <Modal.Content>{this.props.content}</Modal.Content>
         <Modal.Actions>
           <Button color="green" inverted onClick={this.yes}>
             <Icon name="checkmark" /> Yes

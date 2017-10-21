@@ -89,8 +89,8 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                       <ConfirmModal
                         full={shiftFull}
                         selected={selected}
-                        event={this.props.event}
-                        shift={shift}
+                        content="Are you sure you want to sign up for this shift?"
+                        header={`Sign Up for ${this.props.event.name} shift #${shift.num}`}
                         yes={() => this.selectShift(shift.num)}
                       />
                     </Item.Extra>
