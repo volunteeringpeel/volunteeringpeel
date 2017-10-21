@@ -8,13 +8,15 @@
   "scripts": {
     "tsc-dev": "tsc src/index.ts --outDir dist --watch",
     "webpack-dev": "webpack --watch",
-    "nodemon-dev": "nodemon dist/index.js",
-    "build":
-      "concurrently --kill-all --names \"TypeScript,Webpack,Nodemon\" \"yarn run tsc-dev\" \"yarn run webpack-dev\" \"yarn run nodemon-dev\"",
+    "nodemon-dev": "nodemon --watch src --ignore src/app -e ts dist/index.js",
+    "build": "concurrently --kill-all --names \"TypeScript,Webpack,Server\" \"yarn run tsc-dev\" \"yarn run webpack-dev\" \"yarn run nodemon-dev\"",
     "postinstall": "node scripts/fix-semantic.js"
   },
   "devDependencies": {
+    "@types/bcrypt": "^1.0.0",
+    "@types/bluebird": "^3.5.16",
     "@types/express": "^4.0.37",
+    "@types/express-session": "^1.15.3",
     "@types/lodash-es": "^4.14.7",
     "@types/moment": "^2.13.0",
     "@types/mysql": "^0.0.34",
@@ -44,7 +46,9 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "bcrypt": "^1.0.3",
+    "bluebird": "^3.5.1",
     "express": "^4.16.2",
+    "express-session": "^1.15.6",
     "immutability-helper": "^2.4.0",
     "lodash-es": "^4.17.4",
     "moment": "^2.19.1",

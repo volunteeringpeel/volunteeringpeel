@@ -1,3 +1,13 @@
+declare module '*/passwords.json' {
+  const mysql: {
+    host: string;
+    user: string;
+    password: string;
+    database: string;
+    charset: string;
+  };
+}
+
 type Renderable = JSX.Element | string;
 
 interface Page {
