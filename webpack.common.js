@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  context: path.resolve(__dirname, './src/app'),
+  context: path.resolve(__dirname, 'src', 'app'),
 
   entry: {
     app: './app.tsx',
@@ -52,7 +52,7 @@ module.exports = {
   },
 
   output: {
-    path: path.resolve(__dirname, './dist/app'),
+    path: path.resolve(__dirname, 'dist', 'app'),
     filename: '[name].js',
     publicPath: '/',
   },
