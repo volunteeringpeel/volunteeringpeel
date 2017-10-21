@@ -1,9 +1,10 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { BrowserRouter, Redirect, Route } from 'react-router-dom';
-import Content from './components/Content';
-import Footer from './components/Footer';
-import Header from './components/Header';
+
+import Content from 'app/components/Content';
+import Footer from 'app/components/Footer';
+import Header from 'app/components/Header';
 
 import './css/style.less';
 

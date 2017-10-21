@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Accordion, Container, Segment } from 'semantic-ui-react';
 
-import testdata from '../../testdata';
+import testdata from 'app/testdata';
 
 export default () => (
   <div className="large text">

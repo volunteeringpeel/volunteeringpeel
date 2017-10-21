@@ -2,7 +2,7 @@ import { map } from 'lodash-es';
 import * as React from 'react';
 import { Card, Container, Image, Segment } from 'semantic-ui-react';
 
-import testdata from '../../testdata';
+import testdata from 'app/testdata';
 
 export default () => (
   <Segment style={{ padding: '8em 0em' }} vertical>

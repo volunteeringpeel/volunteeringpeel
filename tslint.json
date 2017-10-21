@@ -6,6 +6,7 @@
     "jsx-no-lambda": false,
     "curly": [true, "ignore-same-line"],
     "interface-name": false,
-    "object-literal-sort-keys": [true, "match-declaration-order"]
+    "object-literal-sort-keys": [true, "match-declaration-order"],
+    "no-submodule-imports": false
   }
 }

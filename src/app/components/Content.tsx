@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { Route } from 'react-router-dom';
-import About from './pages/About';
-import Events from './pages/Events';
-import FAQ from './pages/FAQ';
-import Homepage from './pages/Homepage';
-import Sponsors from './pages/Sponsors';
-import Team from './pages/Team';
+
+import About from 'app/components/pages/About';
+import Events from 'app/components/pages/Events';
+import FAQ from 'app/components/pages/FAQ';
+import Homepage from 'app/components/pages/Homepage';
+import Sponsors from 'app/components/pages/Sponsors';
+import Team from 'app/components/pages/Team';
 
 export default class Content extends React.Component {
   public render() {

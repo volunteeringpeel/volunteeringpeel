@@ -3,9 +3,9 @@ import * as moment from 'moment';
 import * as React from 'react';
 import { Container, Item, Progress, Segment, SemanticCOLORS } from 'semantic-ui-react';
 
-import EventModal from '../modules/EventModal';
+import EventModal from 'app/components/modules/EventModal';
 
-import testdata from '../../testdata';
+import testdata from 'app/testdata';
 
 export default () => (
   <Segment style={{ padding: '8em 0em' }} vertical>

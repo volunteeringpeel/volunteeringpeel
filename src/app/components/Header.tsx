@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Link, Redirect, Route } from 'react-router-dom';
 import { Container, Dropdown, Header, Menu, Segment } from 'semantic-ui-react';
 
-import testdata from '../testdata';
+import testdata from 'app/testdata';
 
 export default class HeaderComponent extends React.Component {
   public render() {

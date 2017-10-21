@@ -3,8 +3,8 @@ import * as moment from 'moment';
 import * as React from 'react';
 import { Button, Header, Icon, Item, Label, Progress, SemanticCOLORS } from 'semantic-ui-react';
 
-import Modal from '../modules/Modal';
-import ConfirmModal from './ConfirmModal';
+import ConfirmModal from 'app/components/modules/ConfirmModal';
+import Modal from 'app/components/modules/Modal';
 
 interface EventModalProps {
   event: VPEvent;
