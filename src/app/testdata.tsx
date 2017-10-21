@@ -375,7 +375,7 @@ const events: VPEvent[] = [
         date: 'October 21, 2017',
         meals: ['dinner'],
         max_spots: 50,
-        spots: 5,
+        spots: 25,
         notes:
           'Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque et est fugiat voluptatibus magnam. Eligendi, quae perspiciatis. Vitae, itaque molestiae architecto, facilis assumenda earum officia quas, aspernatur porro quaerat mollitia?',
       },
