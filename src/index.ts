@@ -14,6 +14,11 @@ const passwordsJson = require('../passwords.json');
 const app = express();
 const port = process.env.PORT || 19847;
 
+// Find working directory
+const appDir = process.env.NODEMON
+  ? path.resolve(__dirname, '../dist', 'app')
+  : path.resolve(__dirname, 'app');
+
 // Setup MySQL
 const db = mysql.createConnection({
   database: 'volunteeringpeel',
@@ -26,7 +31,7 @@ const db = mysql.createConnection({
 sessionManagement(app);
 
 // Static assets
-app.use(express.static(path.resolve(__dirname, 'app')));
+app.use(express.static(path.resolve(appDir)));
 
 // API
 app.post('/api/login', (req, res) => {
@@ -35,9 +40,10 @@ app.post('/api/login', (req, res) => {
 
 // React
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'app', 'index.html'));
+  res.sendFile(path.resolve(appDir, 'index.html'));
 });
 
 // Listen
-console.log(`Listening on port ${port}`);
-app.listen(port);
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`);
+});

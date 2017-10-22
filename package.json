@@ -6,8 +6,7 @@
   "author": "RetroCraft <retrocraft314@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build":
-      "concurrently --allow-restart -k -n \"TypeScript,Webpack,Server\" \"yarn run build:ts\" \"yarn run run:webpack\" \"yarn run run:nodemon\"",
+    "build": "concurrently --allow-restart -k -n \"TypeScript,Webpack,Server\" \"yarn run build:ts\" \"yarn run run:webpack\" \"yarn run run:nodemon\"",
     "build:ts": "tsc src/index.ts --outDir dist --watch",
     "build:webpack": "webpack -p --config webpack.prod.js",
     "run:webpack": "webpack-dev-server --open --config webpack.dev.js",
@@ -38,6 +37,7 @@
     "style-loader": "^0.19.0",
     "stylelint": "^8.2.0",
     "stylelint-config-standard": "^17.0.0",
+    "ts-node": "^3.3.0",
     "tslint": "^5.7.0",
     "tslint-config-airbnb": "^5.3.0",
     "tslint-config-prettier": "^1.6.0",
