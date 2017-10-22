@@ -33,10 +33,10 @@ module.exports = merge(common, {
     hot: true,
     progress: true,
 
-    port: 3000,
+    port: 19848,
     proxy: {
       '^/api/*': {
-        target: 'http://localhost:8080/api/',
+        target: 'http://localhost:19847/api/',
         secure: false,
       },
     },
