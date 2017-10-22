@@ -23,17 +23,5 @@ export default (app: Express.Application) => {
     sessionConfig.cookie.secure = true;
   }
 
-  session.prototype.login = (user: User, cb: (err?: any) => void) => {
-    const req = this.req as Express.Request;
-    req.session.regenerate(err => {
-      if (err) {
-        cb(err);
-      }
-    });
-
-    req.session.userInfo = user;
-    cb();
-  };
-
   app.use(session(sessionConfig));
 };
