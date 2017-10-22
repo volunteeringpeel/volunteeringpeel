@@ -4,6 +4,8 @@ import * as Promise from 'bluebird';
 import * as express from 'express';
 import * as mysql from 'mysql';
 import * as path from 'path';
+
+import api from './api';
 import sessionManagement from './sessionManagement';
 
 import 'babel-polyfill';
@@ -34,9 +36,7 @@ sessionManagement(app);
 app.use(express.static(path.resolve(appDir)));
 
 // API
-app.post('/api/login', (req, res) => {
-  res.send(req.session);
-});
+app.use('/api', api);
 
 // React
 app.get('*', (req, res) => {
