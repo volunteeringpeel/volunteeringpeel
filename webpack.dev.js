@@ -11,6 +11,20 @@ module.exports = merge(common, {
   module: {
     rules: [
       {
+        test: /\.tsx?$/,
+        exclude: [/node_modules/],
+        use: [
+          { loader: 'react-hot-loader/webpack' },
+          {
+            loader: 'awesome-typescript-loader',
+            options: {
+              useCache: true,
+            },
+          },
+        ],
+      },
+
+      {
         test: /\.less$/,
         use: [
           { loader: 'style-loader' },

@@ -13,20 +13,6 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        exclude: [/node_modules/],
-        use: [
-          { loader: 'react-hot-loader/webpack' },
-          {
-            loader: 'awesome-typescript-loader',
-            options: {
-              useCache: true,
-            },
-          },
-        ],
-      },
-
-      {
         test: /\.(eot|svg|ttf|woff|woff2)$/,
         use: [
           {
