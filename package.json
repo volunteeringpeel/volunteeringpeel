@@ -6,6 +6,7 @@
   "author": "RetroCraft <retrocraft314@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "test": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
     "build":
       "concurrently -k -n \"Webpack,Server\" \"yarn run run:webpack\" \"yarn run run:nodemon\"",
     "build:ts": "tsc src/index.ts --outDir dist",

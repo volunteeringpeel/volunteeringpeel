@@ -1,3 +1,4 @@
+// tslint:disable:no-namespace
 // Extend Express definitions
 declare namespace Express {
   interface Response {
