@@ -9,6 +9,13 @@ cache:
 addons:
   ssh_known_hosts: 35.190.169.212
 
+env:
+  - DEPLOY_HOST=35.190.169.212
+
+script:
+  - yarn run test
+  - yarn run build
+
 before_deploy:
 - openssl aes-256-cbc -K $encrypted_d05dc4972430_key -iv $encrypted_d05dc4972430_iv
   -in deploy_rsa.enc -out /tmp/deploy_rsa -d
@@ -19,6 +26,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/dist build@35.190.169.212:/var/volunteeringpeel
+  script: scripts/deploy.sh
   on:
     branch: master

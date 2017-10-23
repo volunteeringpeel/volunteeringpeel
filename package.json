@@ -6,10 +6,11 @@
   "author": "RetroCraft <retrocraft314@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "build": "yarn run build:ts && yarn run build:webpack",
     "test": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
-    "build":
+    "dev":
       "concurrently -k -n \"Webpack,Server\" \"yarn run run:webpack\" \"yarn run run:nodemon\"",
-    "build:ts": "tsc src/index.ts --outDir dist",
+    "build:ts": "find dist -maxdepth 1 -type f -delete && tsc --outDir dist",
     "build:webpack": "webpack -p --config webpack.prod.js",
     "run:webpack": "webpack-dev-server --config webpack.dev.js",
     "run:nodemon": "nodemon --watch dist --ignore dist/app -e ts dist/index.js",
