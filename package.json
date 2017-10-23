@@ -6,14 +6,13 @@
   "author": "RetroCraft <retrocraft314@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "yarn run build:ts && yarn run build:webpack",
     "test": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
-    "dev":
-      "concurrently -k -n \"Webpack,Server\" \"yarn run run:webpack\" \"yarn run run:nodemon\"",
-    "build:ts": "find dist -maxdepth 1 -type f -delete && tsc --outDir dist",
+    "build": "yarn run build:ts && yarn run build:webpack",
+    "build:ts": "tsc --outDir dist src/*.ts",
     "build:webpack": "webpack -p --config webpack.prod.js",
-    "run:webpack": "webpack-dev-server --config webpack.dev.js",
-    "run:nodemon": "nodemon --watch dist --ignore dist/app -e ts dist/index.js",
+    "dev": "concurrently -k -n \"Webpack,Node\" \"yarn run dev:webpack\" \"yarn run dev:nodemon\"",
+    "dev:webpack": "webpack-dev-server --config webpack.dev.js",
+    "dev:nodemon": "nodemon --watch dist --ignore dist/app -e ts dist/index.js",
     "postinstall": "node scripts/fix-semantic.js"
   },
   "devDependencies": {
