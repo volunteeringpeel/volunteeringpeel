@@ -10,7 +10,7 @@ import sessionManagement from './sessionManagement';
 
 import 'babel-polyfill';
 
-const passwordsJson = require('../passwords.json');
+const passwordsJson = require('./passwords.json');
 
 // Setup Express
 const app = express();

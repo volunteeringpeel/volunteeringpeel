@@ -3,7 +3,7 @@ import * as Express from 'express';
 import * as session from 'express-session';
 
 export default (app: Express.Application) => {
-  const passwordsJson = require('../passwords.json');
+  const passwordsJson = require('./passwords.json');
 
   // Setup Express sessions
   const sessionConfig: session.SessionOptions = {
