@@ -50,7 +50,7 @@ module.exports = merge(common, {
     port: 19848,
     proxy: {
       '/api/*': {
-        target: 'http://localhost:19847/api/',
+        target: 'http://127.0.0.1:19847/',
         secure: false,
       },
     },
