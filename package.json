@@ -51,6 +51,7 @@
     "webpack-merge": "^4.1.0"
   },
   "dependencies": {
+    "axios": "^0.17.0",
     "babel-polyfill": "^6.26.0",
     "bcrypt": "^1.0.3",
     "bluebird": "^3.5.1",

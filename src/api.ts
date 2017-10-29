@@ -89,6 +89,24 @@ api.all('/user/logout', (req, res) => {
   });
 });
 
+api.get('/faq', (req, res) => {
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      return db.query('SELECT question, answer FROM faq ORDER BY priority');
+    })
+    .then(faqs => {
+      res.success(faqs);
+      db.end();
+    })
+    .catch(error => {
+      if (db && db.end) db.end();
+      res.error('Database error', error);
+    });
+});
+
 // Basically a 404
 api.get('*', (req, res) => {
   res.error('Unknown endpoint');
