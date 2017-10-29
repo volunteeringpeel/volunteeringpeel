@@ -30,6 +30,7 @@ api.use((req, res, next) => {
   next();
 });
 
+// Get user data
 api.get('/user', (req, res) => {
   if (req.session.userData) {
     res.success(req.session.userData);
@@ -38,11 +39,14 @@ api.get('/user', (req, res) => {
   }
 });
 
+// Login
 api.post('/user/login', (req, res) => {
   const { email, password } = req.body;
   console.log(req.body);
-  if (!email || !password) return res.error('Blank email or password');
+  // Check if already logged in
   if (req.session.userData) return res.success('Already logged in!');
+  // Ensure fields are filled in
+  if (!email || !password) return res.error('Blank email or password');
   let db: mysql.PoolConnection;
   pool
     .getConnection()
@@ -77,6 +81,7 @@ api.post('/user/login', (req, res) => {
     });
 });
 
+// Logout
 api.all('/user/logout', (req, res) => {
   req.session.destroy(error => {
     if (error) res.error(error);
@@ -84,6 +89,7 @@ api.all('/user/logout', (req, res) => {
   });
 });
 
+// Basically a 404
 api.get('*', (req, res) => {
   res.error('Unknown endpoint');
 });
