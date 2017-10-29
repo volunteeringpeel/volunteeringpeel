@@ -97,6 +97,7 @@ api.all('/user/logout', (req, res) => {
   });
 });
 
+// FAQ's
 api.get('/faq', (req, res) => {
   let db: mysql.PoolConnection;
   pool
@@ -107,6 +108,25 @@ api.get('/faq', (req, res) => {
     })
     .then(faqs => {
       res.success(faqs);
+      db.release();
+    })
+    .catch(error => {
+      if (db && db.end) db.release();
+      res.error('Database error', error);
+    });
+});
+
+// Execs
+api.get('/execs', (req, res) => {
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      return db.query('SELECT first_name, last_name, bio FROM user WHERE role_id = 3');
+    })
+    .then(execs => {
+      res.success(execs);
       db.release();
     })
     .catch(error => {
