@@ -1,3 +1,4 @@
+/* tslint:disable:member-ordering */
 declare module 'promise-mysql' {
   interface EscapeFunctions {
     escape(value: any, stringifyObjects?: boolean, timeZone?: string): string;
