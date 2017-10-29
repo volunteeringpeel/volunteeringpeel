@@ -1,3 +1,15 @@
+use volunteeringpeel;
+
+drop table if exists event;
+drop table if exists shift;
+drop table if exists role;
+drop table if exists user;
+drop table if exists user_shift;
+drop table if exists faq;
+drop table if exists request;
+drop table if exists contact;
+drop table if exists sponsor;
+
 create table if not exists event (
   event_id    int           not null auto_increment primary key comment 'Unique event ID',
   name        varchar(64)   not null                            comment 'Event name',
@@ -76,7 +88,7 @@ create table if not exists contact (
   foreign key fk_contact_user (exec_id) references user(user_id)
 );
 
-create table if not exists sponsors (
+create table if not exists sponsor (
   sponsor_id  int           not null auto_increment primary key comment 'Unique sponsor ID',
   name        varchar(64)   not null                            comment 'Display name',
   website     varchar(256)  not null                            comment 'Website',

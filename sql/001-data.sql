@@ -1,10 +1,10 @@
-truncate table role;
+use volunteeringpeel;
+
 insert into role (role_id, name) values
 	(1, "Volunteer"),
 	(2, "Event Organizer"),
 	(3, "Executive");
 
-truncate table user;
 -- Password is 'password'.
 insert into user (email, password, role_id, first_name, last_name, active_key) values
 	("volunteer@mailinator.com", "$2a$10$Js7h3DcVu4.YG8URKcn5CuC.8q1wxztd6AWDnanNwn4RvvA6bPSIq", 1, "Volunteer", "Test", ""),
@@ -31,7 +31,6 @@ insert into user (email, password, role_id, first_name, last_name, active_key, b
 	("YassHatahet@example.com", "$2a$10$Js7h3DcVu4.YG8URKcn5CuC.8q1wxztd6AWDnanNwn4RvvA6bPSIq", 3, "Yass", "Hatahet", "", "Greetings fellow audience. The name is Yass Hatahet and I currently attend my 10th year at Glenforest Secondary School for the International Baccalaureate program (very deadly). I am very grateful that I have had the opportunity to be a part of such a wonderful atmosphere compiled of great individuals. This is my first year at Volunteering Peel as a committee member but I feel like I’ve been here for a while thanks to everyone's warm welcomes. Volunteering to me has a very significant value in my heart. I volunteer in hope that I create a sort of change in my community, a positive change. I get to see and meet wonderful new faces who provide me with the experience that allows me to grow as an individual. I am truly grateful for the impacts volunteering has had on my life. My goal is to make you feel what I experience when I deliver assistance partaking in a specific volunteering activity. In terms of what I do, I spend most of my time studying and working my butt off for the perfect grades. When I am not doing that, I enjoy playing football (soccer), spending time with my friends and family, as well as squeeze in a little time for some video games. Please do not hesitate to smile and say hello when you see me at our future events. Can’t wait to meet you!"),
 	("ZuhayrShaikh@example.com", "$2a$10$Js7h3DcVu4.YG8URKcn5CuC.8q1wxztd6AWDnanNwn4RvvA6bPSIq", 3, "Zuhayr", "Shaikh", "", "Aloha! My name is Zuhayr and I’m a grade 10 at Stephen Lewis Secondary School. I’m hyped to be a first year committee member at Volunteering Peel, as I find deep satisfaction in helping others. In fact, according to Harvard Health, it has been proven (through the measure of hormones and brain activity) that volunteering actually makes you happier and counteracts the effects of stress, anger, and anxiety! I also have a passion for photography and mainly take pictures of exotic cars, as I’m a huge car enthusiast. Feel free to show me exuberant memes, artsy pictures or even start up a conversation on your favourite cars if you ever see me at an event!");
 
-truncate table faq;
 insert into faq (question, answer) values
 	("How old do you have to be?", "13-19 years of age. Preferably in High School (grade 9-12), though you can start volunteering the summer before grade 9. Peel Planet Day is always open to grade 8s as well!"),
 	("How do I sign up?", "Visit the Events page, browse through all of our upcoming events and sign up for which events best interest you!"),
@@ -44,8 +43,7 @@ insert into faq (question, answer) values
 	("What if I missed your phone call? ", "That's not a problem! If you think/know that you missed your phone call to attend the event, please email us ASAP and we'll make sure you can come!"),
 	("What is the Waiver of Liability?", "The Waiver of Liability is a nonverbal consent that you must agree upon signing up for an event. By ticking the box, you willingly agree fully to all the terms in this waiver. To view this waiver, <a href=\"http://volunteeringpeel.org/waiver.php\">Click Here.</a>");
     
-truncate table sponsors;
-insert into sponsors (name, website, priority) values
+insert into sponsor (name, website, priority) values
 	("Lions Club of Mississauga Credit Valley ", "http://www.mississaugacreditvalleylionsclub.com/", 0),
 	("Bonnie Crombie", "http://www.mayorcrombie.ca/", 100),
 	("Councillor Doug Whillans", "http://www.dougwhillans.com/", 200),
