@@ -18,6 +18,13 @@ const pool = mysql.createPool({
   charset: 'utf8mb4',
 });
 
+if (process.env.NODE_ENV !== 'production') {
+  api.use((req, res, next) => {
+    console.log(`Request: ${req.originalUrl} (${req.method})`);
+    next();
+  });
+}
+
 // Success/error functions
 api.use((req, res, next) => {
   res.error = (error, details) => {
