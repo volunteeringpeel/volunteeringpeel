@@ -120,7 +120,7 @@ declare module 'promise-mysql' {
      *
      * @param options The options for the stream. (see readable-stream package)
      */
-    stream(options?: stream.ReadableOptions): stream.Readable;
+    // stream(options?: stream.ReadableOptions): stream.Readable;
     on(ev: string, callback: (...args: any[]) => void): Query;
     on(ev: 'result', callback: (row: any, index: number) => void): Query;
     on(ev: 'error', callback: (err: MysqlError) => void): Query;
@@ -319,7 +319,7 @@ declare module 'promise-mysql' {
     /**
      * object with ssl parameters or a string containing name of ssl profile
      */
-    ssl?: tls.SecureContextOptions & { rejectUnauthorized?: boolean };
+    // ssl?: tls.SecureContextOptions & { rejectUnauthorized?: boolean };
   }
 
   interface PoolConfig extends ConnectionConfig {
