@@ -80,10 +80,11 @@ api.post('/user/login', (req, res) => {
     })
     .then(users => {
       req.session.userData = users[0];
+      db.release();
       res.success('Logged in');
     })
     .catch(error => {
-      if (db && db.end) db.end();
+      if (db && db.release) db.release();
       res.error('Database error', error);
     });
 });
@@ -106,10 +107,10 @@ api.get('/faq', (req, res) => {
     })
     .then(faqs => {
       res.success(faqs);
-      db.end();
+      db.release();
     })
     .catch(error => {
-      if (db && db.end) db.end();
+      if (db && db.end) db.release();
       res.error('Database error', error);
     });
 });
