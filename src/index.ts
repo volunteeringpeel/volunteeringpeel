@@ -12,7 +12,7 @@ import 'babel-polyfill';
 // Setup Express
 const app = express();
 // Parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 // Parse application/json
 app.use(bodyParser.json());
 // Sessions

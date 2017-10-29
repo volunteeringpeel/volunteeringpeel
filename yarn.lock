@@ -17,6 +17,10 @@
     "@types/express" "*"
     "@types/node" "*"
 
+"@types/express-mysql-session@^1.2.2":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@types/express-mysql-session/-/express-mysql-session-1.2.2.tgz#439bb4ab1fbbf860c05ea63a33f1c94d1352b62c"
+
 "@types/express-serve-static-core@*":
   version "4.0.53"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.0.53.tgz#1723a35d1447f2c55e13c8721eab3448e42f4d82"
@@ -60,12 +64,6 @@
   resolved "https://registry.yarnpkg.com/@types/moment/-/moment-2.13.0.tgz#604ebd189bc3bc34a1548689404e61a2a4aac896"
   dependencies:
     moment "*"
-
-"@types/mysql@^0.0.34":
-  version "0.0.34"
-  resolved "https://registry.yarnpkg.com/@types/mysql/-/mysql-0.0.34.tgz#edebdd2f75cb9c1420e4b66e066c0c5c5e46dd7b"
-  dependencies:
-    "@types/node" "*"
 
 "@types/node@*":
   version "8.0.45"
@@ -447,6 +445,10 @@ big.js@^3.1.3:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-3.2.0.tgz#a5fc298b81b9e0dca2e458824784b65c52ba588e"
 
+bignumber.js@4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-4.0.2.tgz#2d1dc37ee5968867ecea90b6da4d16e68608d21d"
+
 bignumber.js@4.0.4:
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-4.0.4.tgz#7c40f5abcd2d6623ab7b99682ee7db81b11889a4"
@@ -461,7 +463,7 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-bluebird@^3.4.7, bluebird@^3.5.1:
+bluebird@^3.4.7, bluebird@^3.5.0, bluebird@^3.5.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.1.tgz#d9551f9de98f1fcda1e683d17ee91a0602ee2eb9"
 
@@ -1239,9 +1241,21 @@ date-now@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/date-now/-/date-now-0.1.4.tgz#eaf439fd4d4848ad74e5cc7dbef200672b9e345b"
 
+debug@2.6.8:
+  version "2.6.8"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.8.tgz#e731531ca2ede27d188222427da17821d68ff4fc"
+  dependencies:
+    ms "2.0.0"
+
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.6, debug@^2.6.8:
   version "2.6.9"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
+  dependencies:
+    ms "2.0.0"
+
+debug@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-3.0.0.tgz#1d2feae53349047b08b264ec41906ba17a8516e4"
   dependencies:
     ms "2.0.0"
 
@@ -1717,6 +1731,29 @@ expand-range@^1.8.1:
   resolved "https://registry.yarnpkg.com/expand-range/-/expand-range-1.8.2.tgz#a299effd335fe2721ebae8e257ec79644fc85337"
   dependencies:
     fill-range "^2.1.0"
+
+express-mysql-session@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/express-mysql-session/-/express-mysql-session-1.2.2.tgz#dc5ccc16c5f7d15118a742eda4620405ee6ff38e"
+  dependencies:
+    debug "3.0.0"
+    depd "1.1.1"
+    express-session "1.15.5"
+    mysql "2.14.*"
+
+express-session@1.15.5:
+  version "1.15.5"
+  resolved "https://registry.yarnpkg.com/express-session/-/express-session-1.15.5.tgz#f49a18227263b316f6f8544da5fee25a540259ec"
+  dependencies:
+    cookie "0.3.1"
+    cookie-signature "1.0.6"
+    crc "3.4.4"
+    debug "2.6.8"
+    depd "~1.1.1"
+    on-headers "~1.0.1"
+    parseurl "~1.3.1"
+    uid-safe "~2.1.4"
+    utils-merge "1.0.0"
 
 express-session@^1.15.6:
   version "1.15.6"
@@ -3317,7 +3354,16 @@ multicast-dns@^6.0.1:
     dns-packet "^1.0.1"
     thunky "^0.1.0"
 
-mysql@^2.15.0:
+mysql@2.14.*:
+  version "2.14.1"
+  resolved "https://registry.yarnpkg.com/mysql/-/mysql-2.14.1.tgz#e9324015e810a50abda94855cab41edfad56284a"
+  dependencies:
+    bignumber.js "4.0.2"
+    readable-stream "2.3.3"
+    safe-buffer "5.1.1"
+    sqlstring "2.2.0"
+
+mysql@^2.14.1:
   version "2.15.0"
   resolved "https://registry.yarnpkg.com/mysql/-/mysql-2.15.0.tgz#ea16841156343e8f2e47fc8985ec41cdd9573b5c"
   dependencies:
@@ -3706,7 +3752,7 @@ parse-passwd@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/parse-passwd/-/parse-passwd-1.0.0.tgz#6d5b934a456993b23d37f40a382d6f1666a8e5c6"
 
-parseurl@~1.3.2:
+parseurl@~1.3.1, parseurl@~1.3.2:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/parseurl/-/parseurl-1.3.2.tgz#fc289d4ed8993119460c156253262cdc8de65bf3"
 
@@ -4135,6 +4181,13 @@ process@^0.11.0:
 process@~0.5.1:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/process/-/process-0.5.2.tgz#1638d8a8e34c2f440a91db95ab9aeb677fc185cf"
+
+promise-mysql@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/promise-mysql/-/promise-mysql-3.1.1.tgz#e9a1cfc5ff230a2cad9fe29f0cfa86dfa654c9dd"
+  dependencies:
+    bluebird "^3.5.0"
+    mysql "^2.14.1"
 
 promise@^7.1.1:
   version "7.3.1"
@@ -4962,6 +5015,10 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
+sqlstring@2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/sqlstring/-/sqlstring-2.2.0.tgz#c3135c4ea8abcd7e7ee741a4966a891d86a4f191"
+
 sqlstring@2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/sqlstring/-/sqlstring-2.3.0.tgz#525b8a4fd26d6f71aa61e822a6caf976d31ad2a8"
@@ -5477,7 +5534,7 @@ uid-number@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/uid-number/-/uid-number-0.0.6.tgz#0ea10e8035e8eb5b8e4449f06da1c730663baa81"
 
-uid-safe@~2.1.5:
+uid-safe@~2.1.4, uid-safe@~2.1.5:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/uid-safe/-/uid-safe-2.1.5.tgz#2b3d5c7240e8fc2e58f8aa269e5ee49c0857bd3a"
   dependencies:
@@ -5605,6 +5662,10 @@ utila@~0.3:
 utila@~0.4:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/utila/-/utila-0.4.0.tgz#8a16a05d445657a3aea5eecc5b12a4fa5379772c"
+
+utils-merge@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.0.tgz#0294fb922bb9375153541c4f7096231f287c8af8"
 
 utils-merge@1.0.1:
   version "1.0.1"

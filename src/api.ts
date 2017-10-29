@@ -2,7 +2,7 @@
 import * as bcrypt from 'bcrypt';
 import * as Express from 'express';
 import * as session from 'express-session';
-import * as mysql from 'mysql';
+import * as mysql from 'promise-mysql';
 
 const passwordsJson = require('./passwords.json');
 
@@ -10,7 +10,7 @@ const passwordsJson = require('./passwords.json');
 const api = Express.Router();
 
 // Setup MySQL
-const db = mysql.createConnection({
+const pool = mysql.createPool({
   database: 'volunteeringpeel',
   host: 'localhost',
   user: 'volunteeringpeel',
@@ -38,18 +38,51 @@ api.get('/user', (req, res) => {
   }
 });
 
-api.get('/user/login', (req, res) => {
+api.post('/user/login', (req, res) => {
   const { email, password } = req.body;
-  db.query(
-    `SELECT password FROM user WHERE email = ${db.escape(email)} LIMIT 1`,
-    (error, results) => {
-      if (error) res.error(error.message, error);
-      bcrypt.compare(password, results[0].password).then(res.success, res.error);
-    },
-  );
+  console.log(req.body);
+  if (!email || !password) return res.error('Blank email or password');
+  if (req.session.userData) return res.success('Already logged in!');
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    // Get user by email
+    .then(conn => {
+      db = conn;
+      return db.query(`SELECT password FROM user WHERE email = ? LIMIT 1`, [email]);
+    })
+    // Check password
+    .then(users => {
+      if (users.length !== 1) res.error('Unknown email');
+      return bcrypt.compare(password, users[0].password);
+    })
+    // Get user data
+    .then(passwordValid => {
+      if (passwordValid) {
+        return db.query(
+          `SELECT user_id, first_name, last_name, role_id FROM user WHERE email = ?`,
+          [email],
+        );
+      } else {
+        res.error('Wrong password! Please try again');
+      }
+    })
+    .then(users => {
+      req.session.userData = users[0];
+      res.success('Logged in');
+    })
+    .catch(error => {
+      if (db && db.end) db.end();
+      res.error('Database error', error);
+    });
 });
 
-// api.post('/user/login', (req, res) => {});
+api.all('/user/logout', (req, res) => {
+  req.session.destroy(error => {
+    if (error) res.error(error);
+    res.success('Logged out');
+  });
+});
 
 api.get('*', (req, res) => {
   res.error('Unknown endpoint');
