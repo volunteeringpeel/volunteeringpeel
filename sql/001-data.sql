@@ -60,3 +60,12 @@ insert into sponsor (name, website, image, priority) values
 	("Cineplex", "http://www.cineplex.com/", "images/spnsrs/cineplex.jpg", 1300),
 	("Tim Horton's", "http://www.timhortons.com/ca/en/index.php", "images/spnsrs/timmies.jpg", 1400),
 	("Councillor Pat Saito", "http://www.ward9.ca/", "images/spnsrs/patsaito.jpg", 1500);
+
+insert into event (event_id, name, address, transport, description) values
+	(1, "Diwalicious", "Markham Civic Centre, 101 Town Centre Blvd, Markham, ON", "John Fraser Secondary School", "<span>Help out at this free community festival with many vendors and extensive programs! Jobs include stage help, onsite runners, booth managers, and more!<br />**NOTE: THERE HAS BEEN A CHANGE OF DATE. THE EVENT IS NOW ON OCTOBER 21ST, 2017 INSTEAD OF SEPTEMBER 30TH, 2017. WE APOLOGIZE FOR THE SUDDEN CHANGE OF DATE.</span>"),
+	(2, "Scotiabank Toronto Waterfront Marathon", "Ontario Place Parking Lot 2, 955 Lake Shore Blvd W, Toronto, ON, M6K 3B9", "John Fraser Secondary School", "<span> Come help out at the Scotiabank Toronto Waterfront Marathon! Volunteers will receive snacks and beverages, a volunteer tshirt, a community service hours letter, and a memorable volunteer experience!<br /> Volunteer jobs include: All 5k Start positions – Start Line, Water Station, Greeters, &amp; Green Team.<br /> NOTE: The event will be held outdoors! Please dress accordingly to the weather. </span>");
+
+insert into shift (event_id, shift_num, date, start_time, end_time, meals, max_spots, notes) values
+	(1, "1", "2017-10-21", "09:30:00", "17:00:00", "lunch", 50, "Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque et est fugiat voluptatibus magnam. Eligendi, quae perspiciatis. Vitae, itaque molestiae architecto, facilis assumenda earum officia quas, aspernatur porro quaerat mollitia?"),
+	(1, "2", "2017-10-21", "15:00:00", "23:00:00", "dinner", 50, "Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque et est fugiat voluptatibus magnam. Eligendi, quae perspiciatis. Vitae, itaque molestiae architecto, facilis assumenda earum officia quas, aspernatur porro quaerat mollitia?"),
+	(2, "1", "2017-10-22", "05:00:00", "10:30:00", "snack", 50, "Lorem ipsum dolor sit amet consectetur adipisicing elit. Cumque et est fugiat voluptatibus magnam. Eligendi, quae perspiciatis. Vitae, itaque molestiae architecto, facilis assumenda earum officia quas, aspernatur porro quaerat mollitia?");

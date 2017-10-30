@@ -38,7 +38,7 @@ interface Sponsor {
 }
 
 interface VPEvent {
-  id: number;
+  event_id?: number;
   name: string;
   address: string;
   description: Renderable;
@@ -49,7 +49,7 @@ interface VPEvent {
 type Meal = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
 interface Shift {
-  num: number;
+  shift_num: number;
   start_time: string;
   end_time: string;
   date: string;

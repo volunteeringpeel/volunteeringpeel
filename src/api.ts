@@ -1,5 +1,6 @@
 /* tslint:disable:no-console no-var-requires */
 import * as bcrypt from 'bcrypt';
+import * as Promise from 'bluebird';
 import * as Express from 'express';
 import * as session from 'express-session';
 import * as mysql from 'promise-mysql';
@@ -135,7 +136,7 @@ api.get('/execs', (req, res) => {
     });
 });
 
-// Execs
+// Sponsors
 api.get('/sponsors', (req, res) => {
   let db: mysql.PoolConnection;
   pool
@@ -146,6 +147,37 @@ api.get('/sponsors', (req, res) => {
     })
     .then(execs => {
       res.success(execs);
+      db.release();
+    })
+    .catch(error => {
+      if (db && db.end) db.release();
+      res.error('Database error', error);
+    });
+});
+
+// Events
+api.get('/events', (req, res) => {
+  let db: mysql.PoolConnection;
+  const out: VPEvent[] = [];
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      return db.query('SELECT event_id, name, address, transport, description FROM event');
+    })
+    .then(events => {
+      const promises = events.map((event: VPEvent) =>
+        db
+          .query(
+            'SELECT shift_num, date, start_time, end_time, meals, max_spots, notes FROM shift WHERE event_id = ?',
+            [event.event_id],
+          )
+          .then(shifts => out.push({ ...event, shifts })),
+      );
+      return Promise.all(promises);
+    })
+    .then(events => {
+      res.success(out);
       db.release();
     })
     .catch(error => {

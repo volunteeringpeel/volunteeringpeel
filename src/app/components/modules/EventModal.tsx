@@ -58,12 +58,12 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               const startTime = moment(`2017-03-16 ${shift.start_time}`).format('hh:mm A');
               const endTime = moment(`2017-03-16 ${shift.end_time}`).format('hh:mm A');
               // Has shift already been signed up for
-              const selected = includes(this.state.selectedShifts, shift.num);
+              const selected = includes(this.state.selectedShifts, shift.shift_num);
               return (
-                <Item key={shift.num}>
+                <Item key={shift.shift_num}>
                   <Item.Content>
                     <Item.Header>
-                      Shift #{shift.num}: {startTime} to {endTime}
+                      Shift #{shift.shift_num}: {startTime} to {endTime}
                     </Item.Header>
                     <Item.Meta>{moment(shift.date).format('MMM D, YYYY')}</Item.Meta>
                     <Item.Description>
@@ -82,8 +82,8 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                         full={shiftFull}
                         selected={selected}
                         content="Are you sure you want to sign up for this shift?"
-                        header={`Sign Up for ${this.props.event.name} shift #${shift.num}`}
-                        yes={() => this.selectShift(shift.num)}
+                        header={`Sign Up for ${this.props.event.name} shift #${shift.shift_num}`}
+                        yes={() => this.selectShift(shift.shift_num)}
                       />
                     </Item.Extra>
                   </Item.Content>
