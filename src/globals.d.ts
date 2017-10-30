@@ -18,7 +18,7 @@ interface Page {
 
 interface FAQ {
   question: string;
-  answer: JSX.Element;
+  answer: string;
 }
 
 interface User {
@@ -27,7 +27,7 @@ interface User {
 }
 
 interface Exec extends User {
-  bio: Renderable;
+  bio: string;
 }
 
 interface Sponsor {
@@ -41,7 +41,7 @@ interface VPEvent {
   event_id?: number;
   name: string;
   address: string;
-  description: Renderable;
+  description: string;
   transport: string;
   shifts: Shift[];
 }
@@ -56,5 +56,5 @@ interface Shift {
   meals: Meal[];
   max_spots: number;
   spots: number;
-  notes: Renderable;
+  notes: string;
 }

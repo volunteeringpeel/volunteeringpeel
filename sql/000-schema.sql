@@ -1,14 +1,14 @@
 use volunteeringpeel;
 
-drop table if exists event;
-drop table if exists shift;
-drop table if exists role;
-drop table if exists user;
-drop table if exists user_shift;
-drop table if exists faq;
-drop table if exists request;
-drop table if exists contact;
 drop table if exists sponsor;
+drop table if exists contact;
+drop table if exists request;
+drop table if exists faq;
+drop table if exists user_shift;
+drop table if exists user;
+drop table if exists role;
+drop table if exists shift;
+drop table if exists event;
 
 create table if not exists event (
   event_id    int           not null auto_increment primary key comment 'Unique event ID',

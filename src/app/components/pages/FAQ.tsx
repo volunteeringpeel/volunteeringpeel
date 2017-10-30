@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { map } from 'lodash-es';
 import * as React from 'react';
+import * as ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
 import { Accordion, Container, Segment } from 'semantic-ui-react';
 
@@ -39,7 +40,9 @@ export default class FAQPage extends React.Component<{}, FAQState> {
               defaultActiveIndex={0}
               panels={map(this.state.faqs, question => ({
                 title: question.question,
-                content: { content: question.answer },
+                content: {
+                  content: <ReactMarkdown source={question.answer} />,
+                },
               }))}
             />
           </Container>

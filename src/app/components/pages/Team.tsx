@@ -1,9 +1,8 @@
 import axios from 'axios';
 import { map } from 'lodash-es';
 import * as React from 'react';
+import * as ReactMarkdown from 'react-markdown';
 import { Card, Container, Image, Segment } from 'semantic-ui-react';
-
-import testdata from 'app/testdata';
 
 interface TeamState {
   loading: boolean;
@@ -38,12 +37,12 @@ export default class Team extends React.Component<{}, TeamState> {
                   <Card.Header>
                     {exec.first_name} {exec.last_name}
                   </Card.Header>
-                  <Card.Meta>
-                    <span className="date">Joined in 2015</span>
-                  </Card.Meta>
+                  <Card.Meta>Position Goes Here</Card.Meta>
                 </Card.Content>
                 <Card.Content extra>
-                  <Card.Description>{exec.bio}</Card.Description>
+                  <Card.Description>
+                    <ReactMarkdown source={exec.bio} />
+                  </Card.Description>
                 </Card.Content>
               </Card>
             ))}

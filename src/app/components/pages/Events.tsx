@@ -2,6 +2,7 @@ import axios from 'axios';
 import { map, sumBy } from 'lodash-es';
 import * as moment from 'moment';
 import * as React from 'react';
+import * as ReactMarkdown from 'react-markdown';
 import { Container, Item, Progress, Segment, SemanticCOLORS } from 'semantic-ui-react';
 
 import EventModal from 'app/components/modules/EventModal';
@@ -63,7 +64,9 @@ export default class Events extends React.Component<{}, EventsState> {
                       {event.name} <small>{date}</small>
                     </Item.Header>
                     <Item.Meta>{event.address}</Item.Meta>
-                    <Item.Description>{event.description}</Item.Description>
+                    <Item.Description>
+                      <ReactMarkdown source={event.description} />
+                    </Item.Description>
                     <Item.Extra>
                       {`${event.shifts.length} ${event.shifts.length > 1 ? 'shifts' : 'shift'}`}
                       <Progress

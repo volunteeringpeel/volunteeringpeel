@@ -172,7 +172,15 @@ api.get('/events', (req, res) => {
             'SELECT shift_num, date, start_time, end_time, meals, max_spots, notes FROM shift WHERE event_id = ?',
             [event.event_id],
           )
-          .then(shifts => out.push({ ...event, shifts })),
+          .then(shifts =>
+            out.push({
+              ...event,
+              shifts: shifts.map((shift: any) => ({
+                ...shift,
+                meals: shift.meals.split(','),
+              })),
+            }),
+          ),
       );
       return Promise.all(promises);
     })
