@@ -91,6 +91,7 @@ create table if not exists contact (
 create table if not exists sponsor (
   sponsor_id  int           not null auto_increment primary key comment 'Unique sponsor ID',
   name        varchar(64)   not null                            comment 'Display name',
+  image       varchar(128)  not null                            comment 'Image link',
   website     varchar(256)  not null                            comment 'Website',
   priority    int           not null default 100                comment 'Priority on page'
 );

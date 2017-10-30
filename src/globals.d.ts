@@ -33,7 +33,7 @@ interface Exec extends User {
 interface Sponsor {
   name: string;
   website?: string;
-  img: string;
+  image: string;
   priority: number;
 }
 

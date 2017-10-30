@@ -43,20 +43,20 @@ insert into faq (question, answer) values
 	("What if I missed your phone call? ", "That's not a problem! If you think/know that you missed your phone call to attend the event, please email us ASAP and we'll make sure you can come!"),
 	("What is the Waiver of Liability?", "The Waiver of Liability is a nonverbal consent that you must agree upon signing up for an event. By ticking the box, you willingly agree fully to all the terms in this waiver. To view this waiver, <a href=\"http://volunteeringpeel.org/waiver.php\">Click Here.</a>");
     
-insert into sponsor (name, website, priority) values
-	("Lions Club of Mississauga Credit Valley ", "http://www.mississaugacreditvalleylionsclub.com/", 0),
-	("Bonnie Crombie", "http://www.mayorcrombie.ca/", 100),
-	("Councillor Doug Whillans", "http://www.dougwhillans.com/", 200),
-	("Councillor Frank Dale", "http://www.peelregion.ca/council/councill/dale.htm", 300),
-	("Brampton Transit", "http://www.brampton.ca/EN/residents/transit/zum/Pages/welcome.aspx", 400),
-	("Krispy Kreme", "http://www.krispykreme.ca/", 500),
-	("Michael Angelos (Sandra Berardi)", "undefined", 600),
-	("Roots", "http://www.roots.com/", 700),
-	("Toronto and Region Conservation", "https://trca.ca/", 800),
-	("MP Raj Grewal", "http://rgrewal.liberal.ca/", 900),
-	("Councillor Matt Mahoney", "http://www.mississauga.ca/portal/cityhall/ward8", 1000),
-	("Mississauga Environment Division", "http://www.mississauga.ca/portal/residents/environment", 1100),
-	("Starbucks", "http://www.starbucks.ca/", 1200),
-	("Cineplex", "http://www.cineplex.com/", 1300),
-	("Tim Horton's", "http://www.timhortons.com/ca/en/index.php", 1400),
-	("Councillor Pat Saito", "http://www.ward9.ca/", 1500);
+insert into sponsor (name, website, image, priority) values
+	("Lions Club of Mississauga Credit Valley", "http://www.mississaugacreditvalleylionsclub.com/", "images/spnsrs/lionsclub.jpg", 0),
+	("Bonnie Crombie", "http://www.mayorcrombie.ca/", "images/spnsrs/bcroms.jpg", 100),
+	("Councillor Doug Whillans", "http://www.dougwhillans.com/", "images/spnsrs/DougWhillans.jpg", 200),
+	("Councillor Frank Dale", "http://www.peelregion.ca/council/councill/dale.htm", "images/spnsrs/FrankDale.jpg", 300),
+	("Brampton Transit", "http://www.brampton.ca/EN/residents/transit/zum/Pages/welcome.aspx", "images/spnsrs/zum.png", 400),
+	("Krispy Kreme", "http://www.krispykreme.ca/", "images/spnsrs/krispykreme.png", 500),
+	("Michael Angelos (Sandra Berardi)", "undefined", "images/spnsrs/MichaelAngelos.jpg", 600),
+	("Roots", "http://www.roots.com/", "images/spnsrs/roots.png", 700),
+	("Toronto and Region Conservation", "https://trca.ca/", "images/spnsrs/trca.jpg", 800),
+	("MP Raj Grewal", "http://rgrewal.liberal.ca/", "images/spnsrs/RajGrewal.jpg", 900),
+	("Councillor Matt Mahoney", "http://www.mississauga.ca/portal/cityhall/ward8", "images/spnsrs/mattmahoney.jpg", 1000),
+	("Mississauga Environment Division", "http://www.mississauga.ca/portal/residents/environment", "images/spnsrs/saugaenvironment.png", 1100),
+	("Starbucks", "http://www.starbucks.ca/", "images/spnsrs/starbucks.jpg", 1200),
+	("Cineplex", "http://www.cineplex.com/", "images/spnsrs/cineplex.jpg", 1300),
+	("Tim Horton's", "http://www.timhortons.com/ca/en/index.php", "images/spnsrs/timmies.jpg", 1400),
+	("Councillor Pat Saito", "http://www.ward9.ca/", "images/spnsrs/patsaito.jpg", 1500);

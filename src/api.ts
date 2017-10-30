@@ -135,6 +135,25 @@ api.get('/execs', (req, res) => {
     });
 });
 
+// Execs
+api.get('/sponsors', (req, res) => {
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      return db.query('SELECT name, image, website FROM sponsor ORDER BY priority');
+    })
+    .then(execs => {
+      res.success(execs);
+      db.release();
+    })
+    .catch(error => {
+      if (db && db.end) db.release();
+      res.error('Database error', error);
+    });
+});
+
 // Basically a 404
 api.get('*', (req, res) => {
   res.error('Unknown endpoint');
