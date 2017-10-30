@@ -3,9 +3,17 @@ import * as React from 'react';
 import { Link, Redirect, Route } from 'react-router-dom';
 import { Container, Dropdown, Header, Menu, Segment } from 'semantic-ui-react';
 
-import testdata from 'app/testdata';
-
 export default class HeaderComponent extends React.Component {
+  private pages: Page[] = [
+    { id: '/home', title: 'Home', display: 'Volunteering Peel' },
+    { id: '/about', title: 'About' },
+    { id: '/about/team', title: 'Team', display: 'Meet the Team' },
+    { id: '/events', title: 'Events' },
+    { id: '/about/sponsors', title: 'Sponsors' },
+    { id: '/about/faq', title: 'FAQ', display: 'Frequently Asked Questions' },
+    { id: '/about/contact', title: 'Contact' },
+  ];
+
   public render() {
     return (
       <div>
@@ -55,7 +63,7 @@ export default class HeaderComponent extends React.Component {
           <Route
             path="/:page/:subpage?"
             render={({ match }) => {
-              const page = find(testdata.pages, ['id', match.url]);
+              const page = find(this.pages, ['id', match.url]);
               if (!page) return <Redirect to="/home" />;
               return (
                 <Container text>
