@@ -27,7 +27,8 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
 
   public render() {
     // Event is full if no shifts have spots
-    const full = sumBy(this.props.event.shifts, 'spots') === 0;
+    const full =
+      sumBy(this.props.event.shifts, 'max_spots') === sumBy(this.props.event.shifts, 'spots_taken');
     return (
       <Modal
         trigger={
@@ -48,7 +49,14 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               const spotsLeft = shift.max_spots - shift.spots_taken;
               const shiftFull = spotsLeft === 0;
               // Calculate colour for progress bar.
-              const colors: SemanticCOLORS[] = ['red', 'orange', 'yellow', 'olive', 'green'];
+              const colors: SemanticCOLORS[] = [
+                'green',
+                'green',
+                'olive',
+                'yellow',
+                'orange',
+                'red',
+              ];
               const percentFull = shift.spots_taken / shift.max_spots;
               // Floor multiples of 20% so full is green, 99% - 80% is olive, etc.
               // Full bars are grey (disabled)
@@ -60,7 +68,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               // Has shift already been signed up for
               const selected = includes(this.state.selectedShifts, shift.shift_num);
               return (
-                <Item key={shift.shift_num}>
+                <Item key={shift.shift_id}>
                   <Item.Content>
                     <Item.Header>
                       Shift #{shift.shift_num}: {startTime} to {endTime}

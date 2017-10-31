@@ -31,7 +31,7 @@ export default class Events extends React.Component<{}, EventsState> {
       <LoadingDimmer loading={this.state.loading}>
         <Segment style={{ padding: '8em 0em' }} vertical>
           <Container>
-            <Item.Group>
+            <Item.Group divided>
               {map(this.state.events, (event: VPEvent) => {
                 // Import dates into moment.js for easy comparison and formatting
                 const momentDates = map(event.shifts, shift => moment(shift.date));
@@ -53,13 +53,20 @@ export default class Events extends React.Component<{}, EventsState> {
                 const full = spotsLeft === 0;
 
                 // Calculate colour for progress bar.
-                const colors: SemanticCOLORS[] = ['red', 'orange', 'yellow', 'olive', 'green'];
-                const percentFull = spotsLeft / maxSpots;
+                const colors: SemanticCOLORS[] = [
+                  'green',
+                  'green',
+                  'olive',
+                  'yellow',
+                  'orange',
+                  'red',
+                ];
+                const percentFull = spotsTaken / maxSpots;
                 // Floor multiples of 20% so full is green, 99% - 80% is olive, etc.
                 // Full bars are grey (disabled)
                 const color = full ? 'grey' : colors[Math.floor(percentFull / 0.2)];
                 return (
-                  <Item key={event.name}>
+                  <Item key={event.event_id}>
                     <Item.Content>
                       <Item.Header>
                         {event.name} <small>{date}</small>
