@@ -47,8 +47,8 @@ export default class Events extends React.Component<{}, EventsState> {
 
                 // Calculate if event is full based on spots (sum up shift spots)
                 const maxSpots = sumBy(event.shifts, 'max_spots');
-                const spotsLeft = sumBy(event.shifts, 'spots');
-                const spotsTaken = maxSpots - spotsLeft;
+                const spotsTaken = sumBy(event.shifts, 'spots_taken');
+                const spotsLeft = maxSpots - spotsTaken;
                 // Event is full if spotsLeft === 0
                 const full = spotsLeft === 0;
 
@@ -73,7 +73,7 @@ export default class Events extends React.Component<{}, EventsState> {
                         <Progress
                           value={spotsTaken}
                           total={maxSpots}
-                          label="Spots"
+                          label={`${spotsLeft} of ${maxSpots} spots left`}
                           size="small"
                           color={color}
                         />

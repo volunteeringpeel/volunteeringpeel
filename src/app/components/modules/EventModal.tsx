@@ -45,11 +45,11 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
           <Item.Group>
             {map(this.props.event.shifts, (shift: Shift) => {
               // Calculate if event is full based on spots (sum up shift spots)
-              const spotsTaken = shift.max_spots - shift.spots;
-              const shiftFull = shift.spots === 0;
+              const spotsLeft = shift.max_spots - shift.spots_taken;
+              const shiftFull = spotsLeft === 0;
               // Calculate colour for progress bar.
               const colors: SemanticCOLORS[] = ['red', 'orange', 'yellow', 'olive', 'green'];
-              const percentFull = shift.spots / shift.max_spots;
+              const percentFull = shift.spots_taken / shift.max_spots;
               // Floor multiples of 20% so full is green, 99% - 80% is olive, etc.
               // Full bars are grey (disabled)
               const color = shiftFull ? 'grey' : colors[Math.floor(percentFull / 0.2)];
@@ -72,7 +72,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                     </Item.Description>
                     <Item.Extra>
                       <Progress
-                        value={spotsTaken}
+                        value={shift.spots_taken}
                         total={shift.max_spots}
                         label="Spots"
                         size="small"

@@ -55,6 +55,6 @@ interface Shift {
   date: string;
   meals: Meal[];
   max_spots: number;
-  spots: number;
+  spots_taken: number;
   notes: string;
 }

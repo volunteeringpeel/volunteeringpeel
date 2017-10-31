@@ -169,7 +169,7 @@ api.get('/events', (req, res) => {
       const promises = events.map((event: VPEvent) =>
         db
           .query(
-            'SELECT shift_num, date, start_time, end_time, meals, max_spots, notes FROM shift WHERE event_id = ?',
+            'SELECT shift_num, date, start_time, end_time, meals, max_spots, spots_taken, notes FROM vw_shift WHERE event_id = ?',
             [event.event_id],
           )
           .then(shifts =>
