@@ -1,5 +1,17 @@
 use volunteeringpeel;
 
+set foreign_key_checks = 0;
+truncate table sponsor;
+truncate table contact;
+truncate table request;
+truncate table faq;
+truncate table user_shift;
+truncate table user;
+truncate table role;
+truncate table shift;
+truncate table event;
+set foreign_key_checks = 1;
+
 insert into role (role_id, name) values
 	(1, "Volunteer"),
 	(2, "Event Organizer"),
