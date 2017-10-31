@@ -43,7 +43,7 @@ api.get('/user', (req, res) => {
   if (req.session.userData) {
     res.success(req.session.userData);
   } else {
-    res.error('Not logged in');
+    res.success('Not logged in');
   }
 });
 

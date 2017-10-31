@@ -5,6 +5,8 @@ import * as ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
 import { Accordion, Container, Segment } from 'semantic-ui-react';
 
+import LoadingDimmer from 'app/components/modules/LoadingDimmer';
+
 interface FAQState {
   loading: boolean;
   faqs: FAQ[];
@@ -27,26 +29,27 @@ export default class FAQPage extends React.Component<{}, FAQState> {
   }
 
   public render() {
-    if (this.state.loading) return null;
     return (
       <div className="large text">
-        <Segment style={{ padding: '8em 0em' }} vertical>
-          <Container>
-            <p>
-              Have a question? <a href="mailto:info@volunteeringpeel.org">Email us</a> or contact us
-              through the <Link to="/contact">contact form</Link>.
-            </p>
-            <Accordion
-              defaultActiveIndex={0}
-              panels={map(this.state.faqs, question => ({
-                title: question.question,
-                content: {
-                  content: <ReactMarkdown source={question.answer} />,
-                },
-              }))}
-            />
-          </Container>
-        </Segment>
+        <LoadingDimmer loading={this.state.loading}>
+          <Segment style={{ padding: '8em 0em' }} vertical>
+            <Container>
+              <p>
+                Have a question? <a href="mailto:info@volunteeringpeel.org">Email us</a> or contact
+                us through the <Link to="/contact">contact form</Link>.
+              </p>
+              <Accordion
+                defaultActiveIndex={0}
+                panels={map(this.state.faqs, question => ({
+                  title: question.question,
+                  content: {
+                    content: <ReactMarkdown source={question.answer} />,
+                  },
+                }))}
+              />
+            </Container>
+          </Segment>
+        </LoadingDimmer>
       </div>
     );
   }
