@@ -3,8 +3,9 @@ import { map, sumBy } from 'lodash-es';
 import * as moment from 'moment';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
-import { Container, Item, Progress, Segment, SemanticCOLORS } from 'semantic-ui-react';
+import { Container, Item, Segment } from 'semantic-ui-react';
 
+import ProgressColor from 'app/components/blocks/ProgressColor';
 import EventModal from 'app/components/modules/EventModal';
 import LoadingDimmer from 'app/components/modules/LoadingDimmer';
 
@@ -51,20 +52,6 @@ export default class Events extends React.Component<{}, EventsState> {
                 const spotsLeft = maxSpots - spotsTaken;
                 // Event is full if spotsLeft === 0
                 const full = spotsLeft === 0;
-
-                // Calculate colour for progress bar.
-                const colors: SemanticCOLORS[] = [
-                  'green',
-                  'green',
-                  'olive',
-                  'yellow',
-                  'orange',
-                  'red',
-                ];
-                const percentFull = spotsTaken / maxSpots;
-                // Floor multiples of 20% so full is green, 99% - 80% is olive, etc.
-                // Full bars are grey (disabled)
-                const color = full ? 'grey' : colors[Math.floor(percentFull / 0.2)];
                 return (
                   <Item key={event.event_id}>
                     <Item.Content>
@@ -77,12 +64,11 @@ export default class Events extends React.Component<{}, EventsState> {
                       </Item.Description>
                       <Item.Extra>
                         {`${event.shifts.length} ${event.shifts.length > 1 ? 'shifts' : 'shift'}`}
-                        <Progress
+                        <ProgressColor
                           value={spotsTaken}
                           total={maxSpots}
                           label={`${spotsLeft} of ${maxSpots} spots left`}
                           size="small"
-                          color={color}
                         />
                         <EventModal event={event} />
                       </Item.Extra>

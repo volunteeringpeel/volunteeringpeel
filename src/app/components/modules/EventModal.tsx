@@ -1,10 +1,11 @@
 import { includes, map, pull, sumBy } from 'lodash-es';
 import * as moment from 'moment';
 import * as React from 'react';
-import { Button, Header, Icon, Item, Label, Progress, SemanticCOLORS } from 'semantic-ui-react';
+import { Button, Header, Icon, Item, Label } from 'semantic-ui-react';
 
+import Modal from 'app/components/blocks/Modal';
+import ProgressColor from 'app/components/blocks/ProgressColor';
 import ConfirmModal from 'app/components/modules/ConfirmModal';
-import Modal from 'app/components/modules/Modal';
 
 interface EventModalProps {
   event: VPEvent;
@@ -48,19 +49,6 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               // Calculate if event is full based on spots (sum up shift spots)
               const spotsLeft = shift.max_spots - shift.spots_taken;
               const shiftFull = spotsLeft === 0;
-              // Calculate colour for progress bar.
-              const colors: SemanticCOLORS[] = [
-                'green',
-                'green',
-                'olive',
-                'yellow',
-                'orange',
-                'red',
-              ];
-              const percentFull = shift.spots_taken / shift.max_spots;
-              // Floor multiples of 20% so full is green, 99% - 80% is olive, etc.
-              // Full bars are grey (disabled)
-              const color = shiftFull ? 'grey' : colors[Math.floor(percentFull / 0.2)];
               // This right here is the world's biggest hack adding birthday to time so that
               // Javascript will accept it as a datetime
               const startTime = moment(`2017-03-16 ${shift.start_time}`).format('hh:mm A');
@@ -79,12 +67,11 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                       {map(shift.meals, meal => <Label key={meal}>{meal} provided</Label>)}
                     </Item.Description>
                     <Item.Extra>
-                      <Progress
+                      <ProgressColor
                         value={shift.spots_taken}
                         total={shift.max_spots}
                         label="Spots"
                         size="small"
-                        color={color}
                       />
                       <ConfirmModal
                         full={shiftFull}
