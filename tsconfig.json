@@ -7,7 +7,7 @@
     "jsx": "react",
     "baseUrl": ".",
     "paths": {
-      "*": ["src/*"]
+      "@app/*": ["src/app/*"]
     }
   },
   "exclude": ["node_modules"]

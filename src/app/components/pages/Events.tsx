@@ -5,9 +5,9 @@ import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Container, Item, Segment } from 'semantic-ui-react';
 
-import ProgressColor from 'app/components/blocks/ProgressColor';
-import EventModal from 'app/components/modules/EventModal';
-import LoadingDimmer from 'app/components/modules/LoadingDimmer';
+import ProgressColor from '@app/components/blocks/ProgressColor';
+import EventModal from '@app/components/modules/EventModal';
+import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
 interface EventsState {
   loading: boolean;

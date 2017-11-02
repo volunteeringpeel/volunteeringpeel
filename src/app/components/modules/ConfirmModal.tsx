@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, Header, Icon } from 'semantic-ui-react';
 
-import Modal from 'app/components/blocks/Modal';
+import Modal from '@app/components/blocks/Modal';
 
 interface ConfirmModalProps {
   header: Renderable;

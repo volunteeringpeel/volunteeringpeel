@@ -4,7 +4,7 @@ import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Card, Container, Image, Segment } from 'semantic-ui-react';
 
-import LoadingDimmer from 'app/components/modules/LoadingDimmer';
+import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
 interface TeamState {
   loading: boolean;

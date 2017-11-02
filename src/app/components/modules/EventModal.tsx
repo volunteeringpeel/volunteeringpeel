@@ -3,9 +3,9 @@ import * as moment from 'moment';
 import * as React from 'react';
 import { Button, Header, Icon, Item, Label } from 'semantic-ui-react';
 
-import Modal from 'app/components/blocks/Modal';
-import ProgressColor from 'app/components/blocks/ProgressColor';
-import ConfirmModal from 'app/components/modules/ConfirmModal';
+import Modal from '@app/components/blocks/Modal';
+import ProgressColor from '@app/components/blocks/ProgressColor';
+import ConfirmModal from '@app/components/modules/ConfirmModal';
 
 interface EventModalProps {
   event: VPEvent;

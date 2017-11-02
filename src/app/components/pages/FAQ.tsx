@@ -5,7 +5,7 @@ import * as ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
 import { Accordion, Container, Segment } from 'semantic-ui-react';
 
-import LoadingDimmer from 'app/components/modules/LoadingDimmer';
+import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
 interface FAQState {
   loading: boolean;

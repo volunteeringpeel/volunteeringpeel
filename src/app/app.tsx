@@ -3,11 +3,11 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { BrowserRouter, Redirect, Route } from 'react-router-dom';
 
-import Content from 'app/components/Content';
-import Footer from 'app/components/Footer';
-import Header from 'app/components/Header';
+import Content from '@app/components/Content';
+import Footer from '@app/components/Footer';
+import Header from '@app/components/Header';
 
-import LoadingDimmer from 'app/components/modules/LoadingDimmer';
+import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
 import './css/style.less';
 

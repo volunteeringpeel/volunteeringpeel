@@ -3,7 +3,7 @@ import { map, sortBy } from 'lodash-es';
 import * as React from 'react';
 import { Card, Container, Image, Segment } from 'semantic-ui-react';
 
-import LoadingDimmer from 'app/components/modules/LoadingDimmer';
+import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
 interface SponsorsState {
   loading: boolean;
