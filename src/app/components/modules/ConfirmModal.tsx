@@ -46,7 +46,7 @@ export default class ConfirmModal extends React.Component<ConfirmModalProps, Con
           >
             <Button.Content visible>{buttonText}</Button.Content>
             <Button.Content hidden>
-              <Icon name="right arrow" />
+              <Icon name="arrow right" />
             </Button.Content>
           </Button>
         }

@@ -74,7 +74,7 @@ export default () => (
               <Button primary animated size="huge">
                 <Button.Content visible>Get Started</Button.Content>
                 <Button.Content hidden>
-                  <Icon name="right arrow" />
+                  <Icon name="arrow right" />
                 </Button.Content>
               </Button>
             </Link>

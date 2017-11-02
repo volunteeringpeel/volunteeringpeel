@@ -36,7 +36,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
           <Button animated disabled={full} floated="right" primary={!full}>
             <Button.Content visible>{full ? 'FULL :(' : 'Shifts'}</Button.Content>
             <Button.Content hidden>
-              <Icon name="right arrow" />
+              <Icon name="arrow right" />
             </Button.Content>
           </Button>
         }
