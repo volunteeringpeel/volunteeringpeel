@@ -68,8 +68,8 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.0.tgz#5a7306e367c539b9f6543499de8dd519fac37a8b"
 
 "@types/node@*":
-  version "8.0.45"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.45.tgz#89fad82439d5624e1b5c6b42f0f5d85136dcdecc"
+  version "8.0.47"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.47.tgz#968e596f91acd59069054558a00708c445ca30c2"
 
 "@types/react-dom@^16.0.2":
   version "16.0.2"
@@ -93,11 +93,7 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react@*":
-  version "16.0.14"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.14.tgz#c46d92be936820a93a14ffc84ad805e83f6535ef"
-
-"@types/react@^16.0.19":
+"@types/react@*", "@types/react@^16.0.19":
   version "16.0.19"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.0.19.tgz#f804a0fcd6d94c17df92cf2fd46671bbbc862329"
 
