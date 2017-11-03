@@ -166,22 +166,38 @@ api.get('/events', (req, res) => {
       return db.query('SELECT event_id, name, address, transport, description FROM event');
     })
     .then(events => {
-      const promises = events.map((event: VPEvent) =>
-        db
-          .query(
-            'SELECT shift_id, shift_num, date, start_time, end_time, meals, max_spots, spots_taken, notes FROM vw_shift WHERE event_id = ?',
-            [event.event_id],
-          )
-          .then(shifts =>
-            out.push({
-              ...event,
-              shifts: shifts.map((shift: any) => ({
-                ...shift,
-                meals: shift.meals.split(','),
-              })),
-            }),
-          ),
-      );
+      const promises = events.map((event: VPEvent) => {
+        const query = req.session.userData
+          ? // Query if logged in
+            `SELECT
+              s.shift_id, s.shift_num,
+              s.date, s.start_time, s.end_time,
+              s.meals, s.max_spots, s.spots_taken, s.notes,
+              (CASE WHEN us.user_id IS NULL THEN 0 ELSE 1 END) AS signed_up
+            FROM vw_shift s
+            JOIN user u
+            LEFT JOIN user_shift us ON us.shift_id = s.shift_id AND us.user_id = u.user_id
+            WHERE s.event_id = ? AND u.user_id = ?`
+          : // Query if not logged in
+            `SELECT
+              s.shift_id, s.shift_num,
+              s.date, s.start_time, s.end_time,
+              s.meals, s.max_spots, s.spots_taken, s.notes,
+              0 signed_up
+            FROM vw_shift s
+            WHERE s.event_id = ? AND ?`;
+        const userID = req.session.userData ? req.session.userData.user_id : -1;
+        return db.query(query, [event.event_id, userID]).then(shifts => {
+          console.log([event.event_id, userID]);
+          return out.push({
+            ...event,
+            shifts: shifts.map((shift: any) => ({
+              ...shift,
+              meals: shift.meals.split(','),
+            })),
+          });
+        });
+      });
       return Promise.all(promises);
     })
     .then(events => {

@@ -22,6 +22,7 @@ interface FAQ {
 }
 
 interface User {
+  user_id: number;
   first_name: string;
   last_name: string;
 }
@@ -58,4 +59,5 @@ interface Shift {
   max_spots: number;
   spots_taken: number;
   notes: string;
+  signed_up: boolean;
 }
