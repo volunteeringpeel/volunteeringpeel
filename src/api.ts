@@ -28,8 +28,10 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Success/error functions
 api.use((req, res, next) => {
-  res.error = (error, details) => {
-    res.status(500).json({ error, details: details || 'No further information', status: 'error' });
+  res.error = (status, error, details) => {
+    res
+      .status(status)
+      .json({ error, details: details || 'No further information', status: 'error' });
   };
   res.success = data => {
     if (data) res.status(200).json({ data, status: 'success' });
@@ -50,11 +52,10 @@ api.get('/user', (req, res) => {
 // Login
 api.post('/user/login', (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
   // Check if already logged in
   if (req.session.userData) return res.success('Already logged in!');
   // Ensure fields are filled in
-  if (!email || !password) return res.error('Blank email or password');
+  if (!email || !password) return res.error(400, 'Blank email or password');
   let db: mysql.PoolConnection;
   pool
     .getConnection()
@@ -65,7 +66,7 @@ api.post('/user/login', (req, res) => {
     })
     // Check password
     .then(users => {
-      if (users.length !== 1) res.error('Unknown email');
+      if (users.length !== 1) res.error(401, 'Unknown email');
       return bcrypt.compare(password, users[0].password);
     })
     // Get user data
@@ -76,7 +77,7 @@ api.post('/user/login', (req, res) => {
           [email],
         );
       } else {
-        res.error('Wrong password! Please try again');
+        res.error(401, 'Wrong password! Please try again');
       }
     })
     .then(users => {
@@ -86,14 +87,14 @@ api.post('/user/login', (req, res) => {
     })
     .catch(error => {
       if (db && db.release) db.release();
-      res.error('Database error', error);
+      res.error(500, 'Database error', error);
     });
 });
 
 // Logout
 api.all('/user/logout', (req, res) => {
   req.session.destroy(error => {
-    if (error) res.error(error);
+    if (error) res.error(500, error);
     res.success('Logged out');
   });
 });
@@ -113,7 +114,7 @@ api.get('/faq', (req, res) => {
     })
     .catch(error => {
       if (db && db.end) db.release();
-      res.error('Database error', error);
+      res.error(500, 'Database error', error);
     });
 });
 
@@ -132,7 +133,7 @@ api.get('/execs', (req, res) => {
     })
     .catch(error => {
       if (db && db.end) db.release();
-      res.error('Database error', error);
+      res.error(500, 'Database error', error);
     });
 });
 
@@ -151,7 +152,7 @@ api.get('/sponsors', (req, res) => {
     })
     .catch(error => {
       if (db && db.end) db.release();
-      res.error('Database error', error);
+      res.error(500, 'Database error', error);
     });
 });
 
@@ -188,7 +189,6 @@ api.get('/events', (req, res) => {
             WHERE s.event_id = ? AND ?`;
         const userID = req.session.userData ? req.session.userData.user_id : -1;
         return db.query(query, [event.event_id, userID]).then(shifts => {
-          console.log([event.event_id, userID]);
           return out.push({
             ...event,
             shifts: shifts.map((shift: any) => ({
@@ -206,13 +206,13 @@ api.get('/events', (req, res) => {
     })
     .catch(error => {
       if (db && db.end) db.release();
-      res.error('Database error', error);
+      res.error(500, 'Database error', error);
     });
 });
 
-// Basically a 404
+// 404
 api.get('*', (req, res) => {
-  res.error('Unknown endpoint');
+  res.error(404, 'Unknown endpoint');
 });
 
 export default api;

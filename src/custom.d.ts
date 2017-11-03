@@ -2,7 +2,7 @@
 // Extend Express definitions
 declare namespace Express {
   interface Response {
-    error(error: string, details?: any): void;
+    error(status: number, error: string, details?: any): void;
     success(success?: any): void;
   }
 
