@@ -2,7 +2,7 @@ import * as update from 'immutability-helper';
 import { includes, map, pull, sortBy, sumBy } from 'lodash-es';
 import * as moment from 'moment';
 import * as React from 'react';
-import { Button, Header, Icon, Item, Label } from 'semantic-ui-react';
+import { Button, Dimmer, Header, Icon, Item, Label } from 'semantic-ui-react';
 
 import Modal from '@app/components/blocks/Modal';
 import ProgressColor from '@app/components/blocks/ProgressColor';
@@ -76,6 +76,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                 );
               }
               if (shiftFull) buttonText = 'FULL :(';
+              if (shift.signed_up) buttonText = 'Already signed up!';
               return (
                 <Item key={shift.shift_id}>
                   <Item.Content>
@@ -97,7 +98,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
 
                       <Button
                         animated
-                        disabled={shiftFull}
+                        disabled={shiftFull || shift.signed_up}
                         floated="right"
                         primary
                         basic={!selected}
