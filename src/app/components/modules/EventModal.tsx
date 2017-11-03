@@ -81,7 +81,10 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                 <Item key={shift.shift_id}>
                   <Item.Content>
                     <Item.Header>
-                      Shift #{shift.shift_num}: {startTime} to {endTime}
+                      Shift #{shift.shift_num}{' '}
+                      <small>
+                        {startTime} - {endTime}
+                      </small>
                     </Item.Header>
                     <Item.Meta>{moment(shift.date).format('MMM D, YYYY')}</Item.Meta>
                     <Item.Description>
