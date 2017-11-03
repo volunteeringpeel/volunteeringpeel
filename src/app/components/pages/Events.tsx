@@ -38,7 +38,7 @@ export default class Events extends React.Component<{}, EventsState> {
                 const momentDates = map(event.shifts, shift => moment(shift.date));
                 // Smallest date is start and largest is end
                 const startDate = moment.min(...momentDates);
-                const endDate = moment.min(...momentDates);
+                const endDate = moment.max(...momentDates);
                 // Change formatting (e.g. Oct 17, 2017)
                 const formatString = 'MMM D, YYYY';
                 // If start === end, one day event, otherwise range
