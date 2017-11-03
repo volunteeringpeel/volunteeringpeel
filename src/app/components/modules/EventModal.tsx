@@ -1,4 +1,5 @@
-import { includes, map, pull, sumBy } from 'lodash-es';
+import * as update from 'immutability-helper';
+import { includes, map, pull, sortBy, sumBy } from 'lodash-es';
 import * as moment from 'moment';
 import * as React from 'react';
 import { Button, Header, Icon, Item, Label } from 'semantic-ui-react';
@@ -6,6 +7,8 @@ import { Button, Header, Icon, Item, Label } from 'semantic-ui-react';
 import Modal from '@app/components/blocks/Modal';
 import ProgressColor from '@app/components/blocks/ProgressColor';
 import ConfirmModal from '@app/components/modules/ConfirmModal';
+
+import Utilities from '@app/Utilities';
 
 interface EventModalProps {
   event: VPEvent;
@@ -30,6 +33,13 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
     // Event is full if no shifts have spots
     const full =
       sumBy(this.props.event.shifts, 'max_spots') === sumBy(this.props.event.shifts, 'spots_taken');
+
+    // Text for confirm modal on submit (sort shift numbers first)
+    const shiftsList = Utilities.listify(sortBy(this.state.selectedShifts), '#');
+    // Pluralization
+    const shiftPlural = Utilities.pluralize('shift', this.state.selectedShifts.length);
+    // All together now
+    const confirmText = `Are you sure you want to sign up for ${shiftPlural} ${shiftsList}?`;
     return (
       <Modal
         trigger={
@@ -43,7 +53,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
         closeIcon
       >
         <Modal.Header>Signup - {this.props.event.name}</Modal.Header>
-        <Modal.Content>
+        <Modal.Content scrolling>
           <Item.Group>
             {map(this.props.event.shifts, (shift: Shift) => {
               // Calculate if event is full based on spots (sum up shift spots)
@@ -55,6 +65,17 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               const endTime = moment(`2017-03-16 ${shift.end_time}`).format('hh:mm A');
               // Has shift already been signed up for
               const selected = includes(this.state.selectedShifts, shift.shift_num);
+
+              // Button text for the signup
+              let buttonText: Renderable = 'Select this shift';
+              if (selected) {
+                buttonText = (
+                  <span>
+                    Selected <Icon name="check" />
+                  </span>
+                );
+              }
+              if (shiftFull) buttonText = 'FULL :(';
               return (
                 <Item key={shift.shift_id}>
                   <Item.Content>
@@ -73,13 +94,20 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                         label="Spots"
                         size="small"
                       />
-                      <ConfirmModal
-                        full={shiftFull}
-                        selected={selected}
-                        content="Are you sure you want to sign up for this shift?"
-                        header={`Sign Up for ${this.props.event.name} shift #${shift.shift_num}`}
-                        yes={() => this.selectShift(shift.shift_num)}
-                      />
+
+                      <Button
+                        animated
+                        disabled={shiftFull}
+                        floated="right"
+                        primary
+                        basic={!selected}
+                        onClick={() => this.selectShift(shift.shift_num)}
+                      >
+                        <Button.Content visible>{buttonText}</Button.Content>
+                        <Button.Content hidden>
+                          {selected ? 'Deselect' : <Icon name="arrow right" />}
+                        </Button.Content>
+                      </Button>
                     </Item.Extra>
                   </Item.Content>
                 </Item>
@@ -87,15 +115,38 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
             })}
           </Item.Group>
         </Modal.Content>
+        <Modal.Actions>
+          <ConfirmModal
+            content={confirmText}
+            header={`Sign Up for ${this.props.event.name}`}
+            yes={this.submit}
+            button={
+              <Button animated positive>
+                <Button.Content visible>Sign up!</Button.Content>
+                <Button.Content hidden>
+                  <Icon name="arrow right" />
+                </Button.Content>
+              </Button>
+            }
+          />
+        </Modal.Actions>
       </Modal>
     );
   }
 
   private selectShift(shiftNum: number) {
-    if (includes(this.state.selectedShifts, shiftNum)) {
-      this.setState({ selectedShifts: pull(this.state.selectedShifts, shiftNum) });
-    } else {
-      this.setState({ selectedShifts: this.state.selectedShifts.concat(shiftNum) });
-    }
+    const newState = update(this.state, {
+      // Is the shift is already selected?
+      selectedShifts: includes(this.state.selectedShifts, shiftNum)
+        ? // If yes remove the value
+          { $apply: (oldValue: number[]) => pull(oldValue, shiftNum) }
+        : // If no push the value
+          { $push: [shiftNum] },
+    });
+    this.setState(newState);
+  }
+
+  private submit() {
+    return;
   }
 }

@@ -4,11 +4,26 @@ import { Button, Header, Icon } from 'semantic-ui-react';
 import Modal from '@app/components/blocks/Modal';
 
 interface ConfirmModalProps {
+  /**
+   * Modal header
+   */
   header: Renderable;
+  /**
+   * Modal content
+   */
   content: Renderable;
+  /**
+   * Yes/success callback
+   */
   yes: () => void;
-  selected: boolean;
-  full: boolean;
+  /**
+   * Trigger button
+   */
+  button: React.ReactElement<any>;
+  /**
+   * Has the modal already been confirmed (i.e. a radio with a true state)
+   */
+  skip?: boolean;
 }
 
 interface ConfirmModalState {
@@ -18,38 +33,18 @@ interface ConfirmModalState {
 export default class ConfirmModal extends React.Component<ConfirmModalProps, ConfirmModalState> {
   constructor() {
     super();
+
     this.state = { modalOpen: false };
+
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.yes = this.yes.bind(this);
   }
 
   public render() {
-    let buttonText: Renderable = 'Sign up';
-    if (this.props.selected) {
-      buttonText = (
-        <span>
-          Signed up <Icon name="check" />
-        </span>
-      );
-    }
-    if (this.props.full) buttonText = 'FULL :(';
     return (
       <Modal
-        trigger={
-          <Button
-            animated
-            disabled={this.props.full || this.props.selected}
-            floated="right"
-            primary={!this.props.full}
-            onClick={this.handleOpen}
-          >
-            <Button.Content visible>{buttonText}</Button.Content>
-            <Button.Content hidden>
-              <Icon name="arrow right" />
-            </Button.Content>
-          </Button>
-        }
+        trigger={React.cloneElement(this.props.button, { onClick: this.handleOpen })}
         basic
         open={this.state.modalOpen}
         onClose={this.handleClose}
@@ -68,7 +63,13 @@ export default class ConfirmModal extends React.Component<ConfirmModalProps, Con
   }
 
   private handleOpen() {
-    this.setState({ modalOpen: true });
+    // If skip is on, resolve immediately
+    if (this.props.skip) {
+      this.props.yes();
+    } else {
+      // Otherwise, open the modal normally
+      this.setState({ modalOpen: true });
+    }
   }
 
   private handleClose() {
