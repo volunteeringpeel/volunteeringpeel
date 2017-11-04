@@ -214,7 +214,7 @@ api.get('/events', (req, res) => {
 
 // Signup
 api.post('/signup', (req, res) => {
-  if (!req.session.userData) res.error(401, 'Not logged in');
+  if (!req.session.userData) return res.error(401, 'Not logged in');
   let db: mysql.PoolConnection;
   pool
     .getConnection()
