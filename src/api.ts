@@ -194,6 +194,8 @@ api.get('/events', (req, res) => {
             shifts: shifts.map((shift: any) => ({
               ...shift,
               meals: shift.meals.split(','),
+              // Deal with booleans
+              signed_up: !!shift.signed_up,
             })),
           });
         });
