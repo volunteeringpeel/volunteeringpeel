@@ -62,7 +62,7 @@ export default () => (
           <Grid.Column floated="right" width={6}>
             <Image
               bordered
-              rounded
+              shape="rounded"
               size="large"
               src="http://volunteeringpeel.org/images/home-slider/7.JPG"
             />
