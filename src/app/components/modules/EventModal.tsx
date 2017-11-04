@@ -18,6 +18,7 @@ interface EventModalProps {
 }
 
 interface EventModalState {
+  modalOpen: boolean;
   selectedShifts: number[];
   submitting: boolean;
 }
@@ -27,10 +28,13 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
     super();
 
     this.state = {
+      modalOpen: false,
       selectedShifts: [],
       submitting: false,
     };
 
+    this.handleOpen = this.handleOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
     this.selectShift = this.selectShift.bind(this);
     this.submit = this.submit.bind(this);
   }
@@ -56,13 +60,21 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
     return (
       <Modal
         trigger={
-          <Button animated disabled={full} floated="right" primary={!full}>
+          <Button
+            animated
+            disabled={full}
+            floated="right"
+            primary={!full}
+            onClick={this.handleOpen}
+          >
             <Button.Content visible>{full ? 'FULL :(' : 'Shifts'}</Button.Content>
             <Button.Content hidden>
               <Icon name="arrow right" />
             </Button.Content>
           </Button>
         }
+        open={this.state.modalOpen}
+        onClose={this.handleClose}
         closeIcon
       >
         <Modal.Header>Signup - {this.props.event.name}</Modal.Header>
@@ -133,6 +145,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
           </Item.Group>
         </Modal.Content>
         <Modal.Actions>
+          <Button onClick={this.handleClose}>Cancel</Button>
           <ConfirmModal
             content={confirmText}
             header={`Sign Up for ${this.props.event.name}`}
@@ -149,6 +162,14 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
         </Modal.Actions>
       </Modal>
     );
+  }
+
+  private handleOpen() {
+    this.setState({ modalOpen: true });
+  }
+
+  private handleClose() {
+    this.setState({ modalOpen: false });
   }
 
   private selectShift(shiftNum: number) {
