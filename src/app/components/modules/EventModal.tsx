@@ -1,3 +1,5 @@
+import axios from 'axios';
+import * as Promise from 'bluebird';
 import * as update from 'immutability-helper';
 import { includes, map, pull, sortBy, sumBy } from 'lodash-es';
 import * as moment from 'moment';
@@ -12,10 +14,12 @@ import Utilities from '@app/Utilities';
 
 interface EventModalProps {
   event: VPEvent;
+  refresh: () => PromiseLike<any>;
 }
 
 interface EventModalState {
   selectedShifts: number[];
+  submitting: boolean;
 }
 
 export default class EventModal extends React.Component<EventModalProps, EventModalState> {
@@ -24,9 +28,18 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
 
     this.state = {
       selectedShifts: [],
+      submitting: false,
     };
 
     this.selectShift = this.selectShift.bind(this);
+    this.submit = this.submit.bind(this);
+  }
+
+  public submit(): PromiseLike<any> {
+    return Promise.resolve(this.setState({ submitting: true }))
+      .then(() => axios.post(`/api/signup`, { shifts: this.state.selectedShifts }))
+      .then(this.props.refresh)
+      .then(() => this.setState({ selectedShifts: [], submitting: false }));
   }
 
   public render() {
@@ -123,9 +136,9 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
           <ConfirmModal
             content={confirmText}
             header={`Sign Up for ${this.props.event.name}`}
-            yes={this.submit}
+            yes={() => this.submit()}
             button={
-              <Button animated positive>
+              <Button animated positive disabled={this.state.selectedShifts.length === 0}>
                 <Button.Content visible>Sign up!</Button.Content>
                 <Button.Content hidden>
                   <Icon name="arrow right" />
@@ -148,9 +161,5 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
           { $push: [shiftNum] },
     });
     this.setState(newState);
-  }
-
-  private submit() {
-    return;
   }
 }

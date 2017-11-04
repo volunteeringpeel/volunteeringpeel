@@ -212,6 +212,30 @@ api.get('/events', (req, res) => {
     });
 });
 
+// Signup
+api.post('/signup', (req, res) => {
+  if (!req.session.userData) res.error(401, 'Not logged in');
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      const values = (req.body.shifts as number[]).map(shift => [
+        req.session.userData.user_id,
+        shift,
+      ]);
+      return db.query('INSERT INTO user_shift (user_id, shift_id) VALUES ?', [values]);
+    })
+    .then(execs => {
+      res.success('Signed up successfully');
+      db.release();
+    })
+    .catch(error => {
+      if (db && db.end) db.release();
+      res.error(500, 'Database error', error);
+    });
+});
+
 // 404
 api.get('*', (req, res) => {
   res.error(404, 'Unknown endpoint');

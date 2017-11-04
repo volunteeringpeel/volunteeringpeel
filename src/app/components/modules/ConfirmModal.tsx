@@ -1,3 +1,4 @@
+import * as Promise from 'bluebird';
 import * as React from 'react';
 import { Button, Header, Icon } from 'semantic-ui-react';
 
@@ -15,7 +16,7 @@ interface ConfirmModalProps {
   /**
    * Yes/success callback
    */
-  yes: () => void;
+  yes: () => PromiseLike<any>;
   /**
    * Trigger button
    */
@@ -62,6 +63,10 @@ export default class ConfirmModal extends React.Component<ConfirmModalProps, Con
     );
   }
 
+  public yes() {
+    this.props.yes().then(this.handleClose);
+  }
+
   private handleOpen() {
     // If skip is on, resolve immediately
     if (this.props.skip) {
@@ -74,10 +79,5 @@ export default class ConfirmModal extends React.Component<ConfirmModalProps, Con
 
   private handleClose() {
     this.setState({ modalOpen: false });
-  }
-
-  private yes() {
-    this.props.yes();
-    this.handleClose();
   }
 }

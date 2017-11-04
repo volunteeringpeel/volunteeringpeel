@@ -1,9 +1,10 @@
 import axios from 'axios';
+import * as Promise from 'bluebird';
 import { map, sumBy } from 'lodash-es';
 import * as moment from 'moment';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
-import { Container, Item, Segment } from 'semantic-ui-react';
+import { Button, Container, Item, Segment } from 'semantic-ui-react';
 
 import ProgressColor from '@app/components/blocks/ProgressColor';
 import EventModal from '@app/components/modules/EventModal';
@@ -19,12 +20,20 @@ export default class Events extends React.Component<{}, EventsState> {
     super();
 
     this.state = { loading: true, events: [] };
+
+    this.refresh = this.refresh.bind(this);
   }
 
   public componentDidMount() {
-    axios.get('/api/events').then(res => {
-      this.setState({ loading: false, events: res.data.data });
-    });
+    this.refresh();
+  }
+
+  public refresh(): PromiseLike<any> {
+    return Promise.resolve(this.setState({ loading: true }))
+      .then(() => axios.get('/api/events'))
+      .then(res => {
+        this.setState({ loading: false, events: res.data.data });
+      });
   }
 
   public render() {
@@ -32,6 +41,9 @@ export default class Events extends React.Component<{}, EventsState> {
       <LoadingDimmer loading={this.state.loading}>
         <Segment style={{ padding: '8em 0em' }} vertical>
           <Container>
+            <Button onClick={this.refresh} basic color="grey">
+              Refresh
+            </Button>
             <Item.Group divided>
               {map(this.state.events, (event: VPEvent) => {
                 // Import dates into moment.js for easy comparison and formatting
@@ -70,7 +82,7 @@ export default class Events extends React.Component<{}, EventsState> {
                           label={`${spotsLeft} of ${maxSpots} spots left`}
                           size="small"
                         />
-                        <EventModal event={event} />
+                        <EventModal event={event} refresh={this.refresh} />
                       </Item.Extra>
                     </Item.Content>
                   </Item>
