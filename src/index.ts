@@ -11,6 +11,22 @@ import 'babel-polyfill';
 
 // Setup Express
 const app = express();
+
+// If dev do webpack things
+if (process.env.NODE_ENV !== 'production') {
+  // Use require so that it doesn't get imported unless necessary
+  const webpack = require('webpack');
+  const webpackConfig = require('../webpack.dev.js');
+  const compiler = webpack(webpackConfig);
+
+  app.use(
+    require('webpack-hot-middleware')(compiler, { publicPath: webpackConfig.output.publicPath }),
+  );
+  app.use(
+    require('webpack-dev-middleware')(compiler, { publicPath: webpackConfig.output.publicPath }),
+  );
+}
+
 // Parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 // Parse application/json
@@ -39,5 +55,5 @@ app.get('*', (req, res) => {
 
 // Listen
 app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+  console.log(`Listening on http://localhost:${port}`);
 });

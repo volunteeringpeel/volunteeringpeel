@@ -6,6 +6,11 @@ const LessPluginAutoPrefix = require('less-plugin-autoprefix');
 const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 'android 4'];
 
 module.exports = merge(common, {
+  entry: {
+    app: ['./app.tsx', 'webpack-hot-middleware/client'],
+    admin: ['./admin.tsx', 'webpack-hot-middleware/client'],
+  },
+
   devtool: 'source-map',
 
   module: {
@@ -39,21 +44,6 @@ module.exports = merge(common, {
         ],
       },
     ],
-  },
-
-  devServer: {
-    contentBase: './dist/app',
-    historyApiFallback: true,
-    hot: true,
-    progress: true,
-
-    port: 19848,
-    proxy: {
-      '/api/*': {
-        target: 'http://127.0.0.1:19847/',
-        secure: false,
-      },
-    },
   },
 
   plugins: [new webpack.HotModuleReplacementPlugin()],
