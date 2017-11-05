@@ -7,8 +7,8 @@ const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 
 
 module.exports = merge(common, {
   entry: {
-    app: ['./app.tsx', 'webpack-hot-middleware/client'],
-    admin: ['./admin.tsx', 'webpack-hot-middleware/client'],
+    app: ['react-hot-loader/patch', 'webpack-hot-middleware/client', './app.tsx'],
+    admin: ['react-hot-loader/patch', 'webpack-hot-middleware/client', './admin.tsx'],
   },
 
   devtool: 'source-map',

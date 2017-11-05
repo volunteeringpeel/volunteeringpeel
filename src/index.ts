@@ -16,14 +16,22 @@ const app = express();
 if (process.env.NODE_ENV !== 'production') {
   // Use require so that it doesn't get imported unless necessary
   const webpack = require('webpack');
+  const webpackHot = require('webpack-hot-middleware');
+  const webpackDev = require('webpack-dev-middleware');
+  const dashboardPlugin = require('webpack-dashboard/plugin');
   const webpackConfig = require('../webpack.dev.js');
   const compiler = webpack(webpackConfig);
 
+  compiler.apply(new dashboardPlugin());
+
+  app.use(webpackHot(compiler, { publicPath: webpackConfig.output.publicPath }));
   app.use(
-    require('webpack-hot-middleware')(compiler, { publicPath: webpackConfig.output.publicPath }),
-  );
-  app.use(
-    require('webpack-dev-middleware')(compiler, { publicPath: webpackConfig.output.publicPath }),
+    webpackDev(compiler, {
+      publicPath: webpackConfig.output.publicPath,
+      stats: {
+        colors: true,
+      },
+    }),
   );
 }
 
