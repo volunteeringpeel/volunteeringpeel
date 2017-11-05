@@ -46,9 +46,10 @@ sessionManagement(app);
 const port = process.env.PORT || 19847;
 
 // Find working directory
-const appDir = process.env.NODEMON
-  ? path.resolve(__dirname, '../dist', 'app')
-  : path.resolve(__dirname, 'app');
+const appDir =
+  process.env.NODE_ENV !== 'production'
+    ? path.resolve(__dirname, '../dist', 'app')
+    : path.resolve(__dirname, 'app');
 
 // Static assets
 app.use(express.static(path.resolve(appDir)));

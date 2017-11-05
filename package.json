@@ -10,8 +10,7 @@
     "build": "yarn run build:ts && yarn run build:webpack",
     "build:ts": "tsc --outDir dist src/*.ts",
     "build:webpack": "webpack -p --config webpack.prod.js",
-    "dev": "concurrently -k -n \"Webpack,Node\" \"yarn run dev:webpack\" \"nodemon\"",
-    "dev:webpack": "webpack-dev-server --config webpack.dev.js",
+    "dev": "webpack-dashboard nodemon",
     "postinstall": "node scripts/fix-semantic.js"
   },
   "devDependencies": {
