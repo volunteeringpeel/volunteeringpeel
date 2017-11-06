@@ -1,13 +1,16 @@
 import axios from 'axios';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter, Redirect, Route } from 'react-router-dom';
+import { match } from 'react-router';
+import { renderRoutes, RouteConfig } from 'react-router-config';
+import { BrowserRouter, Route } from 'react-router-dom';
 
-import Content from '@app/components/Content';
 import Footer from '@app/components/Footer';
 import Header from '@app/components/Header';
 
 import LoadingDimmer from '@app/components/modules/LoadingDimmer';
+
+import routes from '@app/routes';
 
 interface PublicSiteState {
   loading: boolean;
@@ -30,14 +33,11 @@ export default class PublicSite extends React.Component<{}, PublicSiteState> {
   public render() {
     return (
       <BrowserRouter>
-        <div>
-          <Route exact path="/" render={() => <Redirect strict from="/" to="/home" />} />
-          <LoadingDimmer loading={this.state.loading}>
-            <Header />
-            <Content />
-            <Footer />
-          </LoadingDimmer>
-        </div>
+        <LoadingDimmer loading={this.state.loading}>
+          <Header />
+          {renderRoutes(routes)}
+          <Footer />
+        </LoadingDimmer>
       </BrowserRouter>
     );
   }
