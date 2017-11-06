@@ -3,6 +3,7 @@ const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const LessPluginAutoPrefix = require('less-plugin-autoprefix');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 'android 4'];
 
@@ -50,5 +51,7 @@ module.exports = merge(common, {
         NODE_ENV: JSON.stringify('production'),
       },
     }),
+    new UglifyJSPlugin(), // minify everything
+    new webpack.optimize.AggressiveMergingPlugin(), // merge chunks
   ],
 });

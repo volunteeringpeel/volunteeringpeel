@@ -9,7 +9,7 @@
     "test": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
     "build": "yarn run build:ts && yarn run build:webpack",
     "build:ts": "tsc --outDir dist src/*.ts",
-    "build:webpack": "webpack -p --config webpack.prod.js",
+    "build:webpack": "webpack --progress --config webpack.prod.js",
     "dev": "webpack-dashboard nodemon",
     "postinstall": "node scripts/fix-semantic.js"
   },
@@ -47,6 +47,7 @@
     "tslint-config-prettier": "^1.6.0",
     "tslint-react": "^3.2.0",
     "typescript": "^2.6.1",
+    "uglifyjs-webpack-plugin": "^1.0.1",
     "webpack": "^3.8.1",
     "webpack-dashboard": "^1.0.0",
     "webpack-dev-middleware": "^1.12.0",
