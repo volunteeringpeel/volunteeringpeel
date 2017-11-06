@@ -7,9 +7,9 @@
   "license": "MIT",
   "scripts": {
     "test": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
-    "build": "yarn run build:ts && yarn run build:webpack",
-    "build:ts": "tsc --outDir dist src/*.ts",
-    "build:webpack": "webpack --progress --config webpack.prod.js",
+    "build": "yarn run build:server && yarn run build:client",
+    "build:server": "webpack --config webpack.server.js",
+    "build:client": "webpack --progress --config webpack.prod.js",
     "dev": "webpack-dashboard nodemon",
     "postinstall": "node scripts/fix-semantic.js"
   },
