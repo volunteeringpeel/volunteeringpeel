@@ -5,7 +5,9 @@ import * as Express from 'express';
 import * as session from 'express-session';
 import * as mysql from 'promise-mysql';
 
-const passwordsJson = require('./passwords.json');
+import user from './user';
+
+const passwordsJson = require('../passwords.json');
 
 // Initialize API
 const api = Express.Router();
@@ -37,67 +39,13 @@ api.use((req, res, next) => {
     if (data) res.status(200).json({ data, status: 'success' });
     else res.status(200).json({ status: 'success' });
   };
+
+  // Store pool connection inside of req for access by other API files
+  req.pool = pool;
   next();
 });
 
-// Get user data
-api.get('/user', (req, res) => {
-  if (req.session.userData) {
-    res.success(req.session.userData);
-  } else {
-    res.success('Not logged in');
-  }
-});
-
-// Login
-api.post('/user/login', (req, res) => {
-  const { email, password } = req.body;
-  // Check if already logged in
-  if (req.session.userData) return res.success('Already logged in!');
-  // Ensure fields are filled in
-  if (!email || !password) return res.error(400, 'Blank email or password');
-  let db: mysql.PoolConnection;
-  pool
-    .getConnection()
-    // Get user by email
-    .then(conn => {
-      db = conn;
-      return db.query(`SELECT password FROM user WHERE email = ? LIMIT 1`, [email]);
-    })
-    // Check password
-    .then(users => {
-      if (users.length !== 1) res.error(401, 'Unknown email');
-      return bcrypt.compare(password, users[0].password);
-    })
-    // Get user data
-    .then(passwordValid => {
-      if (passwordValid) {
-        return db.query(
-          `SELECT user_id, first_name, last_name, role_id FROM user WHERE email = ?`,
-          [email],
-        );
-      } else {
-        res.error(401, 'Wrong password! Please try again');
-      }
-    })
-    .then(users => {
-      req.session.userData = users[0];
-      db.release();
-      res.success('Logged in');
-    })
-    .catch(error => {
-      if (db && db.release) db.release();
-      res.error(500, 'Database error', error);
-    });
-});
-
-// Logout
-api.all('/user/logout', (req, res) => {
-  req.session.destroy(error => {
-    if (error) res.error(500, error);
-    res.success('Logged out');
-  });
-});
+api.use('/user', user);
 
 // FAQ's
 api.get('/faq', (req, res) => {

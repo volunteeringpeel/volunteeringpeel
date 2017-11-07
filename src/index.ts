@@ -4,7 +4,7 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as path from 'path';
 
-import api from './api';
+import api from './api/api';
 import sessionManagement from './sessionManagement';
 
 import 'babel-polyfill';
