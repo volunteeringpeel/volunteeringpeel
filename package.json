@@ -14,10 +14,12 @@
     "postinstall": "node scripts/fix-semantic.js"
   },
   "devDependencies": {
+    "@types/auth0-js": "^8.10.2",
     "@types/bcrypt": "^1.0.0",
     "@types/bluebird": "^3.5.18",
     "@types/body-parser": "^1.16.7",
     "@types/express": "^4.0.39",
+    "@types/express-jwt": "^0.0.38",
     "@types/express-mysql-session": "^1.2.2",
     "@types/express-session": "^1.15.5",
     "@types/immutability-helper": "^2.0.15",
@@ -59,6 +61,8 @@
     "webpack-merge": "^4.1.1"
   },
   "dependencies": {
+    "auth0-js": "^8.11.1",
+    "auth0-lock-passwordless": "^2.2.3",
     "axios": "^0.17.0",
     "babel-polyfill": "^6.26.0",
     "bcrypt": "^1.0.3",
@@ -69,6 +73,7 @@
     "express-mysql-session": "^1.2.2",
     "express-session": "^1.15.6",
     "immutability-helper": "^2.4.0",
+    "jwks-rsa": "^1.2.1",
     "lodash-es": "^4.17.4",
     "moment": "^2.19.1",
     "promise-mysql": "^3.1.1",

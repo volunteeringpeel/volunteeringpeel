@@ -1,6 +1,6 @@
 import { createBrowserHistory } from 'history';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
-import { applyMiddleware, combineReducers, createStore } from 'redux';
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 
 export function listify(list: string[] | number[], prefix: string = ''): string {
   // If length is 0 or 1, don't bother listing
@@ -25,7 +25,8 @@ export function pluralize(noun: string, number: number): string {
 
 export const history = createBrowserHistory();
 
+const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 export const store = createStore(
   combineReducers({ router: routerReducer }),
-  applyMiddleware(routerMiddleware(history)),
+  compose(applyMiddleware(routerMiddleware(history))),
 );

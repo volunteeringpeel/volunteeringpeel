@@ -2,6 +2,8 @@
 import * as Promise from 'bluebird';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
+import * as jwt from 'express-jwt';
+import * as jwksRsa from 'jwks-rsa';
 import * as path from 'path';
 
 import api from './api/api';
@@ -40,7 +42,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Parse application/json
 app.use(bodyParser.json());
 // Sessions
-sessionManagement(app);
+// sessionManagement(app);
 
 // Use random number for port if in dev environment
 const port = process.env.PORT || 19847;
@@ -54,8 +56,23 @@ const appDir =
 // Static assets
 app.use(express.static(path.resolve(appDir)));
 
+const checkJwt = jwt({
+  // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://volunteering-peel.auth0.com/.well-known/jwks.json`,
+  }),
+
+  // Validate the audience and the issuer.
+  audience: process.env.AUTH0_AUDIENCE,
+  issuer: `https://volunteering-peel.auth0.com/`,
+  algorithms: ['RS256'],
+});
+
 // API
-app.use('/api', api);
+app.use('/api', checkJwt, api);
 
 // React
 app.get('*', (req, res) => {
