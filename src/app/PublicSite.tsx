@@ -1,9 +1,10 @@
 import axios from 'axios';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 import { match } from 'react-router';
-import { renderRoutes, RouteConfig } from 'react-router-config';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { renderRoutes } from 'react-router-config';
+import { ConnectedRouter } from 'react-router-redux';
 
 import Footer from '@app/components/Footer';
 import Header from '@app/components/Header';
@@ -11,6 +12,7 @@ import Header from '@app/components/Header';
 import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
 import routes from '@app/routes';
+import { history, store } from '@app/Utilities';
 
 interface PublicSiteState {
   loading: boolean;
@@ -32,13 +34,15 @@ export default class PublicSite extends React.Component<{}, PublicSiteState> {
 
   public render() {
     return (
-      <BrowserRouter>
-        <LoadingDimmer loading={this.state.loading}>
-          <Header />
-          {renderRoutes(routes)}
-          <Footer />
-        </LoadingDimmer>
-      </BrowserRouter>
+      <Provider store={store}>
+        <ConnectedRouter history={history}>
+          <LoadingDimmer loading={this.state.loading}>
+            <Header />
+            {renderRoutes(routes)}
+            <Footer />
+          </LoadingDimmer>
+        </ConnectedRouter>
+      </Provider>
     );
   }
 }

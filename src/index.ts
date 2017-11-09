@@ -13,7 +13,7 @@ import 'babel-polyfill';
 const app = express();
 
 // If dev do webpack things
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && !process.env.NO_REACT) {
   // Use require so that it doesn't get imported unless necessary
   const webpack = require('webpack');
   const webpackHot = require('webpack-hot-middleware');
@@ -47,9 +47,9 @@ const port = process.env.PORT || 19847;
 
 // Find working directory
 const appDir =
-  process.env.NODE_ENV !== 'production'
-    ? path.resolve(__dirname, '../dist', 'app')
-    : path.resolve(__dirname, 'app');
+  process.env.NODE_ENV === 'production'
+    ? path.resolve(__dirname, 'app')
+    : path.resolve(__dirname, '../dist', 'app');
 
 // Static assets
 app.use(express.static(path.resolve(appDir)));

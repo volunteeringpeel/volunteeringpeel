@@ -10,7 +10,7 @@ import Modal from '@app/components/blocks/Modal';
 import ProgressColor from '@app/components/blocks/ProgressColor';
 import ConfirmModal from '@app/components/modules/ConfirmModal';
 
-import Utilities from '@app/Utilities';
+import { listify, pluralize } from '@app/Utilities';
 
 interface EventModalProps {
   event: VPEvent;
@@ -52,9 +52,9 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
       sumBy(this.props.event.shifts, 'max_spots') === sumBy(this.props.event.shifts, 'spots_taken');
 
     // Text for confirm modal on submit (sort shift numbers first)
-    const shiftsList = Utilities.listify(sortBy(this.state.selectedShifts), '#');
+    const shiftsList = listify(sortBy(this.state.selectedShifts), '#');
     // Pluralization
-    const shiftPlural = Utilities.pluralize('shift', this.state.selectedShifts.length);
+    const shiftPlural = pluralize('shift', this.state.selectedShifts.length);
     // All together now
     const confirmText = `Are you sure you want to sign up for ${shiftPlural} ${shiftsList}?`;
     return (
