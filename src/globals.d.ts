@@ -1,10 +1,10 @@
 declare module '*/passwords.json' {
   const mysql: {
-    host: string;
-    user: string;
     password: string;
-    database: string;
-    charset: string;
+  };
+
+  const email: {
+    password: string;
   };
 }
 
