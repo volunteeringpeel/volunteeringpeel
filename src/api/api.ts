@@ -2,7 +2,8 @@
 import * as bcrypt from 'bcrypt';
 import * as Promise from 'bluebird';
 import * as Express from 'express';
-import * as session from 'express-session';
+import * as jwt from 'express-jwt';
+import * as jwksRsa from 'jwks-rsa';
 import * as mysql from 'promise-mysql';
 
 import user from './user';
@@ -27,6 +28,27 @@ if (process.env.NODE_ENV !== 'production') {
     next();
   });
 }
+
+const checkJwt = jwt({
+  // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
+  secret: jwksRsa.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: `https://volunteering-peel.auth0.com/.well-known/jwks.json`,
+  }),
+
+  // Validate the audience and the issuer.
+  audience: process.env.AUTH0_AUDIENCE,
+  issuer: `https://volunteering-peel.auth0.com/`,
+  algorithms: ['RS256'],
+});
+
+api.use((err: any, req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
+  if (err.name === 'UnauthorizedError') {
+    res.error(401, 'Not logged in');
+  }
+});
 
 // Success/error functions
 api.use((req, res, next) => {
@@ -108,6 +130,9 @@ api.get('/sponsors', (req, res) => {
 api.get('/events', (req, res) => {
   let db: mysql.PoolConnection;
   const out: VPEvent[] = [];
+  if (req.headers.authorization) {
+    checkJwt(req, res, noop => noop);
+  }
   pool
     .getConnection()
     .then(conn => {
@@ -116,7 +141,7 @@ api.get('/events', (req, res) => {
     })
     .then(events => {
       const promises = events.map((event: VPEvent) => {
-        const query = req.session.userData
+        const query = req.user
           ? // Query if logged in
             `SELECT
               s.shift_id, s.shift_num,
@@ -126,7 +151,7 @@ api.get('/events', (req, res) => {
             FROM vw_shift s
             JOIN user u
             LEFT JOIN user_shift us ON us.shift_id = s.shift_id AND us.user_id = u.user_id
-            WHERE s.event_id = ? AND u.user_id = ?`
+            WHERE s.event_id = ? AND u.email = ?`
           : // Query if not logged in
             `SELECT
               s.shift_id, s.shift_num,
@@ -135,7 +160,7 @@ api.get('/events', (req, res) => {
               0 signed_up
             FROM vw_shift s
             WHERE s.event_id = ? AND ?`;
-        const userID = req.session.userData ? req.session.userData.user_id : -1;
+        const userID = req.user ? req.user.email : -1;
         return db.query(query, [event.event_id, userID]).then(shifts => {
           return out.push({
             ...event,
@@ -161,8 +186,7 @@ api.get('/events', (req, res) => {
 });
 
 // Signup
-api.post('/signup', (req, res) => {
-  if (!req.session.userData) return res.error(401, 'Not logged in');
+api.post('/signup', checkJwt, (req, res) => {
   let db: mysql.PoolConnection;
   pool
     .getConnection()
