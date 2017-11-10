@@ -8,37 +8,30 @@ import { Action } from 'redux-actions';
 import { Container, Message, Segment } from 'semantic-ui-react';
 
 interface MessageBoxProps {
+  as?: any;
   messages: Message[];
   dismissMessage: (id: number) => () => Action<number>;
 }
 
-class MessageBox extends React.Component<MessageBoxProps> {
+export default class MessageBox extends React.Component<MessageBoxProps> {
+  public static defaultProps: Partial<MessageBoxProps> = {
+    as: Container,
+  };
+
   public render() {
-    if (this.props.messages) {
-      return (
-        <Segment as={Container} style={{ paddingTop: '1em' }} vertical>
-          {map(this.props.messages, message => (
-            <Message
-              key={message.id}
-              header={message.message}
-              content={message.more}
-              onDismiss={this.props.dismissMessage(message.id)}
-              {...{ [message.severity]: true }}
-            />
-          ))}
-        </Segment>
-      );
-    }
-    return null;
+    if (!this.props.messages) return null;
+    return (
+      <Segment as={this.props.as} style={{ paddingTop: '1em' }} vertical>
+        {map(this.props.messages, message => (
+          <Message
+            key={message.id}
+            header={message.message}
+            content={message.more}
+            onDismiss={this.props.dismissMessage(message.id)}
+            {...{ [message.severity]: true }}
+          />
+        ))}
+      </Segment>
+    );
   }
 }
-
-const mapStateToProps = (state: State) => ({
-  messages: state.messages,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<number>) => ({
-  dismissMessage: (id: number) => () => dispatch(dismissMessage(id)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(MessageBox);
