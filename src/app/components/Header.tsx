@@ -26,13 +26,23 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
 
     if (this.props.user.status === 'in') {
       userButton = (
-        <Menu.Item onClick={Auth.logout}>Logout ({this.props.user.user.email})</Menu.Item>
+        <Menu.Item as="div" onClick={Auth.logout}>
+          <a href="#" onClick={Auth.login}>
+            Logout ({this.props.user.user.email})
+          </a>
+        </Menu.Item>
       );
     } else if (this.props.user.status === 'out') {
-      userButton = <Menu.Item onClick={Auth.login}>Login</Menu.Item>;
+      userButton = (
+        <Menu.Item as="div">
+          <a href="#" onClick={Auth.login}>
+            Login
+          </a>
+        </Menu.Item>
+      );
     } else {
       userButton = (
-        <Menu.Item>
+        <Menu.Item as="div">
           <Icon name="circle notched" />
         </Menu.Item>
       );
