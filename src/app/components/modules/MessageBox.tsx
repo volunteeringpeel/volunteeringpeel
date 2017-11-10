@@ -4,11 +4,12 @@ import { map } from 'lodash-es';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import { Action } from 'redux-actions';
 import { Container, Message, Segment } from 'semantic-ui-react';
 
 interface MessageBoxProps {
   messages: Message[];
-  dismissMessage: (id: number) => () => any;
+  dismissMessage: (id: number) => () => Action<number>;
 }
 
 class MessageBox extends React.Component<MessageBoxProps> {
@@ -18,6 +19,7 @@ class MessageBox extends React.Component<MessageBoxProps> {
         <Segment as={Container} style={{ paddingTop: '1em' }} vertical>
           {map(this.props.messages, message => (
             <Message
+              key={message.id}
               header={message.message}
               content={message.more}
               onDismiss={this.props.dismissMessage(message.id)}
@@ -35,7 +37,7 @@ const mapStateToProps = (state: State) => ({
   messages: state.messages,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<number>) => ({
   dismissMessage: (id: number) => () => dispatch(dismissMessage(id)),
 });
 
