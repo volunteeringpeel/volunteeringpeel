@@ -28,9 +28,9 @@ export function pluralize(noun: string, number: number): string {
 
 export const history = createBrowserHistory();
 
-export function configureStore(initialState?: State) {
+function configureStore(initialState?: State) {
   let middleware = [routerMiddleware(history), reduxThunk];
-  let store: Store<State>;
+  let newStore: Store<State>;
 
   if (process.env.NODE_ENV !== 'production') {
     const reduxLogger = require('redux-logger').default;
@@ -38,13 +38,13 @@ export function configureStore(initialState?: State) {
 
     const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-    store = createStore<State>(
+    newStore = createStore<State>(
       combineReducers({ ...reducers, router: routerReducer }),
       initialState,
       composeEnhancers(applyMiddleware(...middleware)),
     );
   } else {
-    store = createStore<State>(
+    newStore = createStore<State>(
       combineReducers({ ...reducers, router: routerReducer }),
       initialState,
       compose(applyMiddleware(...middleware)),
@@ -55,9 +55,11 @@ export function configureStore(initialState?: State) {
     // Enable Webpack hot module replacement for reducers
     module.hot.accept('./reducers', () => {
       const nextRootReducer = require('./reducers');
-      store.replaceReducer(combineReducers({ ...reducers, router: routerReducer }));
+      newStore.replaceReducer(combineReducers({ ...reducers, router: routerReducer }));
     });
   }
 
-  return store;
+  return newStore;
 }
+
+export const store = configureStore();

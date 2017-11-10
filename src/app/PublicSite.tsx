@@ -12,14 +12,12 @@ import Header from '@app/components/Header';
 import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
 import routes from '@app/routes';
-import { configureStore, history } from '@app/Utilities';
+import { history, store } from '@app/Utilities';
 
 interface PublicSiteState {
   loading: boolean;
   user?: User;
 }
-
-const store = configureStore();
 
 export default class PublicSite extends React.Component<{}, PublicSiteState> {
   constructor() {
