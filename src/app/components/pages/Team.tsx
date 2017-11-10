@@ -19,7 +19,7 @@ export default class Team extends React.Component<{}, TeamState> {
   }
 
   public componentDidMount() {
-    axios.get('/api/execs').then(res => {
+    axios.get('/api/public/execs').then(res => {
       this.setState({ loading: false, execs: res.data.data });
     });
   }

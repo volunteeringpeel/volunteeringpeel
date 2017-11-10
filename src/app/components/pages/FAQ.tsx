@@ -23,7 +23,7 @@ export default class FAQPage extends React.Component<{}, FAQState> {
   }
 
   public componentDidMount() {
-    axios.get('/api/faq').then(res => {
+    axios.get('/api/public/faq').then(res => {
       this.setState({ loading: false, faqs: res.data.data });
     });
   }

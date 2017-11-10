@@ -41,7 +41,7 @@ const checkJwt = jwt({
   audience: process.env.AUTH0_AUDIENCE,
   issuer: `https://volunteering-peel.auth0.com/`,
   algorithms: ['RS256'],
-}).unless({ path: ['/faq', '/execs', '/sponsors'] });
+}).unless({ path: [/\/public*/] });
 
 // Success/error functions
 api.use((req, res, next) => {
@@ -88,7 +88,7 @@ api.get('/user', (req, res) => {
 });
 
 // FAQ's
-api.get('/faq', (req, res) => {
+api.get('/public/faq', (req, res) => {
   let db: mysql.PoolConnection;
   pool
     .getConnection()
@@ -107,7 +107,7 @@ api.get('/faq', (req, res) => {
 });
 
 // Execs
-api.get('/execs', (req, res) => {
+api.get('/public/execs', (req, res) => {
   let db: mysql.PoolConnection;
   pool
     .getConnection()
@@ -126,7 +126,7 @@ api.get('/execs', (req, res) => {
 });
 
 // Sponsors
-api.get('/sponsors', (req, res) => {
+api.get('/public/sponsors', (req, res) => {
   let db: mysql.PoolConnection;
   pool
     .getConnection()
@@ -145,7 +145,7 @@ api.get('/sponsors', (req, res) => {
 });
 
 // Events
-api.get('/events', (req, res) => {
+const eventQuery = (req: Express.Request, res: Express.Response, authorized: boolean) => {
   let db: mysql.PoolConnection;
   const out: VPEvent[] = [];
   pool
@@ -156,7 +156,7 @@ api.get('/events', (req, res) => {
     })
     .then(events => {
       const promises = events.map((event: VPEvent) => {
-        const query = req.user
+        const query = authorized
           ? // Query if logged in
             `SELECT
               s.shift_id, s.shift_num,
@@ -175,7 +175,7 @@ api.get('/events', (req, res) => {
               0 signed_up
             FROM vw_shift s
             WHERE s.event_id = ? AND ?`;
-        const userID = req.user ? req.user.email : -1;
+        const userID = authorized ? req.user.email : -1;
         return db.query(query, [event.event_id, userID]).then(shifts => {
           return out.push({
             ...event,
@@ -198,7 +198,10 @@ api.get('/events', (req, res) => {
       if (db && db.end) db.release();
       res.error(500, 'Database error', error);
     });
-});
+};
+
+api.get('/events', (req, res) => eventQuery(req, res, true));
+api.get('/public/events', (req, res) => eventQuery(req, res, false));
 
 // Signup
 api.post('/signup', (req, res) => {
