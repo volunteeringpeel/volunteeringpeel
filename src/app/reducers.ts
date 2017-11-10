@@ -6,6 +6,7 @@ import {
   GET_USER,
   GET_USER_FAILURE,
   GET_USER_SUCCESS,
+  LOGOUT,
 } from '@app/actions';
 import { store } from '@app/Utilities';
 import { AxiosResponse } from 'axios';
@@ -30,7 +31,10 @@ const user = handleActions<UserState, any>(
       state: UserState,
       action: Action<AxiosResponse<APIDataError>>,
     ): UserState => {
-      return { ...state, status: 'out' };
+      return { ...state, user: null, status: 'out' };
+    },
+    [LOGOUT]: (state: UserState, action: Action<void>): UserState => {
+      return { ...state, user: null, status: 'out' };
     },
   },
   { user: null, status: 'out' },

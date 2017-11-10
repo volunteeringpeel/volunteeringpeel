@@ -5,6 +5,9 @@ import { noop } from 'lodash-es';
 import { createAction } from 'redux-actions';
 
 // User Management
+export const LOGOUT = 'LOGOUT';
+export const logout = createAction<void>(LOGOUT, noop);
+
 export const GET_USER = 'GET_USER';
 export const getUser = createAction<Promise<AxiosResponse<APIData<User>>>, string>(
   GET_USER,

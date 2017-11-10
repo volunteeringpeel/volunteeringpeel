@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
 const mapStateToProps = (state: State) => ({
-  user: state.user.user,
+  user: state.user,
 });
 
 // tslint:disable-next-line:variable-name

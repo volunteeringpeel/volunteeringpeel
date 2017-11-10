@@ -2,12 +2,12 @@ import Auth from '@app/Auth';
 import { find, map } from 'lodash-es';
 import * as React from 'react';
 import { Link, Redirect, Route } from 'react-router-dom';
-import { Container, Dropdown, Header, Menu, Message, Segment } from 'semantic-ui-react';
+import { Container, Dropdown, Header, Menu, Message, Segment, Icon } from 'semantic-ui-react';
 
 import MessageBoxController from '@app/controllers/modules/MessageBoxController';
 
 interface HeaderComponentProps {
-  user: User;
+  user: UserState;
 }
 
 class HeaderComponent extends React.Component<HeaderComponentProps> {
@@ -22,6 +22,21 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
   ];
 
   public render() {
+    let userButton;
+
+    if (this.props.user.status === 'in') {
+      userButton = (
+        <Menu.Item onClick={Auth.logout}>Logout ({this.props.user.user.email})</Menu.Item>
+      );
+    } else if (this.props.user.status === 'out') {
+      userButton = <Menu.Item onClick={Auth.login}>Login</Menu.Item>;
+    } else {
+      userButton = (
+        <Menu.Item>
+          <Icon name="circle notched" />
+        </Menu.Item>
+      );
+    }
     return (
       <div>
         <Segment inverted textAlign="center" vertical style={{ paddingBottom: '1em' }}>
@@ -64,11 +79,7 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
                   </Menu.Item>
                 )}
               </Route>
-              {this.props.user ? (
-                <Menu.Item onClick={Auth.logout}>Logout</Menu.Item>
-              ) : (
-                <Menu.Item onClick={Auth.login}>Login</Menu.Item>
-              )}
+              {userButton}
             </Container>
           </Menu>
 
