@@ -7,9 +7,9 @@ import { Link, Redirect, Route } from 'react-router-dom';
 import { Dispatch } from 'redux';
 import { Container, Dropdown, Header, Menu, Message, Segment } from 'semantic-ui-react';
 
+import MessageBox from '@app/components/modules/MessageBox';
+
 interface HeaderComponentProps {
-  messages: Message[];
-  dismissMessage: (id: number) => () => any;
   auth: typeof Auth;
 }
 
@@ -97,29 +97,10 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
             }}
           />
         </Segment>
-        {this.props.messages && (
-          <Segment as={Container} style={{ paddingTop: '1em' }} vertical>
-            {map(this.props.messages, message => (
-              <Message
-                header={message.message}
-                content={message.more}
-                onDismiss={this.props.dismissMessage(message.id)}
-                {...{ [message.severity]: true }}
-              />
-            ))}
-          </Segment>
-        )}
+        <MessageBox />
       </div>
     );
   }
 }
 
-const mapStateToProps = (state: State) => ({
-  messages: state.messages,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
-  dismissMessage: (id: number) => () => dispatch(dismissMessage(id)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(HeaderComponent);
+export default HeaderComponent;
