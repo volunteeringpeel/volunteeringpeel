@@ -8,9 +8,9 @@ class Auth {
     domain: 'volunteering-peel.auth0.com',
     clientID: 'XVYrcvpmYz5nrJ77qkJJFEqtkREB1vVE',
     redirectUri: 'http://localhost:19847/callback',
-    audience: 'https://volunteering-peel.auth0.com/userinfo',
+    audience: 'https://volunteeringpeel.org/api',
     responseType: 'token id_token',
-    scope: 'openid',
+    scope: 'openid email',
   });
 
   constructor() {
@@ -28,7 +28,6 @@ class Auth {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
-        push('/home');
         store.dispatch(addMessage({ message: 'Logged in', severity: 'positive' }));
       } else if (err) {
         push('/home');
@@ -54,9 +53,9 @@ class Auth {
     localStorage.removeItem('access_token');
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
+    store.dispatch(addMessage({ message: 'Logged out successfully', severity: 'positive' }));
     // navigate to the home route
     push('/home');
-    store.dispatch(addMessage({ message: 'Logged out successfully', severity: 'positive' }));
   }
 
   public isAuthenticated() {

@@ -1,10 +1,34 @@
+/* tslint:disable:object-shorthand-properties-first */
+import axios, { AxiosResponse } from 'axios';
+import * as Promise from 'bluebird';
 import { noop } from 'lodash-es';
 import { createAction } from 'redux-actions';
 
-/* tslint:disable:object-shorthand-properties-first */
 // User Management
-export const SET_USER = 'SET_USER';
-export const setUser = createAction<User, User>(SET_USER, (user: User) => user);
+export const GET_USER = 'GET_USER';
+export const getUser = createAction<Promise<AxiosResponse<APIData<User>>>, string>(
+  GET_USER,
+  (token: string) =>
+    Promise.resolve(
+      axios({
+        method: 'get',
+        url: `/api/user`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
+    ),
+);
+export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
+export const getUserSuccess = createAction<
+  AxiosResponse<APIDataSuccess<User>>,
+  AxiosResponse<APIDataSuccess<User>>
+>(GET_USER_SUCCESS, (response: AxiosResponse<APIDataSuccess<User>>) => response);
+export const GET_USER_FAILURE = 'GET_USER_FAILURE';
+export const getUserFailure = createAction<
+  AxiosResponse<APIDataError>,
+  AxiosResponse<APIDataError>
+>(GET_USER_FAILURE, (response: AxiosResponse<APIDataError>) => response);
 
 // Error Management
 export const ADD_MESSAGE = 'ADD_MESSAGE';

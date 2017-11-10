@@ -1,4 +1,4 @@
-import { addMessage, setUser } from '@app/actions';
+import { addMessage } from '@app/actions';
 import Auth from '@app/Auth';
 import routes from '@app/routes';
 import { history, store } from '@app/Utilities';
@@ -15,10 +15,8 @@ import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
 interface SiteProps {
   user: User;
-}
-
-interface SiteState {
-  loading: boolean;
+  status: 'in' | 'out' | 'loading';
+  loadUser: () => void;
 }
 
 const handleAuthentication = (nextState: any) => {
@@ -27,27 +25,14 @@ const handleAuthentication = (nextState: any) => {
   }
 };
 
-export default class Site extends React.Component<SiteProps, SiteState> {
-  constructor() {
-    super();
-
-    this.state = { loading: true };
-  }
-
+export default class Site extends React.Component<SiteProps> {
   public componentDidMount() {
-    Promise.resolve(axios.get('/api/user'))
-      .then(res => {
-        store.dispatch(setUser(res.data.data));
-      })
-      .catch((err: AxiosError) => {
-        store.dispatch(addMessage({ message: err.message, severity: 'negative' }));
-      })
-      .lastly(() => this.setState({ loading: false }));
+    this.props.loadUser();
   }
 
   public render() {
     return (
-      <LoadingDimmer loading={this.state.loading}>
+      <LoadingDimmer loading={this.props.status === 'loading'}>
         <Header auth={Auth} />
         {renderRoutes(routes)}
         <Route

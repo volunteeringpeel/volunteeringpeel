@@ -10,10 +10,18 @@ declare module '*/passwords.json' {
 
 type Renderable = JSX.Element | string;
 
-interface State {
-  user: User;
-  messages: Message[];
+interface APIDataSuccess<T> {
+  status: 'success';
+  data: T;
 }
+
+interface APIDataError {
+  status: 'error';
+  error: string;
+  details: string;
+}
+
+type APIData<T> = APIDataSuccess<T> | APIDataError;
 
 interface Message {
   id?: number;

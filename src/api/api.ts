@@ -5,8 +5,7 @@ import * as Express from 'express';
 import * as jwt from 'express-jwt';
 import * as jwksRsa from 'jwks-rsa';
 import * as mysql from 'promise-mysql';
-
-import user from './user';
+import { UnauthorizedError } from 'express-jwt';
 
 const passwordsJson = require('../passwords.json');
 
@@ -42,13 +41,7 @@ const checkJwt = jwt({
   audience: process.env.AUTH0_AUDIENCE,
   issuer: `https://volunteering-peel.auth0.com/`,
   algorithms: ['RS256'],
-});
-
-api.use((err: any, req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
-  if (err.name === 'UnauthorizedError') {
-    res.error(401, 'Not logged in');
-  }
-});
+}).unless({ path: ['/faq', '/execs', '/sponsors'] });
 
 // Success/error functions
 api.use((req, res, next) => {
@@ -67,7 +60,32 @@ api.use((req, res, next) => {
   next();
 });
 
-api.use('/user', user);
+api.use(checkJwt);
+
+api.use((err: any, req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
+  if (err.name === 'UnauthorizedError') {
+    res.error(err.status, err.message);
+  }
+});
+
+api.get('/user', (req, res) => {
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      return db.query('SELECT * from user WHERE email = ?', [req.user.email]);
+    })
+    .then(user => {
+      if (!user[0]) return res.error(200, 'No user data');
+      res.success(user[0]);
+      db.release();
+    })
+    .catch(error => {
+      if (db && db.end) db.release();
+      res.error(500, 'Database error', error);
+    });
+});
 
 // FAQ's
 api.get('/faq', (req, res) => {
@@ -130,9 +148,6 @@ api.get('/sponsors', (req, res) => {
 api.get('/events', (req, res) => {
   let db: mysql.PoolConnection;
   const out: VPEvent[] = [];
-  if (req.headers.authorization) {
-    checkJwt(req, res, noop => noop);
-  }
   pool
     .getConnection()
     .then(conn => {
@@ -186,16 +201,13 @@ api.get('/events', (req, res) => {
 });
 
 // Signup
-api.post('/signup', checkJwt, (req, res) => {
+api.post('/signup', (req, res) => {
   let db: mysql.PoolConnection;
   pool
     .getConnection()
     .then(conn => {
       db = conn;
-      const values = (req.body.shifts as number[]).map(shift => [
-        req.session.userData.user_id,
-        shift,
-      ]);
+      const values = (req.body.shifts as number[]).map(shift => [req.user.email, shift]);
       return db.query('INSERT INTO user_shift (user_id, shift_id) VALUES ?', [values]);
     })
     .then(execs => {
