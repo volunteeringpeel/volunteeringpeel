@@ -90,16 +90,18 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
             }}
           />
         </Segment>
-        <Segment as={Container} style={{ paddingTop: '2em' }} vertical>
-          {map(this.props.messages, message => (
-            <Message
-              header={message.message}
-              content={message.more}
-              onDismiss={this.props.dismissMessage(message.id)}
-              {...{ [message.severity]: true }}
-            />
-          ))}
-        </Segment>
+        {this.props.messages && (
+          <Segment as={Container} style={{ paddingTop: '2em' }} vertical>
+            {map(this.props.messages, message => (
+              <Message
+                header={message.message}
+                content={message.more}
+                onDismiss={this.props.dismissMessage(message.id)}
+                {...{ [message.severity]: true }}
+              />
+            ))}
+          </Segment>
+        )}
       </div>
     );
   }
