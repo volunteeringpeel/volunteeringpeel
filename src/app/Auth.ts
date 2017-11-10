@@ -29,6 +29,7 @@ class Auth {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
         push('/home');
+        store.dispatch(addMessage({ message: 'Logged in', severity: 'positive' }));
       } else if (err) {
         push('/home');
         store.dispatch(
@@ -55,6 +56,7 @@ class Auth {
     localStorage.removeItem('expires_at');
     // navigate to the home route
     push('/home');
+    store.dispatch(addMessage({ message: 'Logged out successfully', severity: 'positive' }));
   }
 
   public isAuthenticated() {
