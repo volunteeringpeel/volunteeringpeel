@@ -2,6 +2,7 @@ import { addMessage, dismissMessage, getUser, getUserFailure, getUserSuccess } f
 import Site from '@app/components/Site';
 import { AxiosResponse } from 'axios';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import { Dispatch } from 'redux';
 
 const mapStateToProps = (state: State) => ({
@@ -47,7 +48,8 @@ const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   },
 });
 
+const connectedSite = connect(mapStateToProps, mapDispatchToProps)(Site);
 // tslint:disable-next-line:variable-name
-const SiteController = connect(mapStateToProps, mapDispatchToProps)(Site);
+const SiteController = withRouter(connectedSite);
 
 export default SiteController;
