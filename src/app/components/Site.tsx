@@ -9,7 +9,7 @@ import { match, Route } from 'react-router';
 import { renderRoutes } from 'react-router-config';
 
 import Footer from '@app/components/Footer';
-import Header from '@app/components/Header';
+import HeaderController from '@app/controllers/HeaderController';
 
 import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
@@ -33,7 +33,7 @@ export default class Site extends React.Component<SiteProps> {
   public render() {
     return (
       <LoadingDimmer loading={this.props.status === 'loading'}>
-        <Header auth={Auth} />
+        <HeaderController />
         {renderRoutes(routes)}
         <Route
           path="/callback"

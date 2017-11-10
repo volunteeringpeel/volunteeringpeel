@@ -1,16 +1,13 @@
-import { dismissMessage } from '@app/actions';
 import Auth from '@app/Auth';
 import { find, map } from 'lodash-es';
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { Link, Redirect, Route } from 'react-router-dom';
-import { Dispatch } from 'redux';
 import { Container, Dropdown, Header, Menu, Message, Segment } from 'semantic-ui-react';
 
 import MessageBoxController from '@app/controllers/modules/MessageBoxController';
 
 interface HeaderComponentProps {
-  auth: typeof Auth;
+  user: User;
 }
 
 class HeaderComponent extends React.Component<HeaderComponentProps> {
@@ -67,10 +64,10 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
                   </Menu.Item>
                 )}
               </Route>
-              {this.props.auth.isAuthenticated() ? (
-                <Menu.Item onClick={this.props.auth.logout}>Logout</Menu.Item>
+              {this.props.user ? (
+                <Menu.Item onClick={Auth.logout}>Logout</Menu.Item>
               ) : (
-                <Menu.Item onClick={this.props.auth.login}>Login</Menu.Item>
+                <Menu.Item onClick={Auth.login}>Login</Menu.Item>
               )}
             </Container>
           </Menu>
