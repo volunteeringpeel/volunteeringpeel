@@ -12,6 +12,6 @@ const mapDispatchToProps = (dispatch: Dispatch<number>) => ({
 });
 
 // tslint:disable-next-line:variable-name
-const ConnectedMessageBox = connect(mapStateToProps, mapDispatchToProps)(MessageBox);
+const MessageBoxController = connect(mapStateToProps, mapDispatchToProps)(MessageBox);
 
-export default ConnectedMessageBox;
+export default MessageBoxController;

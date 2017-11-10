@@ -7,7 +7,7 @@ import { Link, Redirect, Route } from 'react-router-dom';
 import { Dispatch } from 'redux';
 import { Container, Dropdown, Header, Menu, Message, Segment } from 'semantic-ui-react';
 
-import ConnectedMessageBox from '@app/components/modules/ConnectedMessageBox';
+import MessageBoxController from '@app/controllers/modules/MessageBoxController';
 
 interface HeaderComponentProps {
   auth: typeof Auth;
@@ -97,7 +97,7 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
             }}
           />
         </Segment>
-        <ConnectedMessageBox />
+        <MessageBoxController />
       </div>
     );
   }
