@@ -12,12 +12,14 @@ import Header from '@app/components/Header';
 import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
 import routes from '@app/routes';
-import { history, store } from '@app/Utilities';
+import { configureStore, history } from '@app/Utilities';
 
 interface PublicSiteState {
   loading: boolean;
   user?: User;
 }
+
+const store = configureStore();
 
 export default class PublicSite extends React.Component<{}, PublicSiteState> {
   constructor() {
@@ -27,9 +29,9 @@ export default class PublicSite extends React.Component<{}, PublicSiteState> {
   }
 
   public componentDidMount() {
-    axios.get('/api/user').then(res => {
-      this.setState({ loading: false, user: res.data.data });
-    });
+    // axios.get('/api/user').then(res => {
+    //   this.setState({ loading: false, user: res.data.data });
+    // });
   }
 
   public render() {

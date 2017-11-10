@@ -20,7 +20,7 @@ if (process.env.NODE_ENV !== 'production') {
   render(PublicSite);
 
   if (module.hot) {
-    module.hot.accept(() => {
+    module.hot.accept('./PublicSite', () => {
       render(PublicSite);
     });
   }

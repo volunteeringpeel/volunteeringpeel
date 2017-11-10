@@ -10,6 +10,18 @@ declare module '*/passwords.json' {
 
 type Renderable = JSX.Element | string;
 
+interface State {
+  user: User;
+  messages: Message[];
+}
+
+interface Message {
+  id?: number;
+  message: string;
+  more?: string;
+  severity: 'info' | 'warning' | 'positive' | 'negative';
+}
+
 interface Page {
   id: string;
   title: string;

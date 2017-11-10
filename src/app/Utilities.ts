@@ -1,6 +1,9 @@
 import { createBrowserHistory } from 'history';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
-import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
+import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
+import reduxThunk from 'redux-thunk';
+
+import * as reducers from '@app/reducers';
 
 export function listify(list: string[] | number[], prefix: string = ''): string {
   // If length is 0 or 1, don't bother listing
@@ -25,8 +28,36 @@ export function pluralize(noun: string, number: number): string {
 
 export const history = createBrowserHistory();
 
-const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-export const store = createStore(
-  combineReducers({ router: routerReducer }),
-  compose(applyMiddleware(routerMiddleware(history))),
-);
+export function configureStore(initialState?: State) {
+  let middleware = [routerMiddleware(history), reduxThunk];
+  let store: Store<State>;
+
+  if (process.env.NODE_ENV !== 'production') {
+    const reduxLogger = require('redux-logger').default;
+    middleware = [...middleware, reduxLogger];
+
+    const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+    store = createStore<State>(
+      combineReducers({ ...reducers, router: routerReducer }),
+      initialState,
+      composeEnhancers(applyMiddleware(...middleware)),
+    );
+  } else {
+    store = createStore<State>(
+      combineReducers({ ...reducers, router: routerReducer }),
+      initialState,
+      compose(applyMiddleware(...middleware)),
+    );
+  }
+
+  if (module.hot) {
+    // Enable Webpack hot module replacement for reducers
+    module.hot.accept('./reducers', () => {
+      const nextRootReducer = require('./reducers');
+      store.replaceReducer(combineReducers({ ...reducers, router: routerReducer }));
+    });
+  }
+
+  return store;
+}
