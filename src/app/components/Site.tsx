@@ -19,15 +19,21 @@ interface SiteProps {
   loadUser: () => void;
 }
 
-const handleAuthentication = (nextState: any) => {
-  if (/access_token|id_token|error/.test(nextState.location.hash)) {
-    Auth.handleAuthentication();
-  }
-};
-
 export default class Site extends React.Component<SiteProps> {
+  constructor() {
+    super();
+
+    this.handleAuthentication = this.handleAuthentication.bind(this);
+  }
+
   public componentDidMount() {
     this.props.loadUser();
+  }
+
+  public handleAuthentication(nextState: any) {
+    if (/access_token|id_token|error/.test(nextState.location.hash)) {
+      Auth.handleAuthentication(this.props.loadUser);
+    }
   }
 
   public render() {
@@ -38,7 +44,7 @@ export default class Site extends React.Component<SiteProps> {
         <Route
           path="/callback"
           render={props => {
-            handleAuthentication(props);
+            this.handleAuthentication(props);
             return null;
           }}
         />

@@ -24,16 +24,18 @@ class Auth {
     this.auth0.authorize();
   }
 
-  public handleAuthentication() {
+  public handleAuthentication(cb?: () => void) {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
         store.dispatch(addMessage({ message: 'Logged in', severity: 'positive' }));
+        cb();
       } else if (err) {
         push('/home');
         store.dispatch(
           addMessage({ message: err.error, more: err.description, severity: 'negative' }),
         );
+        cb();
       }
     });
   }
