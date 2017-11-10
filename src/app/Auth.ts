@@ -1,3 +1,5 @@
+import { addMessage } from '@app/actions';
+import { store } from '@app/Utilities';
 import * as auth0 from 'auth0-js';
 import { push } from 'react-router-redux';
 
@@ -29,8 +31,9 @@ export default class Auth {
         push('/home');
       } else if (err) {
         push('/home');
-        // TODO: use redux
-        // console.log(err);
+        store.dispatch(
+          addMessage({ message: err.error, more: err.description, severity: 'negative' }),
+        );
       }
     });
   }

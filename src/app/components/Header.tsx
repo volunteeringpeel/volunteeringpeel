@@ -1,9 +1,17 @@
-import { find } from 'lodash-es';
+import { dismissMessage } from '@app/actions';
+import { find, map } from 'lodash-es';
 import * as React from 'react';
+import { connect } from 'react-redux';
 import { Link, Redirect, Route } from 'react-router-dom';
-import { Container, Dropdown, Header, Menu, Segment } from 'semantic-ui-react';
+import { Dispatch } from 'redux';
+import { Container, Dropdown, Header, Menu, Message, Segment } from 'semantic-ui-react';
 
-export default class HeaderComponent extends React.Component {
+interface HeaderComponentProps {
+  messages: Message[];
+  dismissMessage: (id: number) => () => any;
+}
+
+class HeaderComponent extends React.Component<HeaderComponentProps> {
   private pages: Page[] = [
     { id: '/home', title: 'Home', display: 'Volunteering Peel' },
     { id: '/about', title: 'About' },
@@ -82,7 +90,27 @@ export default class HeaderComponent extends React.Component {
             }}
           />
         </Segment>
+        <Segment as={Container} style={{ paddingTop: '2em' }} vertical>
+          {map(this.props.messages, message => (
+            <Message
+              header={message.message}
+              content={message.more}
+              onDismiss={this.props.dismissMessage(message.id)}
+              {...{ [message.severity]: true }}
+            />
+          ))}
+        </Segment>
       </div>
     );
   }
 }
+
+const mapStateToProps = (state: State) => ({
+  messages: state.messages,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
+  dismissMessage: (id: number) => () => dispatch(dismissMessage(id)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(HeaderComponent);

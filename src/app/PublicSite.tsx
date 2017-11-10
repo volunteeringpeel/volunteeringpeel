@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import * as Promise from 'bluebird';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
@@ -11,12 +12,12 @@ import Header from '@app/components/Header';
 
 import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
+import { addMessage, setUser } from '@app/actions';
 import routes from '@app/routes';
 import { history, store } from '@app/Utilities';
 
 interface PublicSiteState {
   loading: boolean;
-  user?: User;
 }
 
 export default class PublicSite extends React.Component<{}, PublicSiteState> {
@@ -27,9 +28,14 @@ export default class PublicSite extends React.Component<{}, PublicSiteState> {
   }
 
   public componentDidMount() {
-    // axios.get('/api/user').then(res => {
-    //   this.setState({ loading: false, user: res.data.data });
-    // });
+    Promise.resolve(axios.get('/api/user'))
+      .then(res => {
+        store.dispatch(setUser(res.data.data));
+      })
+      .catch((err: AxiosError) => {
+        store.dispatch(addMessage({ message: err.message, severity: 'negative' }));
+      })
+      .lastly(() => this.setState({ loading: false }));
   }
 
   public render() {
