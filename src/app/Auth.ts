@@ -3,7 +3,7 @@ import { store } from '@app/Utilities';
 import * as auth0 from 'auth0-js';
 import { push } from 'react-router-redux';
 
-export default class Auth {
+class Auth {
   private auth0 = new auth0.WebAuth({
     domain: 'volunteering-peel.auth0.com',
     clientID: 'XVYrcvpmYz5nrJ77qkJJFEqtkREB1vVE',
@@ -64,3 +64,5 @@ export default class Auth {
     return new Date().getTime() < expiresAt;
   }
 }
+
+export default new Auth();

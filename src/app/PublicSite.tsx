@@ -3,7 +3,7 @@ import * as Promise from 'bluebird';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { match } from 'react-router';
+import { match, Route } from 'react-router';
 import { renderRoutes } from 'react-router-config';
 import { ConnectedRouter } from 'react-router-redux';
 
@@ -13,12 +13,19 @@ import Header from '@app/components/Header';
 import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
 import { addMessage, setUser } from '@app/actions';
+import Auth from '@app/Auth';
 import routes from '@app/routes';
 import { history, store } from '@app/Utilities';
 
 interface PublicSiteState {
   loading: boolean;
 }
+
+const handleAuthentication = (nextState: any) => {
+  if (/access_token|id_token|error/.test(nextState.location.hash)) {
+    Auth.handleAuthentication();
+  }
+};
 
 export default class PublicSite extends React.Component<{}, PublicSiteState> {
   constructor() {
@@ -43,8 +50,15 @@ export default class PublicSite extends React.Component<{}, PublicSiteState> {
       <Provider store={store}>
         <ConnectedRouter history={history}>
           <LoadingDimmer loading={this.state.loading}>
-            <Header />
+            <Header auth={Auth} />
             {renderRoutes(routes)}
+            <Route
+              path="/callback"
+              render={props => {
+                handleAuthentication(props);
+                return null;
+              }}
+            />
             <Footer />
           </LoadingDimmer>
         </ConnectedRouter>

@@ -1,4 +1,5 @@
 import { dismissMessage } from '@app/actions';
+import Auth from '@app/Auth';
 import { find, map } from 'lodash-es';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -9,6 +10,7 @@ import { Container, Dropdown, Header, Menu, Message, Segment } from 'semantic-ui
 interface HeaderComponentProps {
   messages: Message[];
   dismissMessage: (id: number) => () => any;
+  auth: typeof Auth;
 }
 
 class HeaderComponent extends React.Component<HeaderComponentProps> {
@@ -26,7 +28,7 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
     return (
       <div>
         <Segment inverted textAlign="center" vertical style={{ paddingBottom: '1em' }}>
-          <Menu inverted pointing secondary size="large" widths={3}>
+          <Menu inverted pointing secondary size="large" widths={4}>
             <Container textAlign="center">
               <Route path="/home">
                 {({ match }) => (
@@ -65,6 +67,11 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
                   </Menu.Item>
                 )}
               </Route>
+              {this.props.auth.isAuthenticated() ? (
+                <Menu.Item onClick={this.props.auth.logout}>Logout</Menu.Item>
+              ) : (
+                <Menu.Item onClick={this.props.auth.login}>Login</Menu.Item>
+              )}
             </Container>
           </Menu>
 
