@@ -39,7 +39,7 @@ export default class Events extends React.Component<{}, EventsState> {
   public render() {
     return (
       <LoadingDimmer loading={this.state.loading}>
-        <Segment style={{ padding: '8em 0em' }} vertical>
+        <Segment style={{ padding: '4em 0em' }} vertical>
           <Container>
             <Button onClick={this.refresh} basic color="grey">
               Refresh

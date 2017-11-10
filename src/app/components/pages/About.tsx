@@ -4,7 +4,7 @@ import { Button, Grid, Header, Icon, Segment } from 'semantic-ui-react';
 
 export default () => (
   <div className="large text">
-    <Segment style={{ padding: '8em 0em' }} vertical>
+    <Segment style={{ padding: '4em 0em' }} vertical>
       <Grid
         celled="internally"
         columns="equal"

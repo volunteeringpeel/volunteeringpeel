@@ -32,7 +32,7 @@ export default class FAQPage extends React.Component<{}, FAQState> {
     return (
       <div className="large text">
         <LoadingDimmer loading={this.state.loading}>
-          <Segment style={{ padding: '8em 0em' }} vertical>
+          <Segment style={{ padding: '4em 0em' }} vertical>
             <Container>
               <p>
                 Have a question? <a href="mailto:info@volunteeringpeel.org">Email us</a> or contact

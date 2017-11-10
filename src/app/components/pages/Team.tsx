@@ -27,7 +27,7 @@ export default class Team extends React.Component<{}, TeamState> {
   public render() {
     return (
       <LoadingDimmer loading={this.state.loading}>
-        <Segment style={{ padding: '8em 0em' }} vertical>
+        <Segment style={{ padding: '4em 0em' }} vertical>
           <Container>
             <Card.Group>
               {map(this.state.execs, exec => (

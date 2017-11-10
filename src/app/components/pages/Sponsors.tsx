@@ -26,7 +26,7 @@ export default class Sponsors extends React.Component<{}, SponsorsState> {
   public render() {
     return (
       <LoadingDimmer loading={this.state.loading}>
-        <Segment style={{ padding: '8em 0em' }} vertical>
+        <Segment style={{ padding: '4em 0em' }} vertical>
           <Container>
             <Card.Group>
               {map(sortBy(this.state.sponsors, ['priority']), sponsor => (

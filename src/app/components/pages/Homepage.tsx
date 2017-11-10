@@ -17,7 +17,7 @@ export default class Homepage extends React.Component {
   public render() {
     return (
       <div className="large text">
-        <Container style={{ paddingTop: '2em' }}>
+        <Container style={{ paddingTop: '1em' }}>
           <Message>
             <Grid container doubling columns={2}>
               <Grid.Row>

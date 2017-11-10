@@ -25,7 +25,7 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
   public render() {
     return (
       <div>
-        <Segment inverted textAlign="center" vertical>
+        <Segment inverted textAlign="center" vertical style={{ paddingBottom: '1em' }}>
           <Menu inverted pointing secondary size="large" widths={3}>
             <Container textAlign="center">
               <Route path="/home">
@@ -91,7 +91,7 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
           />
         </Segment>
         {this.props.messages && (
-          <Segment as={Container} style={{ paddingTop: '2em' }} vertical>
+          <Segment as={Container} style={{ paddingTop: '1em' }} vertical>
             {map(this.props.messages, message => (
               <Message
                 header={message.message}
