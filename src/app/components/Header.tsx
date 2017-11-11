@@ -26,11 +26,16 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
 
     if (this.props.user.status === 'in') {
       userButton = (
-        <Menu.Item as="div" onClick={Auth.logout}>
-          <a href="#" onClick={Auth.login}>
-            Logout ({this.props.user.user.email})
-          </a>
-        </Menu.Item>
+        <Dropdown item text="Me">
+          <Dropdown.Menu>
+            <Dropdown.Header
+              icon="user"
+              content={`${this.props.user.user.first_name} ${this.props.user.user.last_name}`}
+            />
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={Auth.logout}>Logout</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       );
     } else if (this.props.user.status === 'out') {
       userButton = (
