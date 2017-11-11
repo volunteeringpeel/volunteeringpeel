@@ -123,7 +123,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                         label="Spots"
                         size="small"
                       />
-
+                      <br />
                       <Button
                         animated
                         disabled={shiftFull || shift.signed_up}

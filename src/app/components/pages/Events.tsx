@@ -48,9 +48,11 @@ export default class Events extends React.Component<{}, EventsState> {
       <LoadingDimmer loading={this.state.loading}>
         <Segment style={{ padding: '4em 0em' }} vertical>
           <Container>
-            <Button onClick={this.refresh} basic color="grey">
-              Refresh
-            </Button>
+            <div style={{ textAlign: 'center' }}>
+              <Button onClick={this.refresh} basic color="grey">
+                Refresh
+              </Button>
+            </div>
             <Item.Group divided>
               {map(this.state.events, (event: VPEvent) => {
                 // Import dates into moment.js for easy comparison and formatting
@@ -89,6 +91,7 @@ export default class Events extends React.Component<{}, EventsState> {
                           label={`${spotsLeft} of ${maxSpots} spots left`}
                           size="small"
                         />
+                        <br />
                         <EventModal event={event} refresh={this.refresh} />
                       </Item.Extra>
                     </Item.Content>
