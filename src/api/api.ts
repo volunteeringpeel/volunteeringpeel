@@ -5,7 +5,6 @@ import * as Express from 'express';
 import * as jwt from 'express-jwt';
 import * as jwksRsa from 'jwks-rsa';
 import * as mysql from 'promise-mysql';
-import { UnauthorizedError } from 'express-jwt';
 
 const passwordsJson = require('../passwords.json');
 
@@ -64,7 +63,7 @@ api.use(checkJwt);
 
 api.use((err: any, req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
   if (err.name === 'UnauthorizedError') {
-    res.error(err.status, err.message);
+    res.error((err as jwt.UnauthorizedError).status, (err as jwt.UnauthorizedError).message);
   }
 });
 

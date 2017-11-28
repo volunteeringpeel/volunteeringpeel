@@ -1,6 +1,6 @@
 // tslint:disable:no-namespace
 // Extend Express definitions
-import mysql = require('promise-mysql');
+import promiseMysql = require('promise-mysql');
 
 declare global {
   namespace Express {
@@ -10,7 +10,7 @@ declare global {
     }
 
     interface Request {
-      pool: mysql.Pool;
+      pool: promiseMysql.Pool;
     }
 
     interface SessionData {
