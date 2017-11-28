@@ -15,7 +15,7 @@ export const getUser = createAction<Promise<AxiosResponse<APIData<User>>>, strin
     Promise.resolve(
       axios({
         method: 'get',
-        url: `/api/user`,
+        url: `/api/user/current`,
         headers: {
           Authorization: `Bearer ${token}`,
         },
