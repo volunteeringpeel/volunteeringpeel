@@ -5,6 +5,8 @@ import * as React from 'react';
 import { Route } from 'react-router-dom';
 import { Container, Dropdown, Header, Icon, Menu, Message, Segment } from 'semantic-ui-react';
 
+import routes from '@app/routes';
+
 import MessageBoxController from '@app/controllers/modules/MessageBoxController';
 
 interface HeaderComponentProps {
@@ -13,16 +15,6 @@ interface HeaderComponentProps {
 }
 
 class HeaderComponent extends React.Component<HeaderComponentProps> {
-  private pages: Page[] = [
-    { id: '/home', title: 'Home', display: 'Volunteering Peel' },
-    { id: '/about', title: 'About' },
-    { id: '/about/team', title: 'Team', display: 'Meet the Team' },
-    { id: '/events', title: 'Events' },
-    { id: '/about/sponsors', title: 'Sponsors' },
-    { id: '/about/faq', title: 'FAQ', display: 'Frequently Asked Questions' },
-    { id: '/about/contact', title: 'Contact' },
-  ];
-
   public render() {
     let userButton;
 
@@ -101,8 +93,12 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
           <Route
             path="/:page/:subpage?"
             render={({ match }) => {
-              const page = find(this.pages, ['id', match.url]);
-              if (!page) this.props.push('/home');
+              const page = find(routes, ['path', match.url]);
+              if (!page) {
+                return () => {
+                  this.props.push('/home');
+                };
+              }
               return (
                 <Container text>
                   <Header
