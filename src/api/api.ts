@@ -49,9 +49,9 @@ api.use((req, res, next) => {
       .status(status)
       .json({ error, details: details || 'No further information', status: 'error' });
   };
-  res.success = data => {
-    if (data) res.status(200).json({ data, status: 'success' });
-    else res.status(200).json({ status: 'success' });
+  res.success = (data, status = 200) => {
+    if (data) res.status(status).json({ data, status: 'success' });
+    else res.status(status).json({ status: 'success' });
   };
 
   // Store pool connection inside of req for access by other API files
