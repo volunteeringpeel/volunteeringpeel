@@ -3,16 +3,20 @@ const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  // do all of these things relative to ./src/app
   context: path.resolve(__dirname, 'src', 'app'),
 
+  // have two pages, app and admin (/ and /admin)
   entry: {
     app: './app.tsx',
     admin: './admin.tsx',
   },
 
   module: {
+    // only static files are in here, everything else goes through either dev or prod
     rules: [
       {
+        // fonts into the font folder,
         test: /\.(eot|svg|ttf|woff|woff2)$/,
         use: [
           {
@@ -25,6 +29,7 @@ module.exports = {
       },
 
       {
+        // images into the image folder
         test: /\.(png|jpg|jpeg)$/,
         use: [
           {
@@ -39,12 +44,16 @@ module.exports = {
   },
 
   output: {
+    // output things to /dist/app
     path: path.resolve(__dirname, 'dist', 'app'),
+    // name them app.js or admin.js
     filename: '[name].js',
+    // everything is relative to /
     publicPath: '/',
   },
 
   plugins: [
+    // name the sites
     new HTMLWebpackPlugin({
       title: 'Volunteering Peel',
       chunks: ['app'],
@@ -55,14 +64,18 @@ module.exports = {
       title: 'Volunteering Peel Admin',
       chunks: ['admin'],
       filename: 'admin.html',
-      // template: 'index.ejs',
+      template: 'index.ejs',
     }),
+    // delete some excess shit (see https://github.com/moment/moment/issues/2517)
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
   ],
 
   resolve: {
+    // if no file extension use these
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    // if no absolute path use these
     modules: [path.resolve(__dirname, './node_modules')],
+    // if we're really lazy just write @app to refer to ./src/app
     alias: {
       '@app': path.resolve(__dirname, 'src', 'app'),
     },

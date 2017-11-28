@@ -1,14 +1,19 @@
 const fs = require('fs');
 const path = require('path');
 
+// for the server...
 module.exports = {
+  // use ./src/index.ts as the entry point
   entry: path.resolve(__dirname, 'src', 'index.ts'),
 
   output: {
+    // output to /dist (not /dist/app)
     path: path.resolve(__dirname, 'dist'),
+    // name it
     filename: 'index.js',
   },
 
+  // this is a server app not a web app
   target: 'node',
 
   // keep node_module paths out of the bundle
@@ -20,6 +25,7 @@ module.exports = {
       return ext;
     }, {}),
 
+  // set a few globals
   node: {
     __filename: false,
     __dirname: false,
@@ -28,6 +34,7 @@ module.exports = {
   module: {
     loaders: [
       {
+        // our usual bunch of awesome
         test: /\.tsx?$/,
         exclude: [/node_modules/],
         use: [
@@ -42,6 +49,7 @@ module.exports = {
     ],
   },
 
+  // just a copy from common.
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
     modules: [path.resolve(__dirname, './node_modules')],
