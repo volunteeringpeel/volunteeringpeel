@@ -40,14 +40,14 @@ create table if not exists role (
 create table if not exists user (
   user_id     int           not null auto_increment primary key comment 'Unique user ID',
   email       varchar(128)  not null unique                     comment 'Email',
-  password    varchar(256)  not null                            comment 'Password hash',
+  -- password    varchar(256)  not null                            comment 'Password hash',
   role_id     int           not null                            comment 'Volunteer/organizer/executive',
   first_name  varchar(32)   not null                            comment 'First name',
   last_name   varchar(32)   not null                            comment 'Last name',
   phone_1     varchar(15)                                       comment 'Phone contact #1 (for volunteers/organizers)',
   phone_2     varchar(15)                                       comment 'Phone contact #2 (for volunteers)',
-  activated   boolean       not null default 0                  comment 'Is user activated?',
-  active_key  varchar(32)   not null                            comment 'Randomly generated activation key',
+  -- activated   boolean       not null default 0                  comment 'Is user activated?',
+  -- active_key  varchar(32)   not null                            comment 'Randomly generated activation key',
   mail_list   boolean       not null default 0                  comment 'Is user on mailing list?',
   bio         text                                              comment 'For execs, bio for about page'
 );
