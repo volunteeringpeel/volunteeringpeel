@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -65,6 +66,8 @@ module.exports = {
   },
 
   plugins: [
+    // delete old files
+    new CleanWebpackPlugin([path.resolve(__dirname, 'dist', 'app')]),
     // use special module ids for caching
     new webpack.HashedModuleIdsPlugin(),
     // extract huge libraries out of main file
