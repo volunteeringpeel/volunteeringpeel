@@ -6,7 +6,12 @@ import { createAction } from 'redux-actions';
 
 // User Management
 export const LOGOUT = 'LOGOUT';
-export const logout = createAction<void>(LOGOUT, noop);
+export const logout = createAction<void>(LOGOUT, () => {
+  // Clear access token and ID token from local storage
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('id_token');
+  localStorage.removeItem('expires_at');
+});
 
 export const GET_USER = 'GET_USER';
 export const getUser = createAction<Promise<AxiosResponse<APIData<User>>>, string>(

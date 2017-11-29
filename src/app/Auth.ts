@@ -29,14 +29,13 @@ class Auth {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
         store.dispatch(addMessage({ message: 'Logged in', severity: 'positive' }));
-        cb();
       } else if (err) {
-        push('/home');
         store.dispatch(
           addMessage({ message: err.error, more: err.description, severity: 'negative' }),
         );
-        cb();
       }
+      if (cb) cb();
+      store.dispatch(push('/home'));
     });
   }
 
@@ -47,18 +46,14 @@ class Auth {
     localStorage.setItem('id_token', authResult.idToken);
     localStorage.setItem('expires_at', expiresAt);
     // navigate to the home route
-    push('/home');
+    store.dispatch(push('/home'));
   }
 
   public logout() {
-    // Clear access token and ID token from local storage
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('id_token');
-    localStorage.removeItem('expires_at');
     store.dispatch(logout());
     store.dispatch(addMessage({ message: 'Logged out successfully', severity: 'positive' }));
     // navigate to the home route
-    push('/home');
+    store.dispatch(push('/home'));
   }
 
   public isAuthenticated() {
