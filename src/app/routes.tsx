@@ -5,12 +5,12 @@ import { Redirect } from 'react-router-dom';
 import PublicSite from './PublicSite';
 
 import About from '@app/components/pages/About';
-import Events from '@app/components/pages/Events';
-import FAQ from '@app/components/pages/FAQ';
 import Homepage from '@app/components/pages/Homepage';
-import Sponsors from '@app/components/pages/Sponsors';
-import Team from '@app/components/pages/Team';
+import EventsController from '@app/controllers/pages/EventsController';
+import FAQController from '@app/controllers/pages/FAQController';
 import LoginCallbackController from '@app/controllers/pages/LoginCallbackController';
+import SponsorsController from '@app/controllers/pages/SponsorsController';
+import TeamController from '@app/controllers/pages/TeamController';
 
 interface Route extends RouteConfig {
   title: string;
@@ -39,24 +39,24 @@ const routes: Route[] = [
   },
   {
     path: '/about/faq',
-    component: FAQ,
+    component: FAQController,
     title: 'FAQ',
     display: 'Frequently Asked Questions',
   },
   {
     path: '/about/sponsors',
-    component: Sponsors,
+    component: SponsorsController,
     title: 'Sponsors',
   },
   {
     path: '/about/team',
-    component: Team,
+    component: TeamController,
     title: 'Team',
     display: 'Meet the Team',
   },
   {
     path: '/events',
-    component: Events,
+    component: EventsController,
     title: 'Events',
   },
   {

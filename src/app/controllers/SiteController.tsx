@@ -13,8 +13,7 @@ import { withRouter } from 'react-router';
 import { Dispatch } from 'redux';
 
 const mapStateToProps = (state: State) => ({
-  user: state.user.user,
-  status: state.user.status,
+  loading: state.loading,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>) => ({

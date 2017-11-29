@@ -1,33 +1,37 @@
 import axios from 'axios';
+import * as Promise from 'bluebird';
 import { map } from 'lodash-es';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Card, Container, Image, Segment } from 'semantic-ui-react';
 
-import LoadingDimmer from '@app/components/modules/LoadingDimmer';
+interface TeamProps {
+  loading: (status: boolean) => any;
+}
 
 interface TeamState {
-  loading: boolean;
   execs: Exec[];
 }
 
-export default class Team extends React.Component<{}, TeamState> {
+export default class Team extends React.Component<TeamProps, TeamState> {
   constructor() {
     super();
 
-    this.state = { loading: true, execs: [] };
+    this.state = { execs: [] };
   }
 
   public componentDidMount() {
-    axios.get('/api/public/execs').then(res => {
-      this.setState({ loading: false, execs: res.data.data });
-    });
+    Promise.resolve(() => this.props.loading(true))
+      .then(() => axios.get('/api/public/execs'))
+      .then(res => {
+        this.props.loading(false);
+        this.setState({ execs: res.data.data });
+      });
   }
 
   public render() {
     return (
       <Segment style={{ padding: '4em 0em' }} vertical>
-        <LoadingDimmer loading={this.state.loading} />
         <Container>
           <Card.Group>
             {map(this.state.execs, exec => (

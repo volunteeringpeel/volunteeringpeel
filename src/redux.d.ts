@@ -5,6 +5,7 @@ interface UserState {
 
 interface State {
   user: UserState;
+  loading: boolean;
   messages: Message[];
   router: {
     location: Location;

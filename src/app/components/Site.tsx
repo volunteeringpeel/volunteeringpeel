@@ -14,8 +14,7 @@ import HeaderController from '@app/controllers/HeaderController';
 import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 
 interface SiteProps {
-  user: User;
-  status: 'in' | 'out' | 'loading';
+  loading: boolean;
   loadUser: () => void;
 }
 
@@ -39,7 +38,7 @@ export default class Site extends React.Component<SiteProps> {
   public render() {
     return (
       <div>
-        <LoadingDimmer loading={this.props.status === 'loading'} />
+        <LoadingDimmer loading={this.props.loading} />
         <HeaderController />
         {renderRoutes(routes)}
         <Footer />

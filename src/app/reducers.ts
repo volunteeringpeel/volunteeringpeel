@@ -6,6 +6,7 @@ import {
   GET_USER,
   GET_USER_FAILURE,
   GET_USER_SUCCESS,
+  LOADING,
   LOGOUT,
 } from '@app/actions';
 import { store } from '@app/Utilities';
@@ -14,7 +15,15 @@ import * as Promise from 'bluebird';
 import * as update from 'immutability-helper';
 import { filter, maxBy } from 'lodash-es';
 import { combineReducers } from 'redux';
-import { Action, handleActions } from 'redux-actions';
+import { Action, handleAction, handleActions } from 'redux-actions';
+
+const loading = handleAction<boolean, boolean>(
+  LOADING,
+  (state: boolean, action: Action<boolean>): boolean => {
+    return action.payload;
+  },
+  true,
+);
 
 const user = handleActions<UserState, any>(
   {
@@ -64,4 +73,4 @@ const messages = handleActions<Message[], any>(
   [],
 );
 
-export { user, messages };
+export { loading, user, messages };

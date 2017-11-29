@@ -4,6 +4,10 @@ import * as Promise from 'bluebird';
 import { noop } from 'lodash-es';
 import { createAction } from 'redux-actions';
 
+// General Things
+export const LOADING = 'LOADING';
+export const loading = createAction<boolean, boolean>(LOADING, (active: boolean) => active);
+
 // User Management
 export const LOGOUT = 'LOGOUT';
 export const logout = createAction<void>(LOGOUT, () => {

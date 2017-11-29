@@ -7,19 +7,21 @@ import * as ReactMarkdown from 'react-markdown';
 import { Button, Container, Item, Segment } from 'semantic-ui-react';
 
 import ProgressColor from '@app/components/blocks/ProgressColor';
-import LoadingDimmer from '@app/components/modules/LoadingDimmer';
 import EventModalController from '@app/controllers/modules/EventModalController';
 
+interface EventsProps {
+  loading: (status: boolean) => any;
+}
+
 interface EventsState {
-  loading: boolean;
   events: VPEvent[];
 }
 
-export default class Events extends React.Component<{}, EventsState> {
+export default class Events extends React.Component<EventsProps, EventsState> {
   constructor() {
     super();
 
-    this.state = { loading: true, events: [] };
+    this.state = { events: [] };
 
     this.refresh = this.refresh.bind(this);
   }
@@ -29,7 +31,7 @@ export default class Events extends React.Component<{}, EventsState> {
   }
 
   public refresh() {
-    return Promise.resolve(this.setState({ loading: true }))
+    return Promise.resolve(this.props.loading(true))
       .then(() => {
         if (localStorage.getItem('id_token')) {
           return axios.get('/api/events', {
@@ -39,14 +41,14 @@ export default class Events extends React.Component<{}, EventsState> {
         return axios.get('/api/public/events');
       })
       .then(res => {
-        this.setState({ loading: false, events: res.data.data });
+        this.props.loading(false);
+        this.setState({ events: res.data.data });
       });
   }
 
   public render() {
     return (
       <Segment style={{ padding: '4em 0em' }} vertical>
-        <LoadingDimmer loading={this.state.loading} />
         <Container>
           <div style={{ textAlign: 'center' }}>
             <Button onClick={this.refresh} basic color="grey">
