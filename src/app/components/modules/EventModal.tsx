@@ -13,6 +13,7 @@ import ConfirmModal from '@app/components/modules/ConfirmModal';
 import { listify, pluralize } from '@app/Utilities';
 
 interface EventModalProps {
+  ableToRegister: string | true;
   event: VPEvent;
   refresh: () => PromiseLike<any>;
 }
@@ -144,7 +145,12 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
             })}
           </Item.Group>
         </Modal.Content>
-        <Modal.Actions>
+        <Dimmer.Dimmable as={Modal.Actions}>
+          <Dimmer active={this.props.ableToRegister !== true}>
+            <Header as="h4" inverted>
+              {this.props.ableToRegister}
+            </Header>
+          </Dimmer>
           <Button onClick={this.handleClose}>Cancel</Button>
           <ConfirmModal
             content={confirmText}
@@ -159,7 +165,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               </Button>
             }
           />
-        </Modal.Actions>
+        </Dimmer.Dimmable>
       </Modal>
     );
   }

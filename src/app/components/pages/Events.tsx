@@ -7,8 +7,8 @@ import * as ReactMarkdown from 'react-markdown';
 import { Button, Container, Item, Segment } from 'semantic-ui-react';
 
 import ProgressColor from '@app/components/blocks/ProgressColor';
-import EventModal from '@app/components/modules/EventModal';
 import LoadingDimmer from '@app/components/modules/LoadingDimmer';
+import EventModalController from '@app/controllers/modules/EventModalController';
 
 interface EventsState {
   loading: boolean;
@@ -28,7 +28,7 @@ export default class Events extends React.Component<{}, EventsState> {
     this.refresh();
   }
 
-  public refresh(): PromiseLike<any> {
+  public refresh() {
     return Promise.resolve(this.setState({ loading: true }))
       .then(() => {
         if (localStorage.getItem('id_token')) {
@@ -92,7 +92,7 @@ export default class Events extends React.Component<{}, EventsState> {
                           size="small"
                         />
                         <br />
-                        <EventModal event={event} refresh={this.refresh} />
+                        <EventModalController event={event} refresh={this.refresh} />
                       </Item.Extra>
                     </Item.Content>
                   </Item>

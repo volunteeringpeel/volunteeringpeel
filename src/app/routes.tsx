@@ -8,9 +8,9 @@ import About from '@app/components/pages/About';
 import Events from '@app/components/pages/Events';
 import FAQ from '@app/components/pages/FAQ';
 import Homepage from '@app/components/pages/Homepage';
-import LoginCallbackController from '@app/controllers/pages/LoginCallbackController';
 import Sponsors from '@app/components/pages/Sponsors';
 import Team from '@app/components/pages/Team';
+import LoginCallbackController from '@app/controllers/pages/LoginCallbackController';
 
 interface Route extends RouteConfig {
   title: string;

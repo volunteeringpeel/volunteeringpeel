@@ -46,6 +46,8 @@ interface User {
   email: string;
   first_name: string;
   last_name: string;
+  phone_1: string;
+  phone_2: string;
 }
 
 interface Exec extends User {
