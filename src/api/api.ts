@@ -84,9 +84,10 @@ api.get('/user/current', (req, res) => {
         // tslint:disable-next-line:variable-name
         const [first_name, last_name] = req.user.name ? req.user.name.split(/ (.+)/) : ['', ''];
         const newUser = {
+          // might be the same as email cause auth0 is weird af
           first_name,
-          // the last name can be email if none is provided by auth0,
-          // so if it isn't a thing, make it a blank string
+          // the name can be email if none is provided by auth0,
+          // so if last name isn't a thing, make it a blank string
           last_name: last_name || '',
           email: req.user.email,
           role_id: 1,
@@ -105,6 +106,37 @@ api.get('/user/current', (req, res) => {
     .catch(error => {
       res.error(500, 'Database error', error);
       console.log(db, error);
+      if (db && db.end) db.release();
+    });
+});
+
+api.post('/user/current', (req, res) => {
+  // get parameters from request body
+  const { first_name, last_name, phone_1, phone_2 } = req.body;
+  // ensure that all parameters exist
+  if (!first_name || !last_name || !phone_1 || !phone_2) {
+    return res.error(400, 'Missing required field');
+  }
+
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      // update the profile in the database
+      return db.query('UPDATE user SET ? WHERE ?', [
+        // fields to update
+        { first_name, last_name, phone_1, phone_2 },
+        // find the user with this email
+        { email: req.user.email },
+      ]);
+    })
+    .then(_ => {
+      res.success('Profile updated successfully');
+      db.release();
+    })
+    .catch(error => {
+      res.error(500, 'Database error', error);
       if (db && db.end) db.release();
     });
 });
