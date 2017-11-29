@@ -10,6 +10,18 @@ module.exports = {
   entry: {
     app: './app.tsx',
     admin: './admin.tsx',
+    vendor: [
+      'axios',
+      'babel-polyfill',
+      'bluebird',
+      'lodash-es',
+      'react',
+      'react-redux',
+      'react-router',
+      'react-router-redux',
+      'redux',
+      'semantic-ui-react',
+    ],
   },
 
   module: {
@@ -46,23 +58,33 @@ module.exports = {
   output: {
     // output things to /dist/app
     path: path.resolve(__dirname, 'dist', 'app'),
-    // name them app.js or admin.js
-    filename: '[name].js',
+    // name them app.version.js or admin.version.js
+    filename: '[name].[chunkhash].js',
     // everything is relative to /
     publicPath: '/',
   },
 
   plugins: [
+    // use special module ids for caching
+    new webpack.HashedModuleIdsPlugin(),
+    // extract huge libraries out of main file
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+    }),
+    // extract webpack bootstrap out of main file
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'runtime',
+    }),
     // name the sites
     new HTMLWebpackPlugin({
       title: 'Volunteering Peel',
-      chunks: ['app'],
+      chunks: ['runtime', 'vendor', 'app'],
       filename: 'index.html',
       template: 'index.ejs',
     }),
     new HTMLWebpackPlugin({
       title: 'Volunteering Peel Admin',
-      chunks: ['admin'],
+      chunks: ['runtime', 'vendor', 'admin'],
       filename: 'admin.html',
       template: 'index.ejs',
     }),
