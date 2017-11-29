@@ -1,4 +1,4 @@
-import { addMessage, logout } from '@app/actions';
+import { addMessage, dismissAllMessages, logout } from '@app/actions';
 import { store } from '@app/Utilities';
 import * as auth0 from 'auth0-js';
 import { push } from 'react-router-redux';
@@ -27,6 +27,7 @@ class Auth {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
+        store.dispatch(dismissAllMessages());
         store.dispatch(addMessage({ message: 'Logged in', severity: 'positive' }));
       } else if (err) {
         store.dispatch(
@@ -50,6 +51,7 @@ class Auth {
 
   public logout() {
     store.dispatch(logout());
+    store.dispatch(dismissAllMessages());
     store.dispatch(addMessage({ message: 'Logged out successfully', severity: 'positive' }));
     // navigate to the home route
     store.dispatch(push('/home'));
