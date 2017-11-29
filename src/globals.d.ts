@@ -2,10 +2,6 @@ declare module '*/passwords.json' {
   const mysql: {
     password: string;
   };
-
-  const email: {
-    password: string;
-  };
 }
 
 type Renderable = JSX.Element | string;

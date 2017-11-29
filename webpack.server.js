@@ -1,5 +1,7 @@
 const fs = require('fs');
 const path = require('path');
+const webpack = require('webpack');
+const nodeExternals = require('webpack-node-externals');
 
 // for the server...
 module.exports = {
@@ -17,13 +19,7 @@ module.exports = {
   target: 'node',
 
   // keep node_module paths out of the bundle
-  externals: fs
-    .readdirSync(path.resolve(__dirname, 'node_modules'))
-    .concat(['react-dom/server', 'react/addons'])
-    .reduce(function(ext, mod) {
-      ext[mod] = 'commonjs ' + mod;
-      return ext;
-    }, {}),
+  externals: [nodeExternals(), { './passwords': 'commonjs ./passwords' }],
 
   // set a few globals
   node: {

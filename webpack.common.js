@@ -13,7 +13,6 @@ module.exports = {
     admin: './admin.tsx',
     vendor: [
       'auth0-js',
-      'auth0-lock-passwordless',
       'axios',
       'babel-polyfill',
       'bluebird',

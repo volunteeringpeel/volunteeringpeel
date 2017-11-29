@@ -6,7 +6,7 @@ import * as jwt from 'express-jwt';
 import * as jwksRsa from 'jwks-rsa';
 import * as mysql from 'promise-mysql';
 
-const passwordsJson = require('../passwords.json');
+const passwordsJson = require('./passwords');
 
 // Initialize API
 const api = Express.Router();
