@@ -23,7 +23,7 @@ class Auth {
     this.auth0.authorize();
   }
 
-  public handleAuthentication(cb?: () => void) {
+  public handleAuthentication(callback?: () => void) {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
@@ -31,11 +31,15 @@ class Auth {
         store.dispatch(addMessage({ message: 'Logged in', severity: 'positive' }));
       } else if (err) {
         store.dispatch(
-          addMessage({ message: err.error, more: err.description, severity: 'negative' }),
+          addMessage({
+            message: 'Login failed',
+            more: `Please try again. Error: ${err.error}`,
+            severity: 'negative',
+          }),
         );
       }
-      if (cb) cb();
       store.dispatch(push('/home'));
+      if (callback) callback();
     });
   }
 
