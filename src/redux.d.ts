@@ -4,7 +4,9 @@ interface UserState {
 }
 
 interface State {
-  authToken: string;
   user: UserState;
   messages: Message[];
+  router: {
+    location: Location;
+  };
 }
