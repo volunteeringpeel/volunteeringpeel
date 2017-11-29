@@ -8,6 +8,7 @@ import About from '@app/components/pages/About';
 import Events from '@app/components/pages/Events';
 import FAQ from '@app/components/pages/FAQ';
 import Homepage from '@app/components/pages/Homepage';
+import LoginCallbackController from '@app/controllers/pages/LoginCallbackController';
 import Sponsors from '@app/components/pages/Sponsors';
 import Team from '@app/components/pages/Team';
 
@@ -57,6 +58,11 @@ const routes: Route[] = [
     path: '/events',
     component: Events,
     title: 'Events',
+  },
+  {
+    path: '/callback',
+    component: LoginCallbackController,
+    title: 'Logging in...',
   },
   // TODO: Contact page
   // {

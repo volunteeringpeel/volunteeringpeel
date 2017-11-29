@@ -41,13 +41,6 @@ export default class Site extends React.Component<SiteProps> {
       <LoadingDimmer loading={this.props.status === 'loading'}>
         <HeaderController />
         {renderRoutes(routes)}
-        <Route
-          path="/callback"
-          render={props => {
-            this.handleAuthentication(props);
-            return null;
-          }}
-        />
         <Footer />
       </LoadingDimmer>
     );

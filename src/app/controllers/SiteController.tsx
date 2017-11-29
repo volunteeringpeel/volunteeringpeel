@@ -1,6 +1,14 @@
-import { addMessage, dismissMessage, getUser, getUserFailure, getUserSuccess } from '@app/actions';
+import {
+  addMessage,
+  dismissMessage,
+  getUser,
+  getUserFailure,
+  getUserSuccess,
+  logout,
+} from '@app/actions';
+import Auth from '@app/Auth';
 import Site from '@app/components/Site';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Dispatch } from 'redux';
@@ -12,19 +20,19 @@ const mapStateToProps = (state: State) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   loadUser: () => {
-    const token = localStorage.getItem('id_token');
-    if (!token || token === '') {
-      // if there is no token, dont bother
+    if (!Auth.isAuthenticated()) {
+      dispatch(logout());
+      dispatch(addMessage({ message: 'Session expired', severity: 'negative' }));
       return;
     }
 
     // fetch user from token (if server deems it's valid token)
-    dispatch(getUser(token))
+    dispatch(getUser(localStorage.getItem('id_token')))
       .payload.then(response => {
         if (response.data.status === 'success') {
           dispatch(getUserSuccess(response as AxiosResponse<APIDataSuccess<User>>));
         } else {
-          sessionStorage.removeItem('id_token');
+          localStorage.removeItem('id_token');
           dispatch(getUserFailure(response as AxiosResponse<APIDataError>));
           dispatch(
             addMessage({
@@ -35,12 +43,13 @@ const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
           );
         }
       })
-      .catch(error => {
-        dispatch(getUserFailure(error));
+      .catch((error: AxiosError) => {
+        localStorage.removeItem('id_token');
+        dispatch(getUserFailure(error.response));
         dispatch(
           addMessage({
-            message: error.data.error,
-            more: error.data.details,
+            message: error.response.data.error,
+            more: error.response.data.details,
             severity: 'negative',
           }),
         );
