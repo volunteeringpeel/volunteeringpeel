@@ -6,7 +6,6 @@ import {
   getUserSuccess,
   logout,
 } from '@app/actions';
-import Auth from '@app/Auth';
 import Site from '@app/components/Site';
 import { AxiosError, AxiosResponse } from 'axios';
 import { connect } from 'react-redux';
@@ -20,9 +19,18 @@ const mapStateToProps = (state: State) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   loadUser: () => {
-    if (!Auth.isAuthenticated()) {
+    // Check whether the current time is past the token's expiry time
+    const expiresAt = JSON.parse(localStorage.getItem('expires_at'));
+    const isValid = new Date().getTime() < expiresAt;
+    if (!isValid) {
       dispatch(logout());
-      dispatch(addMessage({ message: 'Session expired', severity: 'negative' }));
+      dispatch(
+        addMessage({
+          message: 'Session expired',
+          more: 'Please log back in',
+          severity: 'negative',
+        }),
+      );
       return;
     }
 

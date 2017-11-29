@@ -17,7 +17,6 @@ class Auth {
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
     this.handleAuthentication = this.handleAuthentication.bind(this);
-    this.isAuthenticated = this.isAuthenticated.bind(this);
   }
 
   public login() {
@@ -54,13 +53,6 @@ class Auth {
     store.dispatch(addMessage({ message: 'Logged out successfully', severity: 'positive' }));
     // navigate to the home route
     store.dispatch(push('/home'));
-  }
-
-  public isAuthenticated() {
-    // Check whether the current time is past the
-    // access token's expiry time
-    const expiresAt = JSON.parse(localStorage.getItem('expires_at'));
-    return new Date().getTime() < expiresAt;
   }
 }
 
