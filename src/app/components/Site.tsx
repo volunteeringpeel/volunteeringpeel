@@ -38,11 +38,12 @@ export default class Site extends React.Component<SiteProps> {
 
   public render() {
     return (
-      <LoadingDimmer loading={this.props.status === 'loading'}>
+      <div>
+        <LoadingDimmer loading={this.props.status === 'loading'} />
         <HeaderController />
         {renderRoutes(routes)}
         <Footer />
-      </LoadingDimmer>
+      </div>
     );
   }
 }

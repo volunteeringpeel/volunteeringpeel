@@ -25,27 +25,26 @@ export default class Sponsors extends React.Component<{}, SponsorsState> {
 
   public render() {
     return (
-      <LoadingDimmer loading={this.state.loading}>
-        <Segment style={{ padding: '4em 0em' }} vertical>
-          <Container>
-            <Card.Group>
-              {map(sortBy(this.state.sponsors, ['priority']), sponsor => (
-                <Card>
-                  <Image src={`http://volunteeringpeel.org/${sponsor.image}`} />
-                  <Card.Content>
-                    <Card.Header>{sponsor.name}</Card.Header>
-                  </Card.Content>
-                  <Card.Content extra>
-                    <Card.Meta>
-                      <a href={sponsor.website}>Website</a>
-                    </Card.Meta>
-                  </Card.Content>
-                </Card>
-              ))}
-            </Card.Group>
-          </Container>
-        </Segment>
-      </LoadingDimmer>
+      <Segment style={{ padding: '4em 0em' }} vertical>
+        <LoadingDimmer loading={this.state.loading} />
+        <Container>
+          <Card.Group>
+            {map(sortBy(this.state.sponsors, ['priority']), sponsor => (
+              <Card>
+                <Image src={`http://volunteeringpeel.org/${sponsor.image}`} />
+                <Card.Content>
+                  <Card.Header>{sponsor.name}</Card.Header>
+                </Card.Content>
+                <Card.Content extra>
+                  <Card.Meta>
+                    <a href={sponsor.website}>Website</a>
+                  </Card.Meta>
+                </Card.Content>
+              </Card>
+            ))}
+          </Card.Group>
+        </Container>
+      </Segment>
     );
   }
 }

@@ -31,25 +31,24 @@ export default class FAQPage extends React.Component<{}, FAQState> {
   public render() {
     return (
       <div className="large text">
-        <LoadingDimmer loading={this.state.loading}>
-          <Segment style={{ padding: '4em 0em' }} vertical>
-            <Container>
-              <p>
-                Have a question? <a href="mailto:info@volunteeringpeel.org">Email us</a> or contact
-                us through the <Link to="/contact">contact form</Link>.
-              </p>
-              <Accordion
-                defaultActiveIndex={0}
-                panels={map(this.state.faqs, question => ({
-                  title: question.question,
-                  content: {
-                    content: <ReactMarkdown source={question.answer} />,
-                  },
-                }))}
-              />
-            </Container>
-          </Segment>
-        </LoadingDimmer>
+        <Segment style={{ padding: '4em 0em' }} vertical>
+          <LoadingDimmer loading={this.state.loading} />
+          <Container>
+            <p>
+              Have a question? <a href="mailto:info@volunteeringpeel.org">Email us</a> or contact us
+              through the <Link to="/contact">contact form</Link>.
+            </p>
+            <Accordion
+              defaultActiveIndex={0}
+              panels={map(this.state.faqs, question => ({
+                title: question.question,
+                content: {
+                  content: <ReactMarkdown source={question.answer} />,
+                },
+              }))}
+            />
+          </Container>
+        </Segment>
       </div>
     );
   }

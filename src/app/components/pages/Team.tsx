@@ -26,32 +26,33 @@ export default class Team extends React.Component<{}, TeamState> {
 
   public render() {
     return (
-      <LoadingDimmer loading={this.state.loading}>
-        <Segment style={{ padding: '4em 0em' }} vertical>
-          <Container>
-            <Card.Group>
-              {map(this.state.execs, exec => (
-                <Card>
-                  <Image
-                    src={`http://volunteeringpeel.org/images/execPortraits/2017/${exec.first_name}${exec.last_name}2017.JPG`}
-                  />
-                  <Card.Content>
-                    <Card.Header>
-                      {exec.first_name} {exec.last_name}
-                    </Card.Header>
-                    <Card.Meta>Position Goes Here</Card.Meta>
-                  </Card.Content>
-                  <Card.Content extra>
-                    <Card.Description>
-                      <ReactMarkdown source={exec.bio} />
-                    </Card.Description>
-                  </Card.Content>
-                </Card>
-              ))}
-            </Card.Group>
-          </Container>
-        </Segment>
-      </LoadingDimmer>
+      <Segment style={{ padding: '4em 0em' }} vertical>
+        <LoadingDimmer loading={this.state.loading} />
+        <Container>
+          <Card.Group>
+            {map(this.state.execs, exec => (
+              <Card>
+                <Image
+                  src={`http://volunteeringpeel.org/images/execPortraits/2017/${exec.first_name}${
+                    exec.last_name
+                  }2017.JPG`}
+                />
+                <Card.Content>
+                  <Card.Header>
+                    {exec.first_name} {exec.last_name}
+                  </Card.Header>
+                  <Card.Meta>Position Goes Here</Card.Meta>
+                </Card.Content>
+                <Card.Content extra>
+                  <Card.Description>
+                    <ReactMarkdown source={exec.bio} />
+                  </Card.Description>
+                </Card.Content>
+              </Card>
+            ))}
+          </Card.Group>
+        </Container>
+      </Segment>
     );
   }
 }
