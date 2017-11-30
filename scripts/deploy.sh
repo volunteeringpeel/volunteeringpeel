@@ -7,5 +7,5 @@ ssh -T build@$1 <<-'END'
   cd /var/volunteeringpeel
   yarn install --ignore-scripts --production
   sudo chmod -R 774 /var/volunteeringpeel
-  sudo service nodejs restart
+  pm2 restart index
 END
