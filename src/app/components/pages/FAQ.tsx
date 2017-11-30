@@ -1,35 +1,41 @@
 import axios from 'axios';
+import * as Promise from 'bluebird';
 import { map } from 'lodash-es';
 import * as React from 'react';
+import * as ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
 import { Accordion, Container, Segment } from 'semantic-ui-react';
 
+interface FAQProps {
+  loading: (status: boolean) => any;
+}
+
 interface FAQState {
-  loading: boolean;
   faqs: FAQ[];
 }
 
-export default class FAQPage extends React.Component<{}, FAQState> {
+export default class FAQPage extends React.Component<FAQProps, FAQState> {
   constructor() {
     super();
 
     this.state = {
-      loading: true,
       faqs: [],
     };
   }
 
   public componentDidMount() {
-    axios.get('/api/faq').then(res => {
-      this.setState({ loading: false, faqs: res.data.data });
-    });
+    Promise.resolve(() => this.props.loading(true))
+      .then(() => axios.get('/api/public/faq'))
+      .then(res => {
+        this.props.loading(false);
+        this.setState({ faqs: res.data.data });
+      });
   }
 
   public render() {
-    if (this.state.loading) return null;
     return (
       <div className="large text">
-        <Segment style={{ padding: '8em 0em' }} vertical>
+        <Segment style={{ padding: '4em 0em' }} vertical>
           <Container>
             <p>
               Have a question? <a href="mailto:info@volunteeringpeel.org">Email us</a> or contact us
@@ -39,7 +45,9 @@ export default class FAQPage extends React.Component<{}, FAQState> {
               defaultActiveIndex={0}
               panels={map(this.state.faqs, question => ({
                 title: question.question,
-                content: { content: question.answer },
+                content: {
+                  content: <ReactMarkdown source={question.answer} />,
+                },
               }))}
             />
           </Container>

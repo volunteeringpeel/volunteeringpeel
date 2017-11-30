@@ -1,8 +1,6 @@
 {
   "watch": ["src"],
+  "ignore": ["src/app"],
   "ext": "ts",
-  "exec": "ts-node ./src/index.ts",
-  "env": {
-    "NODEMON": true
-  }
+  "exec": "ts-node ./src/index.ts"
 }

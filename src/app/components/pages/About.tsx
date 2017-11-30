@@ -4,7 +4,7 @@ import { Button, Grid, Header, Icon, Segment } from 'semantic-ui-react';
 
 export default () => (
   <div className="large text">
-    <Segment style={{ padding: '8em 0em' }} vertical>
+    <Segment style={{ padding: '4em 0em' }} vertical>
       <Grid
         celled="internally"
         columns="equal"
@@ -37,7 +37,7 @@ export default () => (
               <Button primary animated size="huge">
                 <Button.Content visible>Sign up now!</Button.Content>
                 <Button.Content hidden>
-                  <Icon name="right arrow" />
+                  <Icon name="arrow right" />
                 </Button.Content>
               </Button>
             </Link>

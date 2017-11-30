@@ -5,4 +5,4 @@ dist
 !.gitignore
 !.travis.yml
 
-passwords.json
+passwords.js

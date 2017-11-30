@@ -1,14 +1,30 @@
 declare module '*/passwords.json' {
   const mysql: {
-    host: string;
-    user: string;
     password: string;
-    database: string;
-    charset: string;
   };
 }
 
 type Renderable = JSX.Element | string;
+
+interface APIDataSuccess<T> {
+  status: 'success';
+  data: T;
+}
+
+interface APIDataError {
+  status: 'error';
+  error: string;
+  details: string;
+}
+
+type APIData<T> = APIDataSuccess<T> | APIDataError;
+
+interface Message {
+  id?: number;
+  message: string;
+  more?: string;
+  severity: 'info' | 'warning' | 'positive' | 'negative';
+}
 
 interface Page {
   id: string;
@@ -18,16 +34,20 @@ interface Page {
 
 interface FAQ {
   question: string;
-  answer: JSX.Element;
+  answer: string;
 }
 
 interface User {
+  user_id: number;
+  email: string;
   first_name: string;
   last_name: string;
+  phone_1: string;
+  phone_2: string;
 }
 
 interface Exec extends User {
-  bio: Renderable;
+  bio: string;
 }
 
 interface Sponsor {
@@ -38,10 +58,10 @@ interface Sponsor {
 }
 
 interface VPEvent {
-  event_id?: number;
+  event_id: number;
   name: string;
   address: string;
-  description: Renderable;
+  description: string;
   transport: string;
   shifts: Shift[];
 }
@@ -49,12 +69,14 @@ interface VPEvent {
 type Meal = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
 interface Shift {
+  shift_id: number;
   shift_num: number;
   start_time: string;
   end_time: string;
   date: string;
   meals: Meal[];
   max_spots: number;
-  spots: number;
-  notes: Renderable;
+  spots_taken: number;
+  notes: string;
+  signed_up: boolean;
 }

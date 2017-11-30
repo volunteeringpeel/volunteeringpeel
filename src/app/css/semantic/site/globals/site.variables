@@ -1,3 +1,3 @@
-@h1: 4em;
-@h2: 3em;
-@h3: 2em;
+@emSize: 16px;
+
+@h1: 2.5em;

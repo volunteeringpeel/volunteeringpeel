@@ -1,21 +1,60 @@
-import { find } from 'lodash-es';
+import Auth from '@app/Auth';
+import { LocationDescriptor } from 'history';
+import { find, map } from 'lodash-es';
 import * as React from 'react';
-import { Link, Redirect, Route } from 'react-router-dom';
-import { Container, Dropdown, Header, Menu, Segment } from 'semantic-ui-react';
+import { Route } from 'react-router-dom';
+import { Container, Dropdown, Header, Icon, Menu, Message, Segment } from 'semantic-ui-react';
 
-import testdata from 'app/testdata';
+import routes from '@app/routes';
 
-export default class HeaderComponent extends React.Component {
+import MessageBoxController from '@app/controllers/modules/MessageBoxController';
+
+interface HeaderComponentProps {
+  user: UserState;
+  push: (path: LocationDescriptor) => void;
+}
+
+class HeaderComponent extends React.Component<HeaderComponentProps> {
   public render() {
+    let userButton;
+
+    if (this.props.user.status === 'in') {
+      userButton = (
+        <Dropdown item text="Me" className="right">
+          <Dropdown.Menu>
+            <Dropdown.Header
+              icon="user"
+              content={`${this.props.user.user.first_name} ${this.props.user.user.last_name}`}
+            />
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={Auth.logout}>Logout</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      );
+    } else if (this.props.user.status === 'out') {
+      userButton = (
+        <Menu.Item as="div">
+          <a href="#" onClick={Auth.login}>
+            Login
+          </a>
+        </Menu.Item>
+      );
+    } else {
+      userButton = (
+        <Menu.Item as="div">
+          <Icon name="circle notched" />
+        </Menu.Item>
+      );
+    }
     return (
       <div>
-        <Segment inverted textAlign="center" vertical>
-          <Menu inverted pointing secondary size="large" widths={3}>
+        <Segment inverted textAlign="center" vertical style={{ paddingBottom: '1em' }}>
+          <Menu inverted size="large" widths={4}>
             <Container textAlign="center">
               <Route path="/home">
                 {({ match }) => (
-                  <Menu.Item active={!!match}>
-                    <Link to="/home">Home</Link>
+                  <Menu.Item active={!!match} onClick={() => this.props.push('/home')}>
+                    Home
                   </Menu.Item>
                 )}
               </Route>
@@ -23,40 +62,43 @@ export default class HeaderComponent extends React.Component {
                 {({ match }) => (
                   <Dropdown item text="About" className={match ? 'active' : ''}>
                     <Dropdown.Menu>
-                      <Link to="/about">
-                        <Dropdown.Item>About</Dropdown.Item>
-                      </Link>
-                      <Link to="/about/team">
-                        <Dropdown.Item>Meet the Team</Dropdown.Item>
-                      </Link>
-                      <Link to="/about/faq">
-                        <Dropdown.Item>FAQ</Dropdown.Item>
-                      </Link>
-                      <Link to="/about/sponsors">
-                        <Dropdown.Item>Sponsors</Dropdown.Item>
-                      </Link>
-                      <Link to="/about/contact">
-                        <Dropdown.Item>Contact</Dropdown.Item>
-                      </Link>
+                      <Dropdown.Item onClick={() => this.props.push('/about')}>About</Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.props.push('/about/team')}>
+                        Meet the Team
+                      </Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.props.push('/about/faq')}>
+                        FAQ
+                      </Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.props.push('/about/sponsors')}>
+                        Sponsors
+                      </Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.props.push('/about/contact')}>
+                        Contact
+                      </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                 )}
               </Route>
               <Route path="/events">
                 {({ match }) => (
-                  <Menu.Item active={!!match}>
-                    <Link to="/events">Events</Link>
+                  <Menu.Item active={!!match} onClick={() => this.props.push('/events')}>
+                    Events
                   </Menu.Item>
                 )}
               </Route>
+              {userButton}
             </Container>
           </Menu>
 
           <Route
             path="/:page/:subpage?"
             render={({ match }) => {
-              const page = find(testdata.pages, ['id', match.url]);
-              if (!page) return <Redirect to="/home" />;
+              const page = find(routes, ['path', match.url]);
+              if (!page) {
+                return () => {
+                  this.props.push('/home');
+                };
+              }
               return (
                 <Container text>
                   <Header
@@ -74,7 +116,10 @@ export default class HeaderComponent extends React.Component {
             }}
           />
         </Segment>
+        <MessageBoxController />
       </div>
     );
   }
 }
+
+export default HeaderComponent;

@@ -1,26 +1,29 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { BrowserRouter, Redirect, Route } from 'react-router-dom';
+import { AppContainer } from 'react-hot-loader';
 
-import Content from 'app/components/Content';
-import Footer from 'app/components/Footer';
-import Header from 'app/components/Header';
+import PublicSite from './PublicSite';
 
 import './css/style.less';
 
-export default class App extends React.Component {
-  public render() {
-    return (
-      <BrowserRouter>
-        <div>
-          <Route exact path="/" render={() => <Redirect strict from="/" to="/home" />} />
-          <Header />
-          <Content />
-          <Footer />
-        </div>
-      </BrowserRouter>
+if (process.env.NODE_ENV !== 'production') {
+  // tslint:disable-next-line:variable-name
+  const render = (Component: any) => {
+    ReactDOM.render(
+      <AppContainer>
+        <Component />
+      </AppContainer>,
+      document.getElementById('app'),
     );
-  }
-}
+  };
 
-ReactDOM.render(<App />, document.getElementById('app'));
+  render(PublicSite);
+
+  if (module.hot) {
+    module.hot.accept(() => {
+      render(PublicSite);
+    });
+  }
+} else {
+  ReactDOM.render(<PublicSite />, document.getElementById('app'));
+}

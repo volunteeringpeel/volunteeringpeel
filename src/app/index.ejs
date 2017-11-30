@@ -10,38 +10,7 @@
   </title>
 </head>
 
-<body class="dimmed dimmable">
-  <div id="loading-dimmer" class="ui active page dimmer">
-    <div class="content">
-      <div class="center">
-        <div class="ui large text loader">
-          <div class="ui inverted teal header">Loading...
-            <div class="sub header">Just a moment please!</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <script>(function () {
-      var delay = 500
-      var dimmer = document.querySelector('#loading-dimmer')
-      dimmer.style.pointerEvents = 'none'
-      dimmer.style.transition = 'opacity ' + delay + 'ms linear'
-
-      function removeDimmer() {
-        dimmer.style.opacity = '0'
-
-        setTimeout(function () {
-          var dimmer = document.querySelector('#loading-dimmer')
-
-          document.body.removeChild(dimmer)
-          document.body.setAttribute("class", "")
-          window.removeEventListener('load', removeDimmer)
-        }, delay)
-      }
-
-      window.addEventListener('load', removeDimmer)
-    }())</script>
+<body>
   <div id="app"></div>
 </body>
 

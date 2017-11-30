@@ -28,4 +28,4 @@ deploy:
   skip_cleanup: true
   script: /bin/bash scripts/deploy.sh $DEPLOY_HOST $TRAVIS_BUILD_DIR
   on:
-    branch: master
+    branch: production
