@@ -25,8 +25,8 @@ interface EventModalState {
 }
 
 export default class EventModal extends React.Component<EventModalProps, EventModalState> {
-  constructor() {
-    super();
+  constructor(props: EventModalProps) {
+    super(props);
 
     this.state = {
       modalOpen: false,

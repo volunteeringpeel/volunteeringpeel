@@ -15,8 +15,8 @@ interface FAQState {
 }
 
 export default class FAQPage extends React.Component<FAQProps, FAQState> {
-  constructor() {
-    super();
+  constructor(props: FAQProps) {
+    super(props);
 
     this.state = {
       faqs: [],

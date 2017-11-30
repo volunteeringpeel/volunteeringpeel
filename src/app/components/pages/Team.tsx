@@ -14,8 +14,8 @@ interface TeamState {
 }
 
 export default class Team extends React.Component<TeamProps, TeamState> {
-  constructor() {
-    super();
+  constructor(props: TeamProps) {
+    super(props);
 
     this.state = { execs: [] };
   }

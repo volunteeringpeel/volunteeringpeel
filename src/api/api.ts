@@ -1,5 +1,4 @@
 /* tslint:disable:no-console no-var-requires */
-import * as bcrypt from 'bcrypt';
 import * as Promise from 'bluebird';
 import * as Express from 'express';
 import * as jwt from 'express-jwt';
@@ -95,9 +94,8 @@ api.get('/user/current', (req, res) => {
         return db
           .query('INSERT INTO user SET ?', newUser)
           .then(_ => ({ ...newUser, newUser: true }));
-      } else {
-        return user[0];
       }
+      return user[0];
     })
     .then(user => {
       res.success(user, user.newUser ? 201 : 200);

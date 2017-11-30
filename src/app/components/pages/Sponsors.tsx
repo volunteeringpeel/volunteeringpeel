@@ -13,8 +13,8 @@ interface SponsorsState {
 }
 
 export default class Sponsors extends React.Component<SponsorsProps, SponsorsState> {
-  constructor() {
-    super();
+  constructor(props: SponsorsProps) {
+    super(props);
 
     this.state = { sponsors: [] };
   }

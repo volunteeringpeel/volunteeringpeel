@@ -19,8 +19,8 @@ interface SiteProps {
 }
 
 export default class Site extends React.Component<SiteProps> {
-  constructor() {
-    super();
+  constructor(props: SiteProps) {
+    super(props);
 
     this.handleAuthentication = this.handleAuthentication.bind(this);
   }

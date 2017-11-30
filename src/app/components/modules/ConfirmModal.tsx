@@ -32,8 +32,8 @@ interface ConfirmModalState {
 }
 
 export default class ConfirmModal extends React.Component<ConfirmModalProps, ConfirmModalState> {
-  constructor() {
-    super();
+  constructor(props: ConfirmModalProps) {
+    super(props);
 
     this.state = { modalOpen: false };
 

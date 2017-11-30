@@ -18,8 +18,8 @@ interface EventsState {
 }
 
 export default class Events extends React.Component<EventsProps, EventsState> {
-  constructor() {
-    super();
+  constructor(props: EventsProps) {
+    super(props);
 
     this.state = { events: [] };
 
