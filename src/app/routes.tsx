@@ -16,6 +16,7 @@ import FAQ from '@app/controllers/pages/FAQ';
 import LoginCallback from '@app/controllers/pages/LoginCallback';
 import Sponsors from '@app/controllers/pages/Sponsors';
 import Team from '@app/controllers/pages/Team';
+import UserDashboard from '@app/controllers/pages/UserDashboard';
 
 interface Route extends RouteConfig {
   title: string;
@@ -23,6 +24,7 @@ interface Route extends RouteConfig {
 }
 
 const routes: Route[] = [
+  // TOP LEVEL PAGES
   {
     path: '/',
     exact: true,
@@ -36,6 +38,12 @@ const routes: Route[] = [
     title: 'Home',
     display: 'Volunteering Peel',
   },
+  {
+    path: '/events',
+    component: Events,
+    title: 'Events',
+  },
+  // ABOUT PAGES
   {
     path: '/about',
     exact: true,
@@ -59,11 +67,24 @@ const routes: Route[] = [
     title: 'Team',
     display: 'Meet the Team',
   },
+  // USER PAGES
   {
-    path: '/events',
-    component: Events,
-    title: 'Events',
+    path: '/user',
+    exact: true,
+    component: () => <Redirect strict from="/user" to="/user/dashboard" />,
+    title: 'Dashboard',
   },
+  {
+    path: '/user/dashboard',
+    component: UserDashboard,
+    title: 'Dashboard',
+  },
+  // {
+  //   path: '/user/profile',
+  //   component: UserProfile,
+  //   title: 'Profile',
+  // },
+  // UTILITY ROUTES
   {
     path: '/callback',
     component: LoginCallback,
