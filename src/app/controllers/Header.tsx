@@ -1,11 +1,16 @@
-import { addMessage, dismissMessage, getUser, getUserFailure, getUserSuccess } from '@app/actions';
-import Header from '@app/components/Header';
+// Library Imports
 import { AxiosResponse } from 'axios';
 import { LocationDescriptor } from 'history';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { push } from 'react-router-redux';
 import { Dispatch } from 'redux';
+
+// App Imports
+import { addMessage, dismissMessage, getUser, getUserFailure, getUserSuccess } from '@app/actions';
+
+// Component Imports
+import Header from '@app/components/Header';
 
 const mapStateToProps = (state: State) => ({
   user: state.user,

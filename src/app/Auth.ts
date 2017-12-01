@@ -1,7 +1,10 @@
-import { addMessage, dismissAllMessages, logout } from '@app/actions';
-import { store } from '@app/Utilities';
+// Library Imports
 import * as auth0 from 'auth0-js';
 import { push } from 'react-router-redux';
+
+// App Imports
+import { addMessage, dismissAllMessages, logout } from '@app/actions';
+import { store } from '@app/Utilities';
 
 class Auth {
   private auth0 = new auth0.WebAuth({

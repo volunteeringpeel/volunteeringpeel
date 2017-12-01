@@ -1,16 +1,18 @@
+// Library Imports
 import { history, store } from '@app/Utilities';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 
-import SiteController from '@app/controllers/SiteController';
+// Controller Imports
+import Site from '@app/controllers/Site';
 
 export default class PublicSite extends React.Component {
   public render() {
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
-          <SiteController />
+          <Site />
         </ConnectedRouter>
       </Provider>
     );

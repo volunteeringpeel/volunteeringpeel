@@ -1,5 +1,7 @@
-import { connect } from 'react-redux';
+// Library Imports
+import { connect, Dispatch } from 'react-redux';
 
+// Component Imports
 import LoginCallback from '@app/components/pages/LoginCallback';
 
 const mapStateToProps = (state: State) => ({

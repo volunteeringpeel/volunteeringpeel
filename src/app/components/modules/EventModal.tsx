@@ -1,3 +1,4 @@
+// Library Imports
 import axios from 'axios';
 import * as Promise from 'bluebird';
 import * as update from 'immutability-helper';
@@ -6,11 +7,13 @@ import * as moment from 'moment';
 import * as React from 'react';
 import { Button, Dimmer, Header, Icon, Item, Label } from 'semantic-ui-react';
 
+// App Imports
+import { listify, pluralize } from '@app/Utilities';
+
+// Component Imports
 import Modal from '@app/components/blocks/Modal';
 import ProgressColor from '@app/components/blocks/ProgressColor';
 import ConfirmModal from '@app/components/modules/ConfirmModal';
-
-import { listify, pluralize } from '@app/Utilities';
 
 interface EventModalProps {
   ableToRegister: string | true;

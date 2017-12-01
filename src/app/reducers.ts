@@ -1,3 +1,12 @@
+// Library Imports
+import { AxiosResponse } from 'axios';
+import * as Promise from 'bluebird';
+import * as update from 'immutability-helper';
+import { filter, maxBy } from 'lodash-es';
+import { combineReducers } from 'redux';
+import { Action, handleAction, handleActions } from 'redux-actions';
+
+// App Imports
 import {
   ADD_MESSAGE,
   addMessage,
@@ -10,12 +19,6 @@ import {
   LOGOUT,
 } from '@app/actions';
 import { store } from '@app/Utilities';
-import { AxiosResponse } from 'axios';
-import * as Promise from 'bluebird';
-import * as update from 'immutability-helper';
-import { filter, maxBy } from 'lodash-es';
-import { combineReducers } from 'redux';
-import { Action, handleAction, handleActions } from 'redux-actions';
 
 const loading = handleAction<boolean, boolean>(
   LOADING,

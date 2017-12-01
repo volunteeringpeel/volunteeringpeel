@@ -1,17 +1,22 @@
-import { addMessage } from '@app/actions';
-import Auth from '@app/Auth';
-import routes from '@app/routes';
-import { history, store } from '@app/Utilities';
+// Library Imports
 import axios, { AxiosError } from 'axios';
 import * as Promise from 'bluebird';
 import * as React from 'react';
 import { match, Route } from 'react-router';
 import { renderRoutes } from 'react-router-config';
 
-import Footer from '@app/components/Footer';
-import HeaderController from '@app/controllers/HeaderController';
+// App Imports
+import { addMessage } from '@app/actions';
+import Auth from '@app/Auth';
+import routes from '@app/routes';
+import { history, store } from '@app/Utilities';
 
+// Component Imports
+import Footer from '@app/components/Footer';
 import LoadingDimmer from '@app/components/modules/LoadingDimmer';
+
+// Controller Imports
+import Header from '@app/controllers/Header';
 
 interface SiteProps {
   loading: boolean;
@@ -39,7 +44,7 @@ export default class Site extends React.Component<SiteProps> {
     return (
       <div>
         <LoadingDimmer loading={this.props.loading} />
-        <HeaderController />
+        <Header />
         {renderRoutes(routes)}
         <Footer />
       </div>

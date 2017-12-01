@@ -1,7 +1,11 @@
+// Library Imports
 import { connect } from 'react-redux';
 
-import EventModal from '@app/components/modules/EventModal';
+// App Imports
 import { userAbleToRegister } from '@app/selectors';
+
+// Component Imports
+import EventModal from '@app/components/modules/EventModal';
 
 const mapStateToProps = (state: State) => ({
   ableToRegister: userAbleToRegister(state),

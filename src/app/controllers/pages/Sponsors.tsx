@@ -1,12 +1,16 @@
+// Library Imports
 import { connect, Dispatch } from 'react-redux';
 
+// App Imports
 import { loading } from '@app/actions';
-import FAQ from '@app/components/pages/FAQ';
+
+// Component Imports
+import Events from '@app/components/pages/Events';
 
 const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   loading: (status: boolean) => dispatch(loading(status)),
 });
 
-const connectedFAQ = connect(null, mapDispatchToProps)(FAQ);
+const connectedEvents = connect(null, mapDispatchToProps)(Events);
 
-export default connectedFAQ;
+export default connectedEvents;

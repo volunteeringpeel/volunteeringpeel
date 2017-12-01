@@ -1,3 +1,4 @@
+// Library Imports
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -115,9 +116,7 @@ export default class Homepage extends React.Component {
               </Grid.Column>
               <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
                 <Header as="h3">
-                  Follow us on Twitter at <a href="http://www.twitter.com/volunpeel">
-                    @VolunPeel
-                  </a>{' '}
+                  Follow us on Twitter at <a href="http://www.twitter.com/volunpeel">@VolunPeel</a>{' '}
                   for updates.
                 </Header>
                 <a

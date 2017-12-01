@@ -91,9 +91,10 @@ api.get('/user/current', (req, res) => {
           email: req.user.email,
           role_id: 1,
         };
-        return db
-          .query('INSERT INTO user SET ?', newUser)
-          .then(_ => ({ ...newUser, newUser: true }));
+        // return db
+        //   .query('INSERT INTO user SET ?', newUser)
+        //   .then(_ => ({ ...newUser, newUser: true }));
+        return { ...newUser, newUser: true };
       }
       return user[0];
     })

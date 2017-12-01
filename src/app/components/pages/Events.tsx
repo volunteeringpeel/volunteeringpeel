@@ -1,3 +1,4 @@
+// Library Imports
 import axios from 'axios';
 import * as Promise from 'bluebird';
 import { map, sumBy } from 'lodash-es';
@@ -6,8 +7,11 @@ import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Button, Container, Item, Segment } from 'semantic-ui-react';
 
+// Component Imports
 import ProgressColor from '@app/components/blocks/ProgressColor';
-import EventModalController from '@app/controllers/modules/EventModalController';
+
+// Controller Imports
+import EventModal from '@app/controllers/modules/EventModal';
 
 interface EventsProps {
   loading: (status: boolean) => any;

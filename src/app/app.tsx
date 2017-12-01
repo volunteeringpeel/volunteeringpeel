@@ -1,10 +1,11 @@
+// Library Imports
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 
-import PublicSite from './PublicSite';
-
-import './css/style.less';
+// App Imports
+import '@app/css/style.less';
+import PublicSite from '@app/PublicSite';
 
 if (process.env.NODE_ENV !== 'production') {
   // tslint:disable-next-line:variable-name

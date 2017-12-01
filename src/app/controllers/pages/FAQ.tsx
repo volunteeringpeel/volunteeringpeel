@@ -1,12 +1,16 @@
+// Library Imports
 import { connect, Dispatch } from 'react-redux';
 
+// App Imports
 import { loading } from '@app/actions';
-import Team from '@app/components/pages/Team';
+
+// Component Imports
+import FAQ from '@app/components/pages/FAQ';
 
 const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   loading: (status: boolean) => dispatch(loading(status)),
 });
 
-const connectedTeam = connect(null, mapDispatchToProps)(Team);
+const connectedFAQ = connect(null, mapDispatchToProps)(FAQ);
 
-export default connectedTeam;
+export default connectedFAQ;

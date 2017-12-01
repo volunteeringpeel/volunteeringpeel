@@ -1,7 +1,9 @@
+// Library Imports
 import * as Promise from 'bluebird';
 import * as React from 'react';
 import { Button, Header, Icon } from 'semantic-ui-react';
 
+// Component Imports
 import Modal from '@app/components/blocks/Modal';
 
 interface ConfirmModalProps {

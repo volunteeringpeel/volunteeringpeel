@@ -1,3 +1,10 @@
+// Library Imports
+import { AxiosError, AxiosResponse } from 'axios';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import { Dispatch } from 'redux';
+
+// App Imports
 import {
   addMessage,
   dismissMessage,
@@ -7,10 +14,6 @@ import {
   logout,
 } from '@app/actions';
 import Site from '@app/components/Site';
-import { AxiosError, AxiosResponse } from 'axios';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
-import { Dispatch } from 'redux';
 
 const mapStateToProps = (state: State) => ({
   loading: state.loading,

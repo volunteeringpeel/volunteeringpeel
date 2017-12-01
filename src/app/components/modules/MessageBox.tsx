@@ -1,11 +1,14 @@
-import { dismissMessage } from '@app/actions';
-import Auth from '@app/Auth';
+// Library Imports
 import { map } from 'lodash-es';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Action } from 'redux-actions';
 import { Container, Message, Segment } from 'semantic-ui-react';
+
+// App Imports
+import { dismissMessage } from '@app/actions';
+import Auth from '@app/Auth';
 
 interface MessageBoxProps {
   as?: any;

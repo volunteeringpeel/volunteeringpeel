@@ -1,7 +1,12 @@
-import { dismissMessage } from '@app/actions';
-import MessageBox from '@app/components/modules/MessageBox';
+// Library Imports
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+
+// App Imports
+import { dismissMessage } from '@app/actions';
+
+// Component Inputs
+import MessageBox from '@app/components/modules/MessageBox';
 
 const mapStateToProps = (state: State) => ({
   messages: state.messages,

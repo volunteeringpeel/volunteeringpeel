@@ -1,13 +1,16 @@
-import Auth from '@app/Auth';
+// Library Imports
 import { LocationDescriptor } from 'history';
 import { find, map } from 'lodash-es';
 import * as React from 'react';
 import { Route } from 'react-router-dom';
 import { Container, Dropdown, Header, Icon, Menu, Message, Segment } from 'semantic-ui-react';
 
+// App Imports
+import Auth from '@app/Auth';
 import routes from '@app/routes';
 
-import MessageBoxController from '@app/controllers/modules/MessageBoxController';
+// Controller Imports
+import MessageBox from '@app/controllers/modules/MessageBox';
 
 interface HeaderComponentProps {
   user: UserState;
@@ -116,7 +119,7 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
             }}
           />
         </Segment>
-        <MessageBoxController />
+        <MessageBox />
       </div>
     );
   }

@@ -1,16 +1,21 @@
+// Library Imports
 import * as React from 'react';
 import { RouteConfig } from 'react-router-config';
 import { Redirect } from 'react-router-dom';
 
-import PublicSite from './PublicSite';
+// App Imports
+import PublicSite from '@app/PublicSite';
 
+// Component Imports
 import About from '@app/components/pages/About';
 import Homepage from '@app/components/pages/Homepage';
-import EventsController from '@app/controllers/pages/EventsController';
-import FAQController from '@app/controllers/pages/FAQController';
-import LoginCallbackController from '@app/controllers/pages/LoginCallbackController';
-import SponsorsController from '@app/controllers/pages/SponsorsController';
-import TeamController from '@app/controllers/pages/TeamController';
+
+// Controller Imports
+import Events from '@app/controllers/pages/Events';
+import FAQ from '@app/controllers/pages/FAQ';
+import LoginCallback from '@app/controllers/pages/LoginCallback';
+import Sponsors from '@app/controllers/pages/Sponsors';
+import Team from '@app/controllers/pages/Team';
 
 interface Route extends RouteConfig {
   title: string;
@@ -39,29 +44,29 @@ const routes: Route[] = [
   },
   {
     path: '/about/faq',
-    component: FAQController,
+    component: FAQ,
     title: 'FAQ',
     display: 'Frequently Asked Questions',
   },
   {
     path: '/about/sponsors',
-    component: SponsorsController,
+    component: Sponsors,
     title: 'Sponsors',
   },
   {
     path: '/about/team',
-    component: TeamController,
+    component: Team,
     title: 'Team',
     display: 'Meet the Team',
   },
   {
     path: '/events',
-    component: EventsController,
+    component: Events,
     title: 'Events',
   },
   {
     path: '/callback',
-    component: LoginCallbackController,
+    component: LoginCallback,
     title: 'Logging in...',
   },
   // TODO: Contact page
