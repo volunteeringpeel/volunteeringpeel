@@ -62,6 +62,11 @@ module.exports = merge(common, {
     ],
   },
 
+  output: {
+    // name them app.js or admin.js
+    filename: '[name].js',
+  },
+
   // enable hot-module thingies.
   plugins: [new webpack.HotModuleReplacementPlugin()],
 });

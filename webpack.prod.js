@@ -58,7 +58,14 @@ module.exports = merge(common, {
     ],
   },
 
+  output: {
+    // name them app.version.js or admin.version.js
+    filename: '[name].[chunkhash].js',
+  },
+
   plugins: [
+    // use special module ids for caching
+    new webpack.HashedModuleIdsPlugin(),
     new ExtractTextPlugin('style.css'), // make sure css is separate from js
     new webpack.DefinePlugin({
       'process.env': {

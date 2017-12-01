@@ -68,8 +68,6 @@ module.exports = {
   output: {
     // output things to /dist/app
     path: path.resolve(__dirname, 'dist', 'app'),
-    // name them app.version.js or admin.version.js
-    filename: '[name].[chunkhash].js',
     // everything is relative to /
     publicPath: '/',
   },
@@ -77,8 +75,6 @@ module.exports = {
   plugins: [
     // delete old files
     new CleanWebpackPlugin([path.resolve(__dirname, 'dist', 'app')]),
-    // use special module ids for caching
-    new webpack.HashedModuleIdsPlugin(),
     // extract huge libraries out of main file
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
