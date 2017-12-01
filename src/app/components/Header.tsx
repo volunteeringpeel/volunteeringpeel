@@ -61,7 +61,7 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
     return (
       <div>
         <Segment inverted textAlign="center" vertical style={{ paddingBottom: '1em' }}>
-          <Menu inverted size="large" widths={4}>
+          <Menu inverted stackable size="large" widths={4}>
             <Container textAlign="center">
               <Route path="/home">
                 {({ match }) => (
