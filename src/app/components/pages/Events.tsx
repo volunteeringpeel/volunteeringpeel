@@ -98,7 +98,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                         size="small"
                       />
                       <br />
-                      <EventModalController event={event} refresh={this.refresh} />
+                      <EventModal event={event} refresh={this.refresh} />
                     </Item.Extra>
                   </Item.Content>
                 </Item>

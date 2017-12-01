@@ -6,9 +6,6 @@ import { withRouter } from 'react-router';
 import { push } from 'react-router-redux';
 import { Dispatch } from 'redux';
 
-// App Imports
-import { addMessage, dismissMessage, getUser, getUserFailure, getUserSuccess } from '@app/actions';
-
 // Component Imports
 import Header from '@app/components/Header';
 
