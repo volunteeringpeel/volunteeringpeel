@@ -88,10 +88,9 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               // Calculate if event is full based on spots (sum up shift spots)
               const spotsLeft = shift.max_spots - shift.spots_taken;
               const shiftFull = spotsLeft === 0;
-              // This right here is the world's biggest hack adding birthday to time so that
-              // Javascript will accept it as a datetime
-              const startTime = moment(`2017-03-16 ${shift.start_time}`).format('hh:mm A');
-              const endTime = moment(`2017-03-16 ${shift.end_time}`).format('hh:mm A');
+              // Parse dates
+              const startTime = moment.utc(`${shift.start_time}`, 'HH:mm:ss').format('hh:mm A');
+              const endTime = moment.utc(`${shift.end_time}`, 'HH:mm:ss').format('hh:mm A');
               // Has shift already been signed up for
               const selected = includes(this.state.selectedShifts, shift.shift_num);
 
