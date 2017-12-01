@@ -1,6 +1,8 @@
+const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const LessPluginAutoPrefix = require('less-plugin-autoprefix');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
@@ -59,11 +61,16 @@ module.exports = merge(common, {
   },
 
   output: {
-    // name them app.version.js or admin.version.js
+    // output things to /dist/app
+    path: path.resolve(__dirname, 'dist', 'app'),
+    // name them abcdef.version.js
     filename: '[name].[chunkhash].js',
+    // everything is relative to /
+    publicPath: '/',
   },
-
   plugins: [
+    // delete old files
+    new CleanWebpackPlugin([path.resolve(__dirname, 'dist', 'app')]),
     // use special module ids for caching
     new webpack.HashedModuleIdsPlugin(),
     new ExtractTextPlugin('style.css'), // make sure css is separate from js

@@ -13,6 +13,7 @@ import 'babel-polyfill';
 const app = express();
 
 // If dev do webpack things
+let compiler: any = null;
 if (process.env.NODE_ENV !== 'production' && !process.env.NO_REACT) {
   // Use require so that it doesn't get imported unless necessary
   const webpack = require('webpack');
@@ -20,7 +21,7 @@ if (process.env.NODE_ENV !== 'production' && !process.env.NO_REACT) {
   const webpackDev = require('webpack-dev-middleware');
   const dashboardPlugin = require('webpack-dashboard/plugin');
   const webpackConfig = require('../webpack.dev.js');
-  const compiler = webpack(webpackConfig);
+  compiler = webpack(webpackConfig);
 
   compiler.apply(new dashboardPlugin());
 
@@ -56,8 +57,20 @@ app.use(express.static(path.resolve(appDir)));
 app.use('/api', api);
 
 // React
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(appDir, 'index.html'));
+app.get('*', (req, res, next) => {
+  if (compiler) {
+    const filename = path.join(compiler.outputPath, 'index.html');
+    compiler.outputFileSystem.readFile(filename, (err: any, result: any) => {
+      if (err) {
+        return next(err);
+      }
+      res.set('content-type', 'text/html');
+      res.send(result);
+      res.end();
+    });
+  } else {
+    res.sendFile(path.resolve(appDir, 'index.html'));
+  }
 });
 
 // Listen

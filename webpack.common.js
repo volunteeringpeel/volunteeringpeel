@@ -1,6 +1,5 @@
 const path = require('path');
 const webpack = require('webpack');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -65,16 +64,7 @@ module.exports = {
     ],
   },
 
-  output: {
-    // output things to /dist/app
-    path: path.resolve(__dirname, 'dist', 'app'),
-    // everything is relative to /
-    publicPath: '/',
-  },
-
   plugins: [
-    // delete old files
-    new CleanWebpackPlugin([path.resolve(__dirname, 'dist', 'app')]),
     // extract huge libraries out of main file
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
@@ -87,15 +77,15 @@ module.exports = {
     new HTMLWebpackPlugin({
       title: 'Volunteering Peel',
       chunks: ['runtime', 'vendor', 'app'],
-      filename: 'index.html',
+      filename: './index.html',
       template: 'index.ejs',
     }),
-    new HTMLWebpackPlugin({
-      title: 'Volunteering Peel Admin',
-      chunks: ['runtime', 'vendor', 'admin'],
-      filename: 'admin.html',
-      template: 'index.ejs',
-    }),
+    // new HTMLWebpackPlugin({
+    //   title: 'Volunteering Peel Admin',
+    //   chunks: ['runtime', 'vendor', 'admin'],
+    //   filename: 'admin.html',
+    //   template: 'index.ejs',
+    // }),
     // delete some excess shit (see https://github.com/moment/moment/issues/2517)
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
   ],

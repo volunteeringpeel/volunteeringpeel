@@ -1,3 +1,4 @@
+const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
@@ -63,8 +64,12 @@ module.exports = merge(common, {
   },
 
   output: {
-    // name them app.js or admin.js
+    // output things to /dist/app
+    path: path.resolve(__dirname, 'dist', 'app'),
+    // name them abcdef.js
     filename: '[name].js',
+    // everything is relative to /
+    publicPath: '/',
   },
 
   // enable hot-module thingies.
