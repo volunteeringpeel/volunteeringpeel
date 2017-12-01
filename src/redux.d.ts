@@ -1,6 +1,12 @@
+interface UserData {
+  user: User;
+  new: boolean;
+  events: any[];
+}
+
 interface UserState {
   status: 'in' | 'out' | 'loading';
-  user: User;
+  user: UserData;
 }
 
 interface State {

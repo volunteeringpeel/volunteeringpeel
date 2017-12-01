@@ -27,7 +27,9 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
           <Dropdown.Menu>
             <Dropdown.Header
               icon="user"
-              content={`${this.props.user.user.first_name} ${this.props.user.user.last_name}`}
+              content={`${this.props.user.user.user.first_name} ${
+                this.props.user.user.user.last_name
+              }`}
             />
             <Dropdown.Divider />
             <Dropdown.Item onClick={Auth.logout}>Logout</Dropdown.Item>

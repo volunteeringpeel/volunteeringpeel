@@ -69,6 +69,7 @@ api.use((err: any, req: Express.Request, res: Express.Response, next: Express.Ne
 // Get current user
 api.get('/user/current', (req, res) => {
   let db: mysql.PoolConnection;
+  const out: { user: User; new: boolean; events: any[] } = { user: null, new: false, events: null };
   pool
     .getConnection()
     .then(conn => {
@@ -89,17 +90,41 @@ api.get('/user/current', (req, res) => {
           // so if last name isn't a thing, make it a blank string
           last_name: last_name || '',
           email: req.user.email,
+          phone_1: null as string,
+          phone_2: null as string,
           role_id: 1,
         };
+        // Don't insert for now. Uncomment and delete Promise.resolve to enable INSERT.
         // return db
         //   .query('INSERT INTO user SET ?', newUser)
-        //   .then(_ => ({ ...newUser, newUser: true }));
-        return { ...newUser, newUser: true };
+        return Promise.resolve().then(events => {
+          out.user = newUser;
+          out.new = true;
+          return;
+        });
       }
-      return user[0];
+      return db
+        .query(
+          `SELECT
+              e.event_id, e.name, e.address, e.transport, e.description,
+              s.shift_id, s.shift_num,
+              s.date, s.start_time, s.end_time, s.hours,
+              s.meals, s.notes
+            FROM vw_shift s
+            JOIN event e ON e.event_id = s.event_id
+            JOIN user u
+            JOIN user_shift us ON us.shift_id = s.shift_id
+              AND us.user_id = u.user_id
+            WHERE u.email = ?`,
+          [req.user.email],
+        )
+        .then(events => {
+          out.user = user[0];
+          out.events = events;
+        });
     })
-    .then(user => {
-      res.success(user, user.newUser ? 201 : 200);
+    .then(() => {
+      res.success(out, out.new ? 201 : 200);
       db.release();
     })
     .catch(error => {
@@ -154,8 +179,8 @@ api.get('/public/faq', (req, res) => {
       db.release();
     })
     .catch(error => {
-      if (db && db.end) db.release();
       res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
     });
 });
 
@@ -173,8 +198,8 @@ api.get('/public/execs', (req, res) => {
       db.release();
     })
     .catch(error => {
-      if (db && db.end) db.release();
       res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
     });
 });
 
@@ -192,8 +217,8 @@ api.get('/public/sponsors', (req, res) => {
       db.release();
     })
     .catch(error => {
-      if (db && db.end) db.release();
       res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
     });
 });
 
@@ -213,7 +238,7 @@ const eventQuery = (req: Express.Request, res: Express.Response, authorized: boo
           ? // Query if logged in
             `SELECT
               s.shift_id, s.shift_num,
-              s.date, s.start_time, s.end_time,
+              s.date, s.start_time, s.end_time, s.hours,
               s.meals, s.max_spots, s.spots_taken, s.notes,
               (CASE WHEN us.user_id IS NULL THEN 0 ELSE 1 END) AS signed_up
             FROM vw_shift s
@@ -223,7 +248,7 @@ const eventQuery = (req: Express.Request, res: Express.Response, authorized: boo
           : // Query if not logged in
             `SELECT
               s.shift_id, s.shift_num,
-              s.date, s.start_time, s.end_time,
+              s.date, s.start_time, s.end_time, s.hours,
               s.meals, s.max_spots, s.spots_taken, s.notes,
               0 signed_up
             FROM vw_shift s
@@ -248,8 +273,8 @@ const eventQuery = (req: Express.Request, res: Express.Response, authorized: boo
       db.release();
     })
     .catch(error => {
-      if (db && db.end) db.release();
       res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
     });
 };
 
@@ -271,8 +296,8 @@ api.post('/signup', (req, res) => {
       db.release();
     })
     .catch(error => {
-      if (db && db.end) db.release();
       res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
     });
 });
 

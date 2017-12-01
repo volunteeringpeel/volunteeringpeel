@@ -25,7 +25,7 @@ const loading = handleAction<boolean, boolean>(
   (state: boolean, action: Action<boolean>): boolean => {
     return action.payload;
   },
-  true,
+  false,
 );
 
 const user = handleActions<UserState, any>(
@@ -35,7 +35,7 @@ const user = handleActions<UserState, any>(
     },
     [GET_USER_SUCCESS]: (
       state: UserState,
-      action: Action<AxiosResponse<APIDataSuccess<User>>>,
+      action: Action<AxiosResponse<APIDataSuccess<UserData>>>,
     ): UserState => {
       return { ...state, status: 'in', user: action.payload.data.data };
     },
