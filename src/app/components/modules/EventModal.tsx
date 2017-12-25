@@ -45,7 +45,15 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
 
   public submit(): PromiseLike<any> {
     return Promise.resolve(this.setState({ submitting: true }))
-      .then(() => axios.post(`/api/signup`, { shifts: this.state.selectedShifts }))
+      .then(() =>
+        axios.post(
+          `/api/signup`,
+          { shifts: this.state.selectedShifts },
+          {
+            headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+          },
+        ),
+      )
       .then(this.props.refresh)
       .then(() => this.setState({ selectedShifts: [], submitting: false }));
   }

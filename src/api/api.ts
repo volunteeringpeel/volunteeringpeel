@@ -298,10 +298,13 @@ api.post('/signup', (req, res) => {
     .getConnection()
     .then(conn => {
       db = conn;
-      const values = (req.body.shifts as number[]).map(shift => [req.user.email, shift]);
+      return db.query('SELECT user_id FROM user WHERE email = ?', [req.user.email]);
+    })
+    .then(user => {
+      const values = (req.body.shifts as number[]).map(shift => [user[0].user_id, shift]);
       return db.query('INSERT INTO user_shift (user_id, shift_id) VALUES ?', [values]);
     })
-    .then(execs => {
+    .then(() => {
       res.success('Signed up successfully');
       db.release();
     })
