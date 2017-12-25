@@ -4,7 +4,7 @@ import { push } from 'react-router-redux';
 
 // App Imports
 import { addMessage, dismissAllMessages, logout } from '@app/actions';
-import { store } from '@app/Utilities';
+import { loadUser, store } from '@app/Utilities';
 
 class Auth {
   private auth0 = new auth0.WebAuth({
@@ -32,6 +32,7 @@ class Auth {
         this.setSession(authResult);
         store.dispatch(dismissAllMessages());
         store.dispatch(addMessage({ message: 'Logged in', severity: 'positive' }));
+        loadUser(store.dispatch);
       } else if (err) {
         store.dispatch(
           addMessage({
@@ -52,8 +53,6 @@ class Auth {
     localStorage.setItem('access_token', authResult.accessToken);
     localStorage.setItem('id_token', authResult.idToken);
     localStorage.setItem('expires_at', expiresAt);
-    // navigate to the home route
-    store.dispatch(push('/home'));
   }
 
   public logout() {

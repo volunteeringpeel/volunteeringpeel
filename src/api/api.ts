@@ -124,6 +124,8 @@ api.get('/user/current', (req, res) => {
         });
     })
     .then(() => {
+      // output an empty array if no events are found
+      out.events = out.events || [];
       res.success(out, out.new ? 201 : 200);
       db.release();
     })

@@ -24,30 +24,18 @@ interface SiteProps {
 }
 
 export default class Site extends React.Component<SiteProps> {
-  constructor(props: SiteProps) {
-    super(props);
-
-    this.handleAuthentication = this.handleAuthentication.bind(this);
-  }
-
   public componentDidMount() {
     this.props.loadUser();
   }
 
-  public handleAuthentication(nextState: any) {
-    if (/access_token|id_token|error/.test(nextState.location.hash)) {
-      Auth.handleAuthentication(this.props.loadUser);
-    }
-  }
-
   public render() {
     return (
-      <div>
+      <>
         <LoadingDimmer loading={this.props.loading} />
         <Header />
         {renderRoutes(routes)}
         <Footer />
-      </div>
+      </>
     );
   }
 }

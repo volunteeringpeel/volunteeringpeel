@@ -28,6 +28,7 @@ const loading = handleAction<boolean, boolean>(
   false,
 );
 
+const defaultUser: UserState = { user: { user: null, new: false, events: [] }, status: 'out' };
 const user = handleActions<UserState, any>(
   {
     [GET_USER]: (state: UserState, action: Action<Promise<any>>): UserState => {
@@ -37,19 +38,19 @@ const user = handleActions<UserState, any>(
       state: UserState,
       action: Action<AxiosResponse<APIDataSuccess<UserData>>>,
     ): UserState => {
-      return { ...state, status: 'in', user: action.payload.data.data };
+      return { status: 'in', user: action.payload.data.data };
     },
     [GET_USER_FAILURE]: (
       state: UserState,
       action: Action<AxiosResponse<APIDataError>>,
     ): UserState => {
-      return { ...state, user: null, status: 'out' };
+      return defaultUser;
     },
     [LOGOUT]: (state: UserState, action: Action<void>): UserState => {
-      return { ...state, user: null, status: 'out' };
+      return defaultUser;
     },
   },
-  { user: null, status: 'out' },
+  defaultUser,
 );
 
 const messages = handleActions<Message[], any>(

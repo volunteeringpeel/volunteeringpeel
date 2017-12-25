@@ -1,8 +1,10 @@
+import { AxiosError, AxiosResponse } from 'axios';
 import { createBrowserHistory } from 'history';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
-import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
+import { applyMiddleware, combineReducers, compose, createStore, Dispatch, Store } from 'redux';
 import reduxThunk from 'redux-thunk';
 
+import { addMessage, getUser, getUserFailure, getUserSuccess, logout } from '@app/actions';
 import * as reducers from '@app/reducers';
 
 export function listify(list: string[] | number[], prefix: string = ''): string {
@@ -24,6 +26,52 @@ export function listify(list: string[] | number[], prefix: string = ''): string 
 
 export function pluralize(noun: string, number: number): string {
   return noun + (number !== 1 ? 's' : '');
+}
+
+export function loadUser(dispatch: Dispatch<State>) {
+  // Check whether the current time is past the token's expiry time
+  const expiresAt = JSON.parse(localStorage.getItem('expires_at'));
+  const isValid = new Date().getTime() < expiresAt;
+  if (!isValid) {
+    dispatch(logout());
+    dispatch(
+      addMessage({
+        message: 'Session expired',
+        more: 'Please log back in',
+        severity: 'negative',
+      }),
+    );
+    return;
+  }
+
+  // fetch user from token (if server deems it's valid token)
+  dispatch(getUser(localStorage.getItem('id_token')))
+    .payload.then(response => {
+      if (response.data.status === 'success') {
+        dispatch(getUserSuccess(response as AxiosResponse<APIDataSuccess<User>>));
+      } else {
+        localStorage.removeItem('id_token');
+        dispatch(getUserFailure(response as AxiosResponse<APIDataError>));
+        dispatch(
+          addMessage({
+            message: response.data.error,
+            more: response.data.details,
+            severity: 'negative',
+          }),
+        );
+      }
+    })
+    .catch((error: AxiosError) => {
+      localStorage.removeItem('id_token');
+      dispatch(getUserFailure(error.response));
+      dispatch(
+        addMessage({
+          message: error.response.data.error,
+          more: error.response.data.details,
+          severity: 'negative',
+        }),
+      );
+    });
 }
 
 export const history = createBrowserHistory();
