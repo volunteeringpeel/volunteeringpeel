@@ -46,9 +46,9 @@ export default class Events extends React.Component<EventsProps, EventsState> {
         return axios.get('/api/public/events');
       })
       .then(res => {
-        this.props.loadUser();
-        this.props.loading(false);
         this.setState({ events: res.data.data });
+        this.props.loading(false);
+        this.props.loadUser();
       });
   }
 

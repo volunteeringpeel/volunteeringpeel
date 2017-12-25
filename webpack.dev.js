@@ -12,8 +12,8 @@ module.exports = merge(common, {
   // fix things by adding a bunch of middleware
   // (stuff that makes it better, but slower so we don't include it in production)
   entry: {
-    app: ['react-hot-loader/patch', 'webpack-hot-middleware/client', './app.tsx'],
-    admin: ['react-hot-loader/patch', 'webpack-hot-middleware/client', './admin.tsx'],
+    app: ['webpack-hot-middleware/client', './app.tsx'],
+    admin: ['webpack-hot-middleware/client', './admin.tsx'],
   },
 
   // obviously need this for debugging
@@ -28,7 +28,13 @@ module.exports = merge(common, {
         exclude: [/node_modules/],
         use: [
           // use hot loader (so no need for server restart)
-          { loader: 'react-hot-loader/webpack' },
+          {
+            loader: 'babel-loader',
+            options: {
+              babelrc: true,
+              plugins: ['react-hot-loader/babel'],
+            },
+          },
           // and load normally, but with more awesome.
           {
             loader: 'awesome-typescript-loader',
