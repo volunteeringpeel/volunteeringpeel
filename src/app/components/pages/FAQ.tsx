@@ -49,6 +49,7 @@ export default class FAQPage extends React.Component<FAQProps, FAQState> {
                 content: {
                   content: <ReactMarkdown source={question.answer} />,
                 },
+                key: question.question,
               }))}
             />
           </Container>
