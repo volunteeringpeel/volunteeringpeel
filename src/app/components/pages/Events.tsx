@@ -15,6 +15,7 @@ import EventModal from '@app/controllers/modules/EventModal';
 
 interface EventsProps {
   loading: (status: boolean) => any;
+  loadUser: () => void;
 }
 
 interface EventsState {
@@ -45,6 +46,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
         return axios.get('/api/public/events');
       })
       .then(res => {
+        this.props.loadUser();
         this.props.loading(false);
         this.setState({ events: res.data.data });
       });

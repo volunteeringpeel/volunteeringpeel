@@ -6,7 +6,7 @@ select
   s.shift_num,
   s.start_time,
   s.end_time,
-  timediff(end_time, start_time) as hours,
+  timediff(s.end_time, s.start_time) as hours,
   s.meals,
   s.max_spots,
   sum(case when us.shift_id is null then 0 else 1 end) as spots_taken,
