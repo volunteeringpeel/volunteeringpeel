@@ -10,6 +10,9 @@ interface UserDashboardProps {
 }
 
 export default class UserDashboard extends React.Component<UserDashboardProps> {
+  // take a number and pad it with one zero if it needs to be (i.e. 1 => 01, 11 => 11, 123 => 123)
+  public pad = (number: number) => (number < 10 ? ('00' + number).slice(-2) : number.toString());
+
   public render() {
     if (this.props.user.status !== 'in') return null;
     const totalHours = reduce(
@@ -17,7 +20,7 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
       (acc: moment.Duration, event) => acc.add(event.hours),
       moment.duration(),
     );
-    const hours = `${Math.floor(totalHours.asHours())}:${totalHours.minutes()}`;
+    const hours = `${this.pad(Math.floor(totalHours.asHours()))}:${this.pad(totalHours.minutes())}`;
     return (
       <Container>
         <Segment style={{ padding: '2em 0' }} vertical>
@@ -31,38 +34,46 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
         </Segment>
         <Segment style={{ padding: '2em 0' }} vertical>
           <Header as="h2" content="Events" />
-          <Table>
-            <Table.Body>
-              <Table.Row>
-                <Table.Cell>First</Table.Cell>
-                <Table.Cell>Cell</Table.Cell>
-                <Table.Cell>Cell</Table.Cell>
-              </Table.Row>
-              <Table.Row>
-                <Table.Cell>Cell</Table.Cell>
-                <Table.Cell>Cell</Table.Cell>
-                <Table.Cell>Cell</Table.Cell>
-              </Table.Row>
-              <Table.Row>
-                <Table.Cell>Cell</Table.Cell>
-                <Table.Cell>Cell</Table.Cell>
-                <Table.Cell>Cell</Table.Cell>
-              </Table.Row>
-            </Table.Body>
-          </Table>
+          {this.props.user.user.events.length > 0 ? (
+            <>
+              <Table>
+                <Table.Body>
+                  <Table.Row>
+                    <Table.Cell>First</Table.Cell>
+                    <Table.Cell>Cell</Table.Cell>
+                    <Table.Cell>Cell</Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>Cell</Table.Cell>
+                    <Table.Cell>Cell</Table.Cell>
+                    <Table.Cell>Cell</Table.Cell>
+                  </Table.Row>
+                  <Table.Row>
+                    <Table.Cell>Cell</Table.Cell>
+                    <Table.Cell>Cell</Table.Cell>
+                    <Table.Cell>Cell</Table.Cell>
+                  </Table.Row>
+                </Table.Body>
+              </Table>
 
-          <Menu pagination>
-            <Menu.Item as="a" icon>
-              <Icon name="chevron left" />
-            </Menu.Item>
-            <Menu.Item as="a">1</Menu.Item>
-            <Menu.Item as="a">2</Menu.Item>
-            <Menu.Item as="a">3</Menu.Item>
-            <Menu.Item as="a">4</Menu.Item>
-            <Menu.Item as="a" icon>
-              <Icon name="chevron right" />
-            </Menu.Item>
-          </Menu>
+              <Menu pagination>
+                <Menu.Item as="a" icon>
+                  <Icon name="chevron left" />
+                </Menu.Item>
+                <Menu.Item as="a">1</Menu.Item>
+                <Menu.Item as="a">2</Menu.Item>
+                <Menu.Item as="a">3</Menu.Item>
+                <Menu.Item as="a">4</Menu.Item>
+                <Menu.Item as="a" icon>
+                  <Icon name="chevron right" />
+                </Menu.Item>
+              </Menu>
+            </>
+          ) : (
+            <>
+              No events found 😢<br />Sign up for an event!
+            </>
+          )}
         </Segment>
       </Container>
     );
