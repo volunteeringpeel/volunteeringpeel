@@ -43,7 +43,7 @@ module.exports = merge(common, {
           fallback: 'style-loader',
           use: [
             // use css. also sourcemap.
-            { loader: 'css-loader', options: { sourceMap: true } },
+            { loader: 'css-loader', options: { minimize: true, sourceMap: true } },
             {
               // parse less for css-loader
               loader: 'less-loader',
