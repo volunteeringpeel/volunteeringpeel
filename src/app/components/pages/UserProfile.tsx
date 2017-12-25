@@ -4,6 +4,7 @@ import { LocationDescriptor } from 'history';
 import { reduce } from 'lodash-es';
 import * as moment from 'moment';
 import * as React from 'react';
+import { Redirect } from 'react-router';
 import { RouterAction } from 'react-router-redux';
 import { Container, Form, Header, Icon, InputOnChangeData, Menu, Segment } from 'semantic-ui-react';
 
@@ -27,12 +28,23 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
     super(props);
 
     this.state = {
+      first_name: '',
+      last_name: '',
+      phone_1: '',
+      phone_2: '',
+      verification: false,
+    };
+  }
+
+  public componentDidMount() {
+    if (this.props.user.status !== 'in') this.props.push('/home');
+
+    this.setState({
       first_name: this.props.user.user.user.first_name || '',
       last_name: this.props.user.user.user.last_name || '',
       phone_1: this.props.user.user.user.phone_1 || '',
       phone_2: this.props.user.user.user.phone_2 || '',
-      verification: false,
-    };
+    });
   }
 
   public componentWillReceiveProps(nextProps: UserProfileProps) {
@@ -83,7 +95,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       });
 
   public render() {
-    if (this.props.user.status !== 'in') return null;
+    if (this.props.user.status !== 'in') return <Redirect to="/home" />;
 
     return (
       <Container>

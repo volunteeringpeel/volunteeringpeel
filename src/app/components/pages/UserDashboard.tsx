@@ -2,6 +2,7 @@
 import { reduce } from 'lodash-es';
 import * as moment from 'moment';
 import * as React from 'react';
+import { Redirect } from 'react-router';
 import { Container, Header, Icon, Menu, Segment, Statistic, Table } from 'semantic-ui-react';
 
 interface UserDashboardProps {
@@ -14,7 +15,8 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
   public pad = (number: number) => (number < 10 ? ('00' + number).slice(-2) : number.toString());
 
   public render() {
-    if (this.props.user.status !== 'in') return null;
+    if (this.props.user.status !== 'in') return <Redirect to="/home" />;
+
     const totalHours = reduce(
       this.props.user.user.events,
       (acc: moment.Duration, event) => acc.add(event.hours),
