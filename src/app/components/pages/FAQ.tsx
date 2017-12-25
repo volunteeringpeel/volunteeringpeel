@@ -45,11 +45,14 @@ export default class FAQPage extends React.Component<FAQProps, FAQState> {
             <Accordion
               defaultActiveIndex={0}
               panels={_.map(this.state.faqs, question => ({
-                title: question.question,
+                title: {
+                  content: question.question,
+                  key: `title-${question.question}`,
+                },
                 content: {
                   content: <ReactMarkdown source={question.answer} />,
+                  key: `content-${question.question}`,
                 },
-                key: question.question,
               }))}
             />
           </Container>
