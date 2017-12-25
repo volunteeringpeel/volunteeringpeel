@@ -98,9 +98,9 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               let buttonText: Renderable = 'Select this shift';
               if (selected) {
                 buttonText = (
-                  <span>
+                  <>
                     Selected <Icon name="check" />
-                  </span>
+                  </>
                 );
               }
               if (shiftFull) buttonText = 'FULL :(';

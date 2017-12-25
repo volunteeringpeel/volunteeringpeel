@@ -16,6 +16,6 @@ export default class LoginCallback extends React.Component<LoginCallbackProps> {
   }
 
   public render() {
-    return <div />;
+    return <React.Fragment />;
   }
 }
