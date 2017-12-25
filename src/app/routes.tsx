@@ -1,19 +1,31 @@
 // Library Imports
 import * as React from 'react';
-import reactLoadable from 'react-loadable';
+import reactLoadable, { LoadingComponentProps } from 'react-loadable';
 import { RouteConfig } from 'react-router-config';
 import { Redirect } from 'react-router-dom';
 
 // App Imports
+import { loading } from '@app/actions';
 import PublicSite from '@app/PublicSite';
+import { store } from '@app/Utilities';
 
 interface Route extends RouteConfig {
   title: string;
   display?: string;
 }
 
-function loading() {
-  return <div>Loading...</div>;
+class Loading extends React.Component<LoadingComponentProps> {
+  public componentDidMount() {
+    store.dispatch(loading(true));
+  }
+
+  public componentWillUnmount() {
+    store.dispatch(loading(false));
+  }
+
+  public render(): JSX.Element {
+    return null;
+  }
 }
 
 const routes: Route[] = [
@@ -28,7 +40,7 @@ const routes: Route[] = [
   {
     path: '/home',
     component: reactLoadable({
-      loading,
+      loading: Loading,
       loader: () => import('@app/components/pages/Homepage' /* webpackChunkName: "homepage" */),
     }),
     title: 'Home',
@@ -37,7 +49,7 @@ const routes: Route[] = [
   {
     path: '/events',
     component: reactLoadable({
-      loading,
+      loading: Loading,
       loader: () => import('@app/controllers/pages/Events' /* webpackChunkName: "events" */),
     }),
     title: 'Events',
@@ -47,7 +59,7 @@ const routes: Route[] = [
     path: '/about',
     exact: true,
     component: reactLoadable({
-      loading,
+      loading: Loading,
       loader: () => import('@app/components/pages/About' /* webpackChunkName: "about" */),
     }),
     title: 'About',
@@ -55,7 +67,7 @@ const routes: Route[] = [
   {
     path: '/about/faq',
     component: reactLoadable({
-      loading,
+      loading: Loading,
       loader: () => import('@app/controllers/pages/FAQ' /* webpackChunkName: "faq" */),
     }),
     title: 'FAQ',
@@ -64,7 +76,7 @@ const routes: Route[] = [
   {
     path: '/about/sponsors',
     component: reactLoadable({
-      loading,
+      loading: Loading,
       loader: () => import('@app/controllers/pages/Sponsors' /* webpackChunkName: "sponsors" */),
     }),
     title: 'Sponsors',
@@ -72,7 +84,7 @@ const routes: Route[] = [
   {
     path: '/about/team',
     component: reactLoadable({
-      loading,
+      loading: Loading,
       loader: () => import('@app/controllers/pages/Team' /* webpackChunkName: "team" */),
     }),
     title: 'Team',
@@ -88,7 +100,7 @@ const routes: Route[] = [
   {
     path: '/user/dashboard',
     component: reactLoadable({
-      loading,
+      loading: Loading,
       loader: () =>
         import('@app/controllers/pages/UserDashboard' /* webpackChunkName: "user-dashboard" */),
     }),
@@ -97,7 +109,7 @@ const routes: Route[] = [
   {
     path: '/user/profile',
     component: reactLoadable({
-      loading,
+      loading: Loading,
       loader: () =>
         import('@app/controllers/pages/UserProfile' /* webpackChunkName: "user-profile" */),
     }),
@@ -107,7 +119,7 @@ const routes: Route[] = [
   {
     path: '/callback',
     component: reactLoadable({
-      loading,
+      loading: Loading,
       loader: () =>
         import('@app/controllers/pages/LoginCallback' /* webpackChunkName: "login-callback" */),
     }),
