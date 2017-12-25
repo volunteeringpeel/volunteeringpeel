@@ -1,5 +1,5 @@
 // Library Imports
-import { map } from 'lodash-es';
+import * as _ from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -25,7 +25,7 @@ export default class MessageBox extends React.Component<MessageBoxProps> {
     if (!this.props.messages) return null;
     return (
       <Segment as={this.props.as} style={{ paddingTop: '1em' }} vertical>
-        {map(this.props.messages, message => (
+        {_.map(this.props.messages, message => (
           <Message
             key={message.id}
             header={message.message}

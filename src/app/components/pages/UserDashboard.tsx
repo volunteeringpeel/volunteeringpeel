@@ -1,5 +1,5 @@
 // Library Imports
-import { map, reduce, filter } from 'lodash-es';
+import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
 import { Redirect } from 'react-router';
@@ -29,15 +29,19 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
     if (this.props.user.status !== 'in') return <Redirect to="/home" />;
 
     const pastHours = timeFormat(
-      reduce(
-        filter(this.props.user.user.events, event => moment(event.end_time).isBefore(moment.now())),
+      _.reduce(
+        _.filter(this.props.user.user.events, event =>
+          moment(event.end_time).isBefore(moment.now()),
+        ),
         (acc: moment.Duration, event) => acc.add(event.hours),
         moment.duration(),
       ),
     );
     const plannedHours = timeFormat(
-      reduce(
-        filter(this.props.user.user.events, event => moment(event.end_time).isAfter(moment.now())),
+      _.reduce(
+        _.filter(this.props.user.user.events, event =>
+          moment(event.end_time).isAfter(moment.now()),
+        ),
         (acc: moment.Duration, event) => acc.add(event.hours),
         moment.duration(),
       ),
@@ -67,7 +71,7 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {map(this.props.user.user.events, event => (
+                {_.map(this.props.user.user.events, event => (
                   <Table.Row>
                     <Table.Cell collapsing>
                       <Button size="mini" primary>

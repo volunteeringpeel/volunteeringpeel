@@ -2,7 +2,7 @@
 import { AxiosResponse } from 'axios';
 import * as Promise from 'bluebird';
 import * as update from 'immutability-helper';
-import { filter, maxBy } from 'lodash-es';
+import * as _ from 'lodash';
 import { combineReducers } from 'redux';
 import { Action, handleAction, handleActions } from 'redux-actions';
 
@@ -56,7 +56,7 @@ const user = handleActions<UserState, any>(
 const messages = handleActions<Message[], any>(
   {
     [ADD_MESSAGE]: (state: Message[], action: Action<Message>): Message[] => {
-      const highestID = maxBy(state, 'id');
+      const highestID = _.maxBy(state, 'id');
       return [
         {
           id: highestID ? highestID.id + 1 : 0,

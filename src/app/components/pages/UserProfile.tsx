@@ -1,12 +1,10 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
 import { LocationDescriptor } from 'history';
-import { reduce } from 'lodash-es';
-import * as moment from 'moment';
 import * as React from 'react';
 import { Redirect } from 'react-router';
 import { RouterAction } from 'react-router-redux';
-import { Container, Form, Header, Icon, InputOnChangeData, Menu, Segment } from 'semantic-ui-react';
+import { Container, Form, InputOnChangeData, Segment } from 'semantic-ui-react';
 
 interface UserProfileProps {
   user: UserState;
@@ -100,7 +98,6 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
     return (
       <Container>
         <Segment style={{ padding: '2em 0' }} vertical>
-          <Header as="h2" content="Profile" />
           <Form onSubmit={this.handleSubmit}>
             <Form.Group widths="equal">
               <Form.Input

@@ -2,7 +2,7 @@
 // Library Imports
 import axios, { AxiosResponse } from 'axios';
 import * as Promise from 'bluebird';
-import { noop } from 'lodash-es';
+import * as _ from 'lodash';
 import { createAction } from 'redux-actions';
 
 // General Things
@@ -53,4 +53,4 @@ export const addMessage = createAction<Message, Message>(ADD_MESSAGE, (message: 
 export const DISMISS_MESSAGE = 'DISMISS_MESSAGE';
 export const dismissMessage = createAction<number, number>(DISMISS_MESSAGE, (id: number) => id);
 export const DISMISS_ALL_MESSAGES = 'DISMISS_ALL_MESSAGES';
-export const dismissAllMessages = createAction<void>(DISMISS_ALL_MESSAGES, noop);
+export const dismissAllMessages = createAction<void>(DISMISS_ALL_MESSAGES, _.noop);

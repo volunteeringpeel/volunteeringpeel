@@ -1,7 +1,7 @@
 // Library Imports
 import axios from 'axios';
 import * as Promise from 'bluebird';
-import { map, sortBy } from 'lodash-es';
+import * as _ from 'lodash';
 import * as React from 'react';
 import { Card, Container, Image, Segment } from 'semantic-ui-react';
 
@@ -34,7 +34,7 @@ export default class Sponsors extends React.Component<SponsorsProps, SponsorsSta
       <Segment style={{ padding: '4em 0em' }} vertical>
         <Container>
           <Card.Group>
-            {map(sortBy(this.state.sponsors, ['priority']), sponsor => (
+            {_.map(_.sortBy(this.state.sponsors, ['priority']), sponsor => (
               <Card>
                 <Image src={`http://volunteeringpeel.org/${sponsor.image}`} />
                 <Card.Content>

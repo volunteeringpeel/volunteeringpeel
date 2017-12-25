@@ -2,7 +2,7 @@
 import axios from 'axios';
 import * as Promise from 'bluebird';
 import * as update from 'immutability-helper';
-import { includes, map, pull, sortBy, sumBy } from 'lodash-es';
+import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
 import { Button, Dimmer, Header, Icon, Item, Label } from 'semantic-ui-react';
@@ -61,10 +61,11 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
   public render() {
     // Event is full if no shifts have spots
     const full =
-      sumBy(this.props.event.shifts, 'max_spots') === sumBy(this.props.event.shifts, 'spots_taken');
+      _.sumBy(this.props.event.shifts, 'max_spots') ===
+      _.sumBy(this.props.event.shifts, 'spots_taken');
 
     // Text for confirm modal on submit (sort shift numbers first)
-    const shiftsList = listify(sortBy(this.state.selectedShifts), '#');
+    const shiftsList = listify(_.sortBy(this.state.selectedShifts), '#');
     // Pluralization
     const shiftPlural = pluralize('shift', this.state.selectedShifts.length);
     // All together now
@@ -92,7 +93,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
         <Modal.Header>Signup - {this.props.event.name}</Modal.Header>
         <Modal.Content scrolling>
           <Item.Group>
-            {map(this.props.event.shifts, (shift: Shift) => {
+            {_.map(this.props.event.shifts, (shift: Shift) => {
               // Calculate if event is full based on spots (sum up shift spots)
               const spotsLeft = shift.max_spots - shift.spots_taken;
               const shiftFull = spotsLeft === 0;
@@ -100,7 +101,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               const startDate = moment(`${shift.start_time}`);
               const endDate = moment(`${shift.end_time}`);
               // Has shift already been signed up for
-              const selected = includes(this.state.selectedShifts, shift.shift_num);
+              const selected = _.includes(this.state.selectedShifts, shift.shift_num);
 
               // Button text for the signup
               let buttonText: Renderable = 'Select this shift';
@@ -129,7 +130,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                     </Item.Meta>
                     <Item.Description>
                       <p>{shift.notes}</p>
-                      {map(shift.meals, meal => <Label key={meal}>{meal} provided</Label>)}
+                      {_.map(shift.meals, meal => <Label key={meal}>{meal} provided</Label>)}
                     </Item.Description>
                     <Item.Extra>
                       <ProgressColor
@@ -195,9 +196,9 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
   private selectShift(shiftNum: number) {
     const newState = update(this.state, {
       // Is the shift is already selected?
-      selectedShifts: includes(this.state.selectedShifts, shiftNum)
+      selectedShifts: _.includes(this.state.selectedShifts, shiftNum)
         ? // If yes remove the value
-          { $apply: (oldValue: number[]) => pull(oldValue, shiftNum) }
+          { $apply: (oldValue: number[]) => _.pull(oldValue, shiftNum) }
         : // If no push the value
           { $push: [shiftNum] },
     });

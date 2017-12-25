@@ -1,6 +1,6 @@
 // Library Imports
 import { LocationDescriptor } from 'history';
-import { find, map } from 'lodash-es';
+import * as _ from 'lodash';
 import * as React from 'react';
 import { Route } from 'react-router-dom';
 import { Container, Dropdown, Header, Icon, Menu, Message, Segment } from 'semantic-ui-react';
@@ -108,7 +108,7 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
           <Route
             path="/:page/:subpage?"
             render={({ match }) => {
-              const page = find(routes, ['path', match.url]);
+              const page = _.find(routes, ['path', match.url]);
               if (!page) {
                 return () => {
                   this.props.push('/home');

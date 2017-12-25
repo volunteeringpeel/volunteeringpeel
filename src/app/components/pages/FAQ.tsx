@@ -1,7 +1,7 @@
 // Library Imports
 import axios from 'axios';
 import * as Promise from 'bluebird';
-import { map } from 'lodash-es';
+import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
@@ -44,7 +44,7 @@ export default class FAQPage extends React.Component<FAQProps, FAQState> {
             </p>
             <Accordion
               defaultActiveIndex={0}
-              panels={map(this.state.faqs, question => ({
+              panels={_.map(this.state.faqs, question => ({
                 title: question.question,
                 content: {
                   content: <ReactMarkdown source={question.answer} />,

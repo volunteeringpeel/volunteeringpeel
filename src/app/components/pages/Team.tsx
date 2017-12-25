@@ -1,7 +1,7 @@
 // Library Imports
 import axios from 'axios';
 import * as Promise from 'bluebird';
-import { map } from 'lodash-es';
+import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Card, Container, Image, Segment } from 'semantic-ui-react';
@@ -35,7 +35,7 @@ export default class Team extends React.Component<TeamProps, TeamState> {
       <Segment style={{ padding: '4em 0em' }} vertical>
         <Container>
           <Card.Group>
-            {map(this.state.execs, exec => (
+            {_.map(this.state.execs, exec => (
               <Card>
                 <Image
                   src={`http://volunteeringpeel.org/images/execPortraits/2017/${exec.first_name}${

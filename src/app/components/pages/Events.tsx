@@ -1,7 +1,7 @@
 // Library Imports
 import axios from 'axios';
 import * as Promise from 'bluebird';
-import { map, sumBy } from 'lodash-es';
+import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
@@ -62,10 +62,10 @@ export default class Events extends React.Component<EventsProps, EventsState> {
             </Button>
           </div>
           <Item.Group divided>
-            {map(this.state.events, (event: VPEvent) => {
+            {_.map(this.state.events, (event: VPEvent) => {
               // Import dates into moment.js for easy comparison and formatting
-              const startDates = map(event.shifts, shift => moment(shift.start_time));
-              const endDates = map(event.shifts, shift => moment(shift.end_time));
+              const startDates = _.map(event.shifts, shift => moment(shift.start_time));
+              const endDates = _.map(event.shifts, shift => moment(shift.end_time));
               // Smallest date is start and largest is end
               const startDate = moment.min(...startDates);
               const endDate = moment.max(...endDates);
@@ -77,8 +77,8 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                 : `${startDate.format(formatString)} - ${endDate.format(formatString)}`;
 
               // Calculate if event is full based on spots (sum up shift spots)
-              const maxSpots = sumBy(event.shifts, 'max_spots');
-              const spotsTaken = sumBy(event.shifts, 'spots_taken');
+              const maxSpots = _.sumBy(event.shifts, 'max_spots');
+              const spotsTaken = _.sumBy(event.shifts, 'spots_taken');
               const spotsLeft = maxSpots - spotsTaken;
               // Event is full if spotsLeft === 0
               const full = spotsLeft === 0;
