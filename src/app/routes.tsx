@@ -6,7 +6,6 @@ import { Redirect } from 'react-router-dom';
 
 // App Imports
 import { loading } from '@app/actions';
-import PublicSite from '@app/PublicSite';
 import { store } from '@app/Utilities';
 
 interface Route extends RouteConfig {
