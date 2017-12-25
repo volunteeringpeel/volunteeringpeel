@@ -1,5 +1,5 @@
 // Library Imports
-import { reduce } from 'lodash-es';
+import { reduce, map } from 'lodash-es';
 import * as moment from 'moment';
 import * as React from 'react';
 import { Redirect } from 'react-router';
@@ -39,37 +39,25 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
           {this.props.user.user.events.length > 0 ? (
             <>
               <Table>
+                <Table.Header>
+                  <Table.Row>
+                    <Table.HeaderCell>Event</Table.HeaderCell>
+                    <Table.HeaderCell>Shift</Table.HeaderCell>
+                    <Table.HeaderCell>Hours</Table.HeaderCell>
+                    <Table.HeaderCell>Status</Table.HeaderCell>
+                  </Table.Row>
+                </Table.Header>
                 <Table.Body>
-                  <Table.Row>
-                    <Table.Cell>First</Table.Cell>
-                    <Table.Cell>Cell</Table.Cell>
-                    <Table.Cell>Cell</Table.Cell>
-                  </Table.Row>
-                  <Table.Row>
-                    <Table.Cell>Cell</Table.Cell>
-                    <Table.Cell>Cell</Table.Cell>
-                    <Table.Cell>Cell</Table.Cell>
-                  </Table.Row>
-                  <Table.Row>
-                    <Table.Cell>Cell</Table.Cell>
-                    <Table.Cell>Cell</Table.Cell>
-                    <Table.Cell>Cell</Table.Cell>
-                  </Table.Row>
+                  {map(this.props.user.user.events, event => (
+                    <Table.Row>
+                      <Table.Cell>{event.name}</Table.Cell>
+                      <Table.Cell>{event.shift_num}</Table.Cell>
+                      <Table.Cell>{event.hours}</Table.Cell>
+                      <Table.Cell />
+                    </Table.Row>
+                  ))}
                 </Table.Body>
               </Table>
-
-              <Menu pagination>
-                <Menu.Item as="a" icon>
-                  <Icon name="chevron left" />
-                </Menu.Item>
-                <Menu.Item as="a">1</Menu.Item>
-                <Menu.Item as="a">2</Menu.Item>
-                <Menu.Item as="a">3</Menu.Item>
-                <Menu.Item as="a">4</Menu.Item>
-                <Menu.Item as="a" icon>
-                  <Icon name="chevron right" />
-                </Menu.Item>
-              </Menu>
             </>
           ) : (
             <>
