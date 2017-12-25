@@ -1,15 +1,9 @@
 // Library Imports
-import axios, { AxiosError } from 'axios';
-import * as Promise from 'bluebird';
 import * as React from 'react';
-import { match, Route } from 'react-router';
 import { renderRoutes } from 'react-router-config';
 
 // App Imports
-import { addMessage } from '@app/actions';
-import Auth from '@app/Auth';
 import routes from '@app/routes';
-import { history, store } from '@app/Utilities';
 
 // Component Imports
 import Footer from '@app/components/Footer';

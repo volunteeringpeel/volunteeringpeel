@@ -33,6 +33,9 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
                     this.props.user.user.user.last_name
                   }`}
                 />
+                <Dropdown.Item onClick={() => this.props.push('/user/profile')}>
+                  Profile
+                </Dropdown.Item>
                 <Dropdown.Item onClick={() => this.props.push('/user/dashboard')}>
                   Dashboard
                 </Dropdown.Item>

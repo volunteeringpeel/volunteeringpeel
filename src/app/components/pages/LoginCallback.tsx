@@ -15,7 +15,7 @@ export default class LoginCallback extends React.Component<LoginCallbackProps> {
     }
   }
 
-  public render() {
-    return <React.Fragment />;
+  public render(): React.ReactElement<any> {
+    return null;
   }
 }

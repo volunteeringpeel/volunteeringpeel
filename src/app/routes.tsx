@@ -17,6 +17,7 @@ import LoginCallback from '@app/controllers/pages/LoginCallback';
 import Sponsors from '@app/controllers/pages/Sponsors';
 import Team from '@app/controllers/pages/Team';
 import UserDashboard from '@app/controllers/pages/UserDashboard';
+import UserProfile from '@app/controllers/pages/UserProfile';
 
 interface Route extends RouteConfig {
   title: string;
@@ -79,11 +80,11 @@ const routes: Route[] = [
     component: UserDashboard,
     title: 'Dashboard',
   },
-  // {
-  //   path: '/user/profile',
-  //   component: UserProfile,
-  //   title: 'Profile',
-  // },
+  {
+    path: '/user/profile',
+    component: UserProfile,
+    title: 'Profile',
+  },
   // UTILITY ROUTES
   {
     path: '/callback',

@@ -141,7 +141,11 @@ api.post('/user/current', (req, res) => {
   const { first_name, last_name, phone_1, phone_2 } = req.body;
   // ensure that all parameters exist
   if (!first_name || !last_name || !phone_1 || !phone_2) {
-    return res.error(400, 'Missing required field');
+    return res.error(
+      400,
+      'Missing required field!',
+      'Hmmm...the website should have stopped you from doing this.',
+    );
   }
 
   let db: mysql.PoolConnection;
@@ -157,8 +161,12 @@ api.post('/user/current', (req, res) => {
         { email: req.user.email },
       ]);
     })
-    .then(_ => {
-      res.success('Profile updated successfully');
+    .then(result => {
+      if (result.affectedRows !== 1) {
+        res.error(500, 'Profile could not update.', 'Please try again or contact us for help.');
+      } else {
+        res.success('Profile updated successfully');
+      }
       db.release();
     })
     .catch(error => {
