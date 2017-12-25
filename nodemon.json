@@ -2,5 +2,5 @@
   "watch": ["src"],
   "ignore": ["src/app"],
   "ext": "ts",
-  "exec": "ts-node ./src/index.ts"
+  "exec": "ts-node -P tsconfig.server.json ./src/index.ts"
 }

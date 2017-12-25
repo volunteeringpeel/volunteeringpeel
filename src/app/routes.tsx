@@ -1,27 +1,19 @@
 // Library Imports
 import * as React from 'react';
+import reactLoadable from 'react-loadable';
 import { RouteConfig } from 'react-router-config';
 import { Redirect } from 'react-router-dom';
 
 // App Imports
 import PublicSite from '@app/PublicSite';
 
-// Component Imports
-import About from '@app/components/pages/About';
-import Homepage from '@app/components/pages/Homepage';
-
-// Controller Imports
-import Events from '@app/controllers/pages/Events';
-import FAQ from '@app/controllers/pages/FAQ';
-import LoginCallback from '@app/controllers/pages/LoginCallback';
-import Sponsors from '@app/controllers/pages/Sponsors';
-import Team from '@app/controllers/pages/Team';
-import UserDashboard from '@app/controllers/pages/UserDashboard';
-import UserProfile from '@app/controllers/pages/UserProfile';
-
 interface Route extends RouteConfig {
   title: string;
   display?: string;
+}
+
+function loading() {
+  return <div>Loading...</div>;
 }
 
 const routes: Route[] = [
@@ -35,36 +27,54 @@ const routes: Route[] = [
   },
   {
     path: '/home',
-    component: Homepage,
+    component: reactLoadable({
+      loading,
+      loader: () => import('@app/components/pages/Homepage' /* webpackChunkName: "homepage" */),
+    }),
     title: 'Home',
     display: 'Volunteering Peel',
   },
   {
     path: '/events',
-    component: Events,
+    component: reactLoadable({
+      loading,
+      loader: () => import('@app/controllers/pages/Events' /* webpackChunkName: "events" */),
+    }),
     title: 'Events',
   },
   // ABOUT PAGES
   {
     path: '/about',
     exact: true,
-    component: About,
+    component: reactLoadable({
+      loading,
+      loader: () => import('@app/components/pages/About' /* webpackChunkName: "about" */),
+    }),
     title: 'About',
   },
   {
     path: '/about/faq',
-    component: FAQ,
+    component: reactLoadable({
+      loading,
+      loader: () => import('@app/controllers/pages/FAQ' /* webpackChunkName: "faq" */),
+    }),
     title: 'FAQ',
     display: 'Frequently Asked Questions',
   },
   {
     path: '/about/sponsors',
-    component: Sponsors,
+    component: reactLoadable({
+      loading,
+      loader: () => import('@app/controllers/pages/Sponsors' /* webpackChunkName: "sponsors" */),
+    }),
     title: 'Sponsors',
   },
   {
     path: '/about/team',
-    component: Team,
+    component: reactLoadable({
+      loading,
+      loader: () => import('@app/controllers/pages/Team' /* webpackChunkName: "team" */),
+    }),
     title: 'Team',
     display: 'Meet the Team',
   },
@@ -77,18 +87,30 @@ const routes: Route[] = [
   },
   {
     path: '/user/dashboard',
-    component: UserDashboard,
+    component: reactLoadable({
+      loading,
+      loader: () =>
+        import('@app/controllers/pages/UserDashboard' /* webpackChunkName: "user-dashboard" */),
+    }),
     title: 'Dashboard',
   },
   {
     path: '/user/profile',
-    component: UserProfile,
+    component: reactLoadable({
+      loading,
+      loader: () =>
+        import('@app/controllers/pages/UserProfile' /* webpackChunkName: "user-profile" */),
+    }),
     title: 'Profile',
   },
   // UTILITY ROUTES
   {
     path: '/callback',
-    component: LoginCallback,
+    component: reactLoadable({
+      loading,
+      loader: () =>
+        import('@app/controllers/pages/LoginCallback' /* webpackChunkName: "login-callback" */),
+    }),
     title: 'Logging in...',
   },
   // TODO: Contact page

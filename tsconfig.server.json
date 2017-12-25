@@ -2,9 +2,7 @@
   "compilerOptions": {
     "sourceMap": true,
     "noImplicitAny": true,
-    "removeComments": false,
     "target": "es2015",
-    "module": "esnext",
     "moduleResolution": "node",
     "jsx": "react",
     "baseUrl": ".",

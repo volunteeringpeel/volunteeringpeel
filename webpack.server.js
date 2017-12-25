@@ -38,6 +38,7 @@ module.exports = {
             loader: 'awesome-typescript-loader',
             options: {
               useCache: true,
+              configFileName: 'tsconfig.server.json',
             },
           },
         ],

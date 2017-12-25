@@ -10,27 +10,6 @@ module.exports = {
   entry: {
     app: './app.tsx',
     admin: './admin.tsx',
-    vendor: [
-      'auth0-js',
-      'axios',
-      'babel-polyfill',
-      'bluebird',
-      'immutability-helper',
-      'lodash-es',
-      'moment',
-      'react',
-      'react-markdown',
-      'react-redux',
-      'react-router',
-      'react-router-config',
-      'react-router-dom',
-      'react-router-redux',
-      'redux',
-      'redux-actions',
-      'redux-thunk',
-      'reselect',
-      'semantic-ui-react',
-    ],
   },
 
   module: {
@@ -67,16 +46,25 @@ module.exports = {
   plugins: [
     // extract huge libraries out of main file
     new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
+      name: 'commons',
+      minChunks: function(module) {
+        // This prevents stylesheet resources with the .css or .scss extension
+        // from being moved from their original chunk to the vendor chunk
+        if (module.resource && /^.*\.(css|less)$/.test(module.resource)) {
+          return false;
+        }
+        return module.context && module.context.includes('node_modules');
+      },
     }),
     // extract webpack bootstrap out of main file
     new webpack.optimize.CommonsChunkPlugin({
       name: 'runtime',
+      minChunks: Infinity,
     }),
     // name the sites
     new HTMLWebpackPlugin({
       title: 'Volunteering Peel',
-      chunks: ['runtime', 'vendor', 'app'],
+      chunks: ['runtime', 'commons', 'app'],
       filename: './index.html',
       template: 'index.ejs',
     }),
