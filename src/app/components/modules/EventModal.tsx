@@ -89,8 +89,8 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               const spotsLeft = shift.max_spots - shift.spots_taken;
               const shiftFull = spotsLeft === 0;
               // Parse dates
-              const startTime = moment.utc(`${shift.start_time}`, 'HH:mm:ss').format('hh:mm A');
-              const endTime = moment.utc(`${shift.end_time}`, 'HH:mm:ss').format('hh:mm A');
+              const startDate = moment(`${shift.start_time}`);
+              const endDate = moment(`${shift.end_time}`);
               // Has shift already been signed up for
               const selected = includes(this.state.selectedShifts, shift.shift_num);
 
@@ -111,10 +111,14 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                     <Item.Header>
                       Shift #{shift.shift_num}{' '}
                       <small>
-                        {startTime} - {endTime}
+                        {startDate.format('hh:mm A')} - {endDate.format('hh:mm A')}
                       </small>
                     </Item.Header>
-                    <Item.Meta>{moment(shift.date).format('MMM D, YYYY')}</Item.Meta>
+                    <Item.Meta>
+                      {startDate.isSame(endDate, 'day')
+                        ? startDate.format('MMM D, YYYY')
+                        : `${startDate.format('MMM D, YYYY')} - ${endDate.format('MMM D, YYYY')}`}
+                    </Item.Meta>
                     <Item.Description>
                       <p>{shift.notes}</p>
                       {map(shift.meals, meal => <Label key={meal}>{meal} provided</Label>)}

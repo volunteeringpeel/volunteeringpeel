@@ -22,9 +22,8 @@ create table if not exists shift (
   shift_id    int           not null auto_increment primary key comment 'Unique shift ID',
   event_id    int           not null                            comment 'Parent event',
   shift_num   int           not null                            comment 'Shift number',
-  date        date          not null                            comment 'Shift date (for events w multiple days)',
-  start_time  time          not null                            comment 'Start time',
-  end_time    time          not null                            comment 'End time',
+  start_time  datetime      not null                            comment 'Start date + time',
+  end_time    datetime      not null                            comment 'End date + time',
   max_spots   int           not null                            comment 'Maximum number of spots',
   meals       set('breakfast', 'lunch', 'dinner', 'snack')      comment 'Provided food',
   notes       text          not null                            comment 'Shift notes',
@@ -40,14 +39,11 @@ create table if not exists role (
 create table if not exists user (
   user_id     int           not null auto_increment primary key comment 'Unique user ID',
   email       varchar(128)  not null unique                     comment 'Email',
-  -- password    varchar(256)  not null                            comment 'Password hash',
   role_id     int           not null                            comment 'Volunteer/organizer/executive',
   first_name  varchar(32)   not null                            comment 'First name',
   last_name   varchar(32)   not null                            comment 'Last name',
   phone_1     varchar(15)                                       comment 'Phone contact #1 (for volunteers/organizers)',
   phone_2     varchar(15)                                       comment 'Phone contact #2 (for volunteers)',
-  -- activated   boolean       not null default 0                  comment 'Is user activated?',
-  -- active_key  varchar(32)   not null                            comment 'Randomly generated activation key',
   mail_list   boolean       not null default 0                  comment 'Is user on mailing list?',
   bio         text                                              comment 'For execs, bio for about page'
 );

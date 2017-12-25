@@ -62,10 +62,11 @@ export default class Events extends React.Component<EventsProps, EventsState> {
           <Item.Group divided>
             {map(this.state.events, (event: VPEvent) => {
               // Import dates into moment.js for easy comparison and formatting
-              const momentDates = map(event.shifts, shift => moment(shift.date));
+              const startDates = map(event.shifts, shift => moment(shift.start_time));
+              const endDates = map(event.shifts, shift => moment(shift.end_time));
               // Smallest date is start and largest is end
-              const startDate = moment.min(...momentDates);
-              const endDate = moment.max(...momentDates);
+              const startDate = moment.min(...startDates);
+              const endDate = moment.max(...endDates);
               // Change formatting (e.g. Oct 17, 2017)
               const formatString = 'MMM D, YYYY';
               // If start === end, one day event, otherwise range

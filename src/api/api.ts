@@ -108,7 +108,7 @@ api.get('/user/current', (req, res) => {
           `SELECT
               e.event_id, e.name, e.address, e.transport, e.description,
               s.shift_id, s.shift_num,
-              s.date, s.start_time, s.end_time, s.hours,
+              s.start_time, s.end_time, s.hours,
               s.meals, s.notes
             FROM vw_shift s
             JOIN event e ON e.event_id = s.event_id
@@ -248,7 +248,7 @@ const eventQuery = (req: Express.Request, res: Express.Response, authorized: boo
           ? // Query if logged in
             `SELECT
               s.shift_id, s.shift_num,
-              s.date, s.start_time, s.end_time, s.hours,
+              s.start_time, s.end_time, s.hours,
               s.meals, s.max_spots, s.spots_taken, s.notes,
               (CASE WHEN us.user_id IS NULL THEN 0 ELSE 1 END) AS signed_up
             FROM vw_shift s
@@ -258,7 +258,7 @@ const eventQuery = (req: Express.Request, res: Express.Response, authorized: boo
           : // Query if not logged in
             `SELECT
               s.shift_id, s.shift_num,
-              s.date, s.start_time, s.end_time, s.hours,
+              s.start_time, s.end_time, s.hours,
               s.meals, s.max_spots, s.spots_taken, s.notes,
               0 signed_up
             FROM vw_shift s
