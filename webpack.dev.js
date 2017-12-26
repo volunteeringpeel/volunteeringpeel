@@ -47,6 +47,7 @@ module.exports = merge(common, {
         // for fancy css (less) files
         test: /\.less$/,
         use: [
+          { loader: 'cache-loader' },
           // load directly into the javascript
           { loader: 'style-loader' },
           // make into css with sourcemap

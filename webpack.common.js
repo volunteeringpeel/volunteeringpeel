@@ -80,7 +80,7 @@ module.exports = {
 
   resolve: {
     // if no file extension use these
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    extensions: ['.tsx', '.ts', '.jsx', '.js'],
     // if no absolute path use these
     modules: [path.resolve(__dirname, './node_modules')],
     // if we're really lazy just write @app to refer to ./src/app
