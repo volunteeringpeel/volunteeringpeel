@@ -18,10 +18,13 @@ class Loading extends React.Component<LoadingComponentProps> {
     store.dispatch(loading(false));
   }
 
-  public render(): JSX.Element {
+  public componentWillUpdate(nextProps: LoadingComponentProps) {
     if (this.props.pastDelay) {
       store.dispatch(loading(true));
     }
+  }
+
+  public render(): JSX.Element {
     return null;
   }
 }
