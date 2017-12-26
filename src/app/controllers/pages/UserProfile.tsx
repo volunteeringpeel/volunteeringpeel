@@ -1,8 +1,6 @@
 // Library Imports
-import { AxiosResponse } from 'axios';
 import { LocationDescriptor } from 'history';
 import { connect, Dispatch } from 'react-redux';
-import { withRouter } from 'react-router';
 import { push } from 'react-router-redux';
 
 // App Imports
@@ -26,8 +24,7 @@ const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   },
 });
 
-const connectedUserProfile = connect(mapStateToProps, mapDispatchToProps)(UserProfile);
 // tslint:disable-next-line:variable-name
-const UserProfileController = withRouter(connectedUserProfile);
+const UserProfileController = connect(mapStateToProps, mapDispatchToProps)(UserProfile);
 
 export default UserProfileController;

@@ -3,16 +3,13 @@
     "sourceMap": true,
     "noImplicitAny": true,
     "target": "es2015",
+    "module": "esnext",
     "moduleResolution": "node",
     "jsx": "react",
     "baseUrl": ".",
     "paths": {
-      "@app/*": [
-        "src/app/*"
-      ]
+      "@app/*": ["src/app/*"]
     }
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

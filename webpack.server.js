@@ -46,6 +46,12 @@ module.exports = {
     ],
   },
 
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+    }),
+  ],
+
   // just a copy from common.
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],

@@ -1,8 +1,6 @@
 // Library Imports
-import { AxiosResponse } from 'axios';
 import { LocationDescriptor } from 'history';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
 import { push } from 'react-router-redux';
 import { Dispatch } from 'redux';
 
@@ -19,8 +17,7 @@ const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   },
 });
 
-const connectedHeader = connect(mapStateToProps, mapDispatchToProps)(Header);
 // tslint:disable-next-line:variable-name
-const HeaderController = withRouter(connectedHeader);
+const HeaderController = connect(mapStateToProps, mapDispatchToProps)(Header);
 
 export default HeaderController;

@@ -14,26 +14,28 @@ const app = express();
 
 // If dev do webpack things
 let compiler: any = null;
-if (process.env.NODE_ENV !== 'production' && !process.env.NO_REACT) {
-  // Use require so that it doesn't get imported unless necessary
-  const webpack = require('webpack');
-  const webpackHot = require('webpack-hot-middleware');
-  const webpackDev = require('webpack-dev-middleware');
-  const dashboardPlugin = require('webpack-dashboard/plugin');
-  const webpackConfig = require('../webpack.dev.js');
-  compiler = webpack(webpackConfig);
+if (process.env.NODE_ENV !== 'production') {
+  if (!process.env.NO_REACT) {
+    // Use require so that it doesn't get imported unless necessary
+    const webpack = require('webpack');
+    const webpackHot = require('webpack-hot-middleware');
+    const webpackDev = require('webpack-dev-middleware');
+    const dashboardPlugin = require('webpack-dashboard/plugin');
+    const webpackConfig = require('../webpack.dev.js');
+    compiler = webpack(webpackConfig);
 
-  compiler.apply(new dashboardPlugin());
+    compiler.apply(new dashboardPlugin());
 
-  app.use(webpackHot(compiler, { publicPath: webpackConfig.output.publicPath }));
-  app.use(
-    webpackDev(compiler, {
-      publicPath: webpackConfig.output.publicPath,
-      stats: {
-        colors: true,
-      },
-    }),
-  );
+    app.use(webpackHot(compiler, { publicPath: webpackConfig.output.publicPath }));
+    app.use(
+      webpackDev(compiler, {
+        publicPath: webpackConfig.output.publicPath,
+        stats: {
+          colors: true,
+        },
+      }),
+    );
+  }
 }
 
 // Parse application/x-www-form-urlencoded

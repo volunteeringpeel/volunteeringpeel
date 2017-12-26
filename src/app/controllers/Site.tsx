@@ -1,6 +1,5 @@
 // Library Imports
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
 import { Dispatch } from 'redux';
 
 // App Imports
@@ -15,8 +14,7 @@ const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   loadUser: loadUser.bind(null, dispatch),
 });
 
-const connectedSite = connect(mapStateToProps, mapDispatchToProps)(Site);
 // tslint:disable-next-line:variable-name
-const SiteController = withRouter(connectedSite);
+const SiteController = connect(mapStateToProps, mapDispatchToProps)(Site);
 
 export default SiteController;
