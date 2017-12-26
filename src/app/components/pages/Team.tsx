@@ -36,7 +36,7 @@ export default class Team extends React.Component<TeamProps, TeamState> {
         <Container>
           <Card.Group>
             {_.map(this.state.execs, exec => (
-              <Card>
+              <Card key={exec.user_id}>
                 <Image
                   src={`http://volunteeringpeel.org/images/execPortraits/2017/${exec.first_name}${
                     exec.last_name
@@ -50,7 +50,7 @@ export default class Team extends React.Component<TeamProps, TeamState> {
                 </Card.Content>
                 <Card.Content extra>
                   <Card.Description>
-                    <ReactMarkdown source={exec.bio} />
+                    <ReactMarkdown source={exec.bio || ''} />
                   </Card.Description>
                 </Card.Content>
               </Card>
