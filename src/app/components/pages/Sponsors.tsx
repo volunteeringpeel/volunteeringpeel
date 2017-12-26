@@ -35,7 +35,7 @@ export default class Sponsors extends React.Component<SponsorsProps, SponsorsSta
         <Container>
           <Card.Group>
             {_.map(_.sortBy(this.state.sponsors, ['priority']), sponsor => (
-              <Card>
+              <Card key={sponsor.name}>
                 <Image src={`http://volunteeringpeel.org/${sponsor.image}`} />
                 <Card.Content>
                   <Card.Header>{sponsor.name}</Card.Header>
