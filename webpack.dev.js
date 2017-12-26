@@ -27,20 +27,17 @@ module.exports = merge(common, {
         // ignore node_modules
         exclude: [/node_modules/],
         use: [
-          // use hot loader (so no need for server restart)
-          {
-            loader: 'babel-loader',
-            options: {
-              babelrc: true,
-              plugins: ['react-hot-loader/babel'],
-            },
-          },
           // and load normally, but with more awesome.
           {
             loader: 'awesome-typescript-loader',
             options: {
               // also use cache so it's faster
               useCache: true,
+              useBabel: true,
+              babelOptions: {
+                // use hot loader (so no need for server restart)
+                plugins: ['react-hot-loader/babel'],
+              },
             },
           },
         ],
