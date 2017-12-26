@@ -47,16 +47,10 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
         </Route>
       );
     } else if (this.props.user.status === 'out') {
-      userButton = (
-        <Menu.Item as="div">
-          <a href="#" onClick={Auth.login}>
-            Login
-          </a>
-        </Menu.Item>
-      );
+      userButton = <Menu.Item onClick={Auth.login}>Login</Menu.Item>;
     } else {
       userButton = (
-        <Menu.Item as="div">
+        <Menu.Item>
           <Icon name="circle notched" />
         </Menu.Item>
       );
