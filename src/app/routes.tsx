@@ -14,15 +14,14 @@ interface Route extends RouteConfig {
 }
 
 class Loading extends React.Component<LoadingComponentProps> {
-  public componentDidMount() {
-    store.dispatch(loading(true));
-  }
-
   public componentWillUnmount() {
     store.dispatch(loading(false));
   }
 
   public render(): JSX.Element {
+    if (this.props.pastDelay) {
+      store.dispatch(loading(true));
+    }
     return null;
   }
 }
