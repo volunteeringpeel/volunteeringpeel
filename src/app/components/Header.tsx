@@ -60,9 +60,9 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
         <Segment inverted textAlign="center" vertical style={{ paddingBottom: '1em' }}>
           <Menu inverted stackable size="large" widths={4}>
             <Container textAlign="center">
-              <Route path="/home">
+              <Route path="/" exact>
                 {({ match }) => (
-                  <Menu.Item active={!!match} onClick={() => this.props.push('/home')}>
+                  <Menu.Item active={!!match} onClick={() => this.props.push('/')}>
                     Home
                   </Menu.Item>
                 )}
@@ -100,12 +100,12 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
           </Menu>
 
           <Route
-            path="/:page/:subpage?"
+            path="/:page?/:subpage?"
             render={({ match }) => {
               const page = _.find(routes, ['path', match.url]);
               if (!page) {
                 return () => {
-                  this.props.push('/home');
+                  this.props.push('/');
                 };
               }
               return (

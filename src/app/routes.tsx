@@ -34,12 +34,6 @@ const routes: Route[] = [
   {
     path: '/',
     exact: true,
-    component: () => <Redirect strict from="/" to="/home" />,
-    title: 'Home',
-    display: 'Volunteering Peel',
-  },
-  {
-    path: '/home',
     component: reactLoadable({
       loading: Loading,
       loader: () => import('@app/components/pages/Homepage' /* webpackChunkName: "homepage" */),

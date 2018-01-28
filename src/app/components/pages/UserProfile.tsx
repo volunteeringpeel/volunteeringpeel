@@ -35,7 +35,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
   }
 
   public componentDidMount() {
-    if (this.props.user.status !== 'in') this.props.push('/home');
+    if (this.props.user.status !== 'in') this.props.push('/');
 
     this.setState({
       first_name: this.props.user.user.user.first_name || '',
@@ -93,7 +93,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       });
 
   public render() {
-    if (this.props.user.status !== 'in') return <Redirect to="/home" />;
+    if (this.props.user.status !== 'in') return <Redirect to="/" />;
 
     return (
       <Container>

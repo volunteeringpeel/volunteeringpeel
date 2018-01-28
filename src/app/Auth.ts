@@ -42,7 +42,7 @@ class Auth {
           }),
         );
       }
-      store.dispatch(push('/home'));
+      store.dispatch(push('/'));
       if (callback) callback();
     });
   }
@@ -60,7 +60,7 @@ class Auth {
     store.dispatch(dismissAllMessages());
     store.dispatch(addMessage({ message: 'Logged out successfully', severity: 'positive' }));
     // navigate to the home route
-    store.dispatch(push('/home'));
+    store.dispatch(push('/'));
   }
 }
 

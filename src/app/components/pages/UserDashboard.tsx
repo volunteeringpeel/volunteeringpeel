@@ -26,7 +26,7 @@ const timeFormat = (time: moment.Duration) =>
 
 export default class UserDashboard extends React.Component<UserDashboardProps> {
   public render() {
-    if (this.props.user.status !== 'in') return <Redirect to="/home" />;
+    if (this.props.user.status !== 'in') return <Redirect to="/" />;
 
     const pastHours = timeFormat(
       _.reduce(
