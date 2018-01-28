@@ -3,7 +3,6 @@ const webpack = require('webpack');
 const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
 const LessPluginAutoPrefix = require('less-plugin-autoprefix');
-const Jarvis = require('webpack-jarvis');
 
 // this was copypasted from a faq should cover just about everybody ever
 const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 'android 4'];
@@ -77,6 +76,8 @@ module.exports = merge(common, {
     publicPath: '/',
   },
 
-  // enable hot-module thingies.
-  plugins: [new webpack.HotModuleReplacementPlugin(), new Jarvis()],
+  plugins: [
+    // enable hot-module thingies.
+    new webpack.HotModuleReplacementPlugin(),
+  ],
 });

@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
+const Jarvis = require('webpack-jarvis');
 
 module.exports = {
   // do all of these things relative to ./src/app
@@ -76,6 +77,8 @@ module.exports = {
     // }),
     // delete some excess shit (see https://github.com/moment/moment/issues/2517)
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
+    // fancy dashboard at http://localhost:1337
+    new Jarvis(),
   ],
 
   resolve: {
