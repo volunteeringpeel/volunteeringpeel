@@ -19,11 +19,8 @@ if (process.env.NODE_ENV !== 'production') {
     const webpack = require('webpack');
     const webpackHot = require('webpack-hot-middleware');
     const webpackDev = require('webpack-dev-middleware');
-    const dashboardPlugin = require('webpack-dashboard/plugin');
     const webpackConfig = require('../webpack.dev.js');
     compiler = webpack(webpackConfig);
-
-    compiler.apply(new dashboardPlugin());
 
     app.use(webpackHot(compiler, { publicPath: webpackConfig.output.publicPath }));
     app.use(
