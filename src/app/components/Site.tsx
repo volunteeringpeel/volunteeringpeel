@@ -4,6 +4,7 @@ import { renderRoutes } from 'react-router-config';
 
 // App Imports
 import routes from '@app/routes';
+import { RouteComponentProps } from 'react-router';
 
 // Component Imports
 import Footer from '@app/components/Footer';
@@ -17,7 +18,7 @@ interface SiteProps {
   loadUser: () => void;
 }
 
-export default class Site extends React.Component<SiteProps> {
+export default class Site extends React.Component<RouteComponentProps<any> & SiteProps> {
   public componentDidMount() {
     this.props.loadUser();
   }
