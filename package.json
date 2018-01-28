@@ -10,7 +10,7 @@
     "build": "yarn run build:server && yarn run build:client",
     "build:server": "webpack --config webpack.server.js",
     "build:client": "webpack --progress --config webpack.prod.js",
-    "dev": "webpack-dashboard nodemon",
+    "dev": "nodemon",
     "postinstall": "node scripts/fix-semantic.js"
   },
   "devDependencies": {
@@ -62,9 +62,9 @@
     "typescript": "^2.6.1",
     "uglifyjs-webpack-plugin": "^1.0.1",
     "webpack": "^3.8.1",
-    "webpack-dashboard": "^1.0.0",
     "webpack-dev-middleware": "^2.0.3",
     "webpack-hot-middleware": "^2.20.0",
+    "webpack-jarvis": "^0.2.2",
     "webpack-merge": "^4.1.1",
     "webpack-node-externals": "^1.6.0"
   },

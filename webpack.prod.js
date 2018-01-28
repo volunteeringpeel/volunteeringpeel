@@ -12,7 +12,7 @@ const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 
 
 // grab the common config and...
 module.exports = merge(common, {
-  devtool: 'source-map', // turn on sourcemap for debugging
+  // devtool: 'source-map', // turn on sourcemap for debugging
 
   module: {
     rules: [
@@ -22,6 +22,7 @@ module.exports = merge(common, {
         // ignore dependencies,
         exclude: [/node_modules/],
         use: [
+          { loader: 'cache-loader' },
           // note lack of hot-loader,
           {
             // parse normally,
@@ -29,6 +30,7 @@ module.exports = merge(common, {
             options: {
               // and use cache to make rebuilds faster
               useCache: true,
+              useBabel: true,
             },
           },
         ],
@@ -42,8 +44,9 @@ module.exports = merge(common, {
           // if something goes wrong don't put in separate file,
           fallback: 'style-loader',
           use: [
+            { loader: 'cache-loader' },
             // use css. also sourcemap.
-            { loader: 'css-loader', options: { minimize: true, sourceMap: true } },
+            { loader: 'css-loader', options: { minimize: true /* sourceMap: true  */ } },
             {
               // parse less for css-loader
               loader: 'less-loader',
@@ -82,7 +85,10 @@ module.exports = merge(common, {
     }),
     new UglifyJSPlugin({
       // minify everything
-      sourceMap: true, // but keep the sourcemap for debugging
+      extractComments: true,
+      parallel: true,
+      cache: true,
+      // sourceMap: true, // but keep the sourcemap for debugging
     }),
     new webpack.optimize.AggressiveMergingPlugin(), // merge chunks
   ],

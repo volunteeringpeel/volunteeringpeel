@@ -3,7 +3,6 @@
     "sourceMap": true,
     "noImplicitAny": true,
     "target": "es2015",
-    "module": "esnext",
     "moduleResolution": "node",
     "jsx": "react",
     "baseUrl": ".",
