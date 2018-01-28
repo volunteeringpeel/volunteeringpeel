@@ -8,6 +8,8 @@ import { Redirect } from 'react-router-dom';
 import { loading } from '@app/actions';
 import { store } from '@app/Utilities';
 
+import Contact from '@app/components/pages/Contact';
+
 interface Route extends RouteConfig {
   title: string;
   display?: string;
@@ -85,6 +87,11 @@ const routes: Route[] = [
     title: 'Team',
     display: 'Meet the Team',
   },
+  {
+    path: '/about/contact',
+    component: Contact,
+    title: 'Contact',
+  },
   // USER PAGES
   {
     path: '/user',
@@ -120,12 +127,6 @@ const routes: Route[] = [
     }),
     title: 'Logging in...',
   },
-  // TODO: Contact page
-  // {
-  //   path: '/contact',
-  //   component: Contact,
-  //   title: 'Contact'
-  // }
 ];
 
 export default routes;
