@@ -2,7 +2,7 @@
 import { LocationDescriptor } from 'history';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Route } from 'react-router-dom';
+import { Route, RouteComponentProps } from 'react-router-dom';
 import { Container, Dropdown, Header, Icon, Menu, Message, Segment } from 'semantic-ui-react';
 
 // App Imports
@@ -17,7 +17,7 @@ interface HeaderComponentProps {
   push: (path: LocationDescriptor) => void;
 }
 
-class HeaderComponent extends React.Component<HeaderComponentProps> {
+class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderComponentProps> {
   public render() {
     let userButton;
 
@@ -31,7 +31,7 @@ class HeaderComponent extends React.Component<HeaderComponentProps> {
                   icon="user"
                   content={`${this.props.user.user.user.first_name} ${
                     this.props.user.user.user.last_name
-                  }`}
+                    }`}
                 />
                 <Dropdown.Item onClick={() => this.props.push('/user/profile')}>
                   Profile
