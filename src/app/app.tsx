@@ -9,7 +9,7 @@ import '@app/css/style.less';
 import { history, store } from '@app/Utilities';
 
 // Controller Imports
-import Site from '@app/controllers/Site';
+import Site from '@app/public/controllers/Site';
 
 class App extends React.Component {
   public render() {

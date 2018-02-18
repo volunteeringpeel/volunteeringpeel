@@ -1,11 +1,13 @@
+// Library Imports
 import { AxiosError, AxiosResponse } from 'axios';
 import { createBrowserHistory } from 'history';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore, Dispatch, Store } from 'redux';
 import reduxThunk from 'redux-thunk';
 
-import { addMessage, getUser, getUserFailure, getUserSuccess, logout } from '@app/actions';
-import * as reducers from '@app/reducers';
+// App Imports
+import { addMessage, getUser, getUserFailure, getUserSuccess, logout } from '@app/public/actions';
+import * as reducers from '@app/public/reducers';
 
 export function listify(list: string[] | number[], prefix: string = ''): string {
   // If length is 0 or 1, don't bother listing
@@ -102,8 +104,8 @@ function configureStore(initialState?: State) {
 
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
-    module.hot.accept('./reducers', () => {
-      const nextRootReducer = require('./reducers');
+    module.hot.accept('./public/reducers', () => {
+      const nextRootReducer = require('./public/reducers');
       newStore.replaceReducer(combineReducers({ ...reducers, router: routerReducer }));
     });
   }
