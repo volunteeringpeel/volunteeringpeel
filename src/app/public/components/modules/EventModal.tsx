@@ -8,7 +8,7 @@ import * as React from 'react';
 import { Button, Dimmer, Header, Icon, Item, Label } from 'semantic-ui-react';
 
 // App Imports
-import { listify, pluralize } from '@app/Utilities';
+import { listify, pluralize } from '@app/common/utilities';
 
 // Component Imports
 import Modal from '@app/public/components/blocks/Modal';

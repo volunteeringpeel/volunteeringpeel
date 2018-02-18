@@ -3,8 +3,8 @@ import * as auth0 from 'auth0-js';
 import { push } from 'react-router-redux';
 
 // App Imports
+import { loadUser, store } from '@app/common/utilities';
 import { addMessage, dismissAllMessages, logout } from '@app/public/actions';
-import { loadUser, store } from '@app/Utilities';
 
 class Auth {
   private auth0 = new auth0.WebAuth({

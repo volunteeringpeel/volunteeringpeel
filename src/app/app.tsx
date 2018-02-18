@@ -5,8 +5,8 @@ import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 
 // App Imports
+import { history, store } from '@app/common/utilities';
 import '@app/css/style.less';
-import { history, store } from '@app/Utilities';
 
 // Controller Imports
 import Site from '@app/public/controllers/Site';

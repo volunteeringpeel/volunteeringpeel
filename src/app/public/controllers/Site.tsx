@@ -4,8 +4,8 @@ import { withRouter } from 'react-router';
 import { Dispatch } from 'redux';
 
 // App Imports
+import { loadUser } from '@app/common/utilities';
 import Site from '@app/public/components/Site';
-import { loadUser } from '@app/Utilities';
 
 const mapStateToProps = (state: State) => ({
   loading: state.loading,

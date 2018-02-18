@@ -5,8 +5,8 @@ import { connect, Dispatch } from 'react-redux';
 import { loading } from '@app/public/actions';
 
 // Component Imports
+import { loadUser } from '@app/common/utilities';
 import Events from '@app/public/components/pages/Events';
-import { loadUser } from '@app/Utilities';
 
 const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   loading: (status: boolean) => dispatch(loading(status)),
