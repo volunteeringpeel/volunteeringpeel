@@ -1,34 +1,17 @@
 // Library Imports
 import * as React from 'react';
-import reactLoadable, { LoadingComponentProps } from 'react-loadable';
+import reactLoadable from 'react-loadable';
 import { RouteConfig } from 'react-router-config';
 import { Redirect } from 'react-router-dom';
 
 // App Imports
-import { loading } from '@app/public/actions';
-import { store } from '@app/Utilities';
+import Loading from '@app/common/components/Loading';
 
 import Contact from '@app/public/components/pages/Contact';
 
 interface Route extends RouteConfig {
   title: string;
   display?: string;
-}
-
-class Loading extends React.Component<LoadingComponentProps> {
-  public componentWillUnmount() {
-    store.dispatch(loading(false));
-  }
-
-  public componentWillUpdate(nextProps: LoadingComponentProps) {
-    if (this.props.pastDelay) {
-      store.dispatch(loading(true));
-    }
-  }
-
-  public render(): JSX.Element {
-    return null;
-  }
 }
 
 const routes: Route[] = [
