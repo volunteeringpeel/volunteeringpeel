@@ -39,7 +39,9 @@ export default class FormContact extends React.Component<{}, FormContactState> {
             fluid
             label="Name"
             name="name"
+            autocomplete="name"
             value={name}
+            placeholder="Donald Trump"
             onChange={this.handleChange}
             required
           />
@@ -47,16 +49,28 @@ export default class FormContact extends React.Component<{}, FormContactState> {
             fluid
             label="Email"
             name="email"
+            autocomplete="email"
             value={email}
+            placeholder="potus@whitehouse.gov"
             onChange={this.handleChange}
             required
           />
-          <Form.Input fluid label="Phone" name="phone" value={phone} onChange={this.handleChange} />
+          <Form.Input
+            fluid
+            label="Phone"
+            name="phone"
+            type="tel"
+            autocomplete="tel"
+            value={phone}
+            placeholder="202-456-1111"
+            onChange={this.handleChange}
+          />
         </Form.Group>
         <Form.TextArea
           label="Message"
           name="message"
           value={message}
+          placeholder="I have bigger hands than the rest of the world.\n\nAny advice?"
           onChange={this.handleChange}
           required
         />
