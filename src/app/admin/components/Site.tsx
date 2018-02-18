@@ -7,8 +7,8 @@ import routes from '@app/admin/routes';
 import { RouteComponentProps } from 'react-router';
 
 // Component Imports
-import Footer from '@app/public/components/Footer';
-import LoadingDimmer from '@app/public/components/modules/LoadingDimmer';
+import Footer from '@app/common/components/Footer';
+import LoadingDimmer from '@app/common/components/LoadingDimmer';
 
 // Controller Imports
 import Header from '@app/public/controllers/Header';
