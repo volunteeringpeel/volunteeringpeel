@@ -4,8 +4,8 @@ import { connect, Dispatch } from 'react-redux';
 import { push } from 'react-router-redux';
 
 // App Imports
+import { addMessage } from '@app/common/actions';
 import { loadUser } from '@app/common/utilities';
-import { addMessage } from '@app/public/actions';
 
 // Component Imports
 import UserProfile from '@app/public/components/pages/UserProfile';

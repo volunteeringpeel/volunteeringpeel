@@ -1,8 +1,8 @@
 import * as React from "react";
 import { LoadingComponentProps } from "react-loadable";
 
+import { loading } from "@app/common/actions";
 import { store } from "@app/common/utilities";
-import { loading } from "@app/public/actions";
 
 export default class Loading extends React.Component<LoadingComponentProps> {
   public componentWillUnmount() {

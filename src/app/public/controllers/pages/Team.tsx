@@ -2,7 +2,7 @@
 import { connect, Dispatch } from 'react-redux';
 
 // App Imports
-import { loading } from '@app/public/actions';
+import { loading } from '@app/common/actions';
 
 // Component Imports
 import Team from '@app/public/components/pages/Team';

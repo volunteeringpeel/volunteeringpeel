@@ -7,7 +7,7 @@ import { Action } from 'redux-actions';
 import { Container, Message, Segment } from 'semantic-ui-react';
 
 // App Imports
-import { dismissMessage } from '@app/public/actions';
+import { dismissMessage } from '@app/common/actions';
 import Auth from '@app/public/Auth';
 
 interface MessageBoxProps {

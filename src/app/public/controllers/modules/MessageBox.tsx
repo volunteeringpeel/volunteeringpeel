@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
 // App Imports
-import { dismissMessage } from '@app/public/actions';
+import { dismissMessage } from '@app/common/actions';
 
 // Component Inputs
 import MessageBox from '@app/public/components/modules/MessageBox';

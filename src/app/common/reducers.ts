@@ -7,7 +7,6 @@ import { combineReducers } from 'redux';
 import { Action, handleAction, handleActions } from 'redux-actions';
 
 // App Imports
-import { store } from '@app/common/utilities';
 import {
   ADD_MESSAGE,
   addMessage,
@@ -18,7 +17,8 @@ import {
   GET_USER_SUCCESS,
   LOADING,
   LOGOUT,
-} from '@app/public/actions';
+} from '@app/common/actions';
+import { store } from '@app/common/utilities';
 
 const loading = handleAction<boolean, boolean>(
   LOADING,

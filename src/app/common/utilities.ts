@@ -6,8 +6,8 @@ import { applyMiddleware, combineReducers, compose, createStore, Dispatch, Store
 import reduxThunk from 'redux-thunk';
 
 // App Imports
-import { addMessage, getUser, getUserFailure, getUserSuccess, logout } from '@app/public/actions';
-import * as reducers from '@app/public/reducers';
+import { addMessage, getUser, getUserFailure, getUserSuccess, logout } from '@app/common/actions';
+import * as reducers from '@app/common/reducers';
 
 export function listify(list: string[] | number[], prefix: string = ''): string {
   // If length is 0 or 1, don't bother listing
