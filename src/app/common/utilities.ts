@@ -1,12 +1,13 @@
 // Library Imports
 import { AxiosError, AxiosResponse } from 'axios';
+import * as Promise from 'bluebird';
 import { createBrowserHistory } from 'history';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore, Dispatch, Store } from 'redux';
 import reduxThunk from 'redux-thunk';
 
 // App Imports
-import { addMessage, getUser, getUserFailure, getUserSuccess, logout } from '@app/common/actions';
+import { addMessage, getUser, getUserFailure, getUserSuccess, loading, logout } from '@app/common/actions';
 import * as reducers from '@app/common/reducers';
 
 export function listify(list: string[] | number[], prefix: string = ''): string {
@@ -30,10 +31,15 @@ export function pluralize(noun: string, number: number): string {
   return noun + (number !== 1 ? 's' : '');
 }
 
-export function loadUser(dispatch: Dispatch<State>) {
+/**
+ * Load the current user into redux store
+ * @param dispatch Dispatch to base redux on
+ * @returns Promise awaiting success (true) or failure (false)  
+ */
+export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
+  dispatch(loading(true));
   // Check whether the current time is past the token's expiry time
   const expiresAt = JSON.parse(localStorage.getItem('expires_at'));
-  if (!expiresAt) return;
   const isValid = new Date().getTime() < expiresAt;
   if (!isValid) {
     dispatch(logout());
@@ -44,27 +50,32 @@ export function loadUser(dispatch: Dispatch<State>) {
         severity: 'negative',
       }),
     );
-    return;
+    dispatch(loading(false));
+    return Promise.resolve(false);
   }
 
   // fetch user from token (if server deems it's valid token)
-  dispatch(getUser(localStorage.getItem('id_token')))
+  return dispatch(getUser(localStorage.getItem('id_token')))
     .payload.then(response => {
+      // success
       if (response.data.status === 'success') {
         dispatch(getUserSuccess(response as AxiosResponse<APIDataSuccess<User>>));
-      } else {
-        localStorage.removeItem('id_token');
-        dispatch(getUserFailure(response as AxiosResponse<APIDataError>));
-        dispatch(
-          addMessage({
-            message: response.data.error,
-            more: response.data.details,
-            severity: 'negative',
-          }),
-        );
+        return true;
       }
+      // failure
+      localStorage.removeItem('id_token');
+      dispatch(getUserFailure(response as AxiosResponse<APIDataError>));
+      dispatch(
+        addMessage({
+          message: response.data.error,
+          more: response.data.details,
+          severity: 'negative',
+        }),
+      );
+      return false;
     })
     .catch((error: AxiosError) => {
+      // big failure
       localStorage.removeItem('id_token');
       dispatch(getUserFailure(error.response));
       dispatch(
@@ -74,7 +85,10 @@ export function loadUser(dispatch: Dispatch<State>) {
           severity: 'negative',
         }),
       );
-    });
+      return false;
+    })
+    .finally(() =>
+      dispatch(loading(false)));
 }
 
 export const history = createBrowserHistory();
