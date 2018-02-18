@@ -54,7 +54,25 @@ app.use(express.static(path.resolve(appDir)));
 // API
 app.use('/api', api);
 
-// React
+// Admin page
+// Really hacky use of .use instead of .get here. Should probably be changed
+app.use('/admin', (req, res, next) => {
+  if (compiler) {
+    const filename = path.join(compiler.outputPath, 'admin.html');
+    compiler.outputFileSystem.readFile(filename, (err: any, result: any) => {
+      if (err) {
+        return next(err);
+      }
+      res.set('content-type', 'text/html');
+      res.send(result);
+      res.end();
+    });
+  } else {
+    res.sendFile(path.resolve(appDir, 'admin.html'));
+  }
+});
+
+// Public page
 app.get('*', (req, res, next) => {
   if (compiler) {
     const filename = path.join(compiler.outputPath, 'index.html');

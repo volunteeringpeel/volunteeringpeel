@@ -48,7 +48,7 @@ module.exports = {
     // extract huge libraries out of main file
     new webpack.optimize.CommonsChunkPlugin({
       name: 'commons',
-      minChunks: function(module) {
+      minChunks: function (module) {
         // This prevents stylesheet resources with the .css or .scss extension
         // from being moved from their original chunk to the vendor chunk
         if (module.resource && /^.*\.(css|less)$/.test(module.resource)) {
@@ -69,12 +69,12 @@ module.exports = {
       filename: './index.html',
       template: 'index.ejs',
     }),
-    // new HTMLWebpackPlugin({
-    //   title: 'Volunteering Peel Admin',
-    //   chunks: ['runtime', 'vendor', 'admin'],
-    //   filename: 'admin.html',
-    //   template: 'index.ejs',
-    // }),
+    new HTMLWebpackPlugin({
+      title: 'Volunteering Peel Admin',
+      chunks: ['runtime', 'commons', 'admin'],
+      filename: 'admin.html',
+      template: 'index.ejs',
+    }),
     // delete some excess shit (see https://github.com/moment/moment/issues/2517)
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
     // fancy dashboard at http://localhost:1337
