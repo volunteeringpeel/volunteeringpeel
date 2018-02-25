@@ -25,7 +25,9 @@ export default class Site extends React.Component<SiteProps> {
         <LoadingDimmer loading={this.props.loading} />
         <Menu inverted fixed="top" stackable>
           <Menu.Item header>Volunteering Peel Admin</Menu.Item>
-          <Menu.Item position="right"><a href="/">Back</a></Menu.Item>
+          <Menu.Item position="right">
+            <a href="/">Back</a>
+          </Menu.Item>
         </Menu>
         <Content />
         <Footer />

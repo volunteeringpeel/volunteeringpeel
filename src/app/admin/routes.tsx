@@ -1,6 +1,6 @@
 // Library Imports
 import * as React from 'react';
-import reactLoadable from 'react-loadable';
+import * as reactLoadable from 'react-loadable';
 import { RouteConfig } from 'react-router-config';
 import { Redirect } from 'react-router-dom';
 

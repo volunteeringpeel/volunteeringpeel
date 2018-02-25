@@ -1,6 +1,6 @@
 // Library Imports
 import * as React from 'react';
-import reactLoadable from 'react-loadable';
+import * as reactLoadable from 'react-loadable';
 import { RouteConfig } from 'react-router-config';
 import { Redirect } from 'react-router-dom';
 
@@ -21,7 +21,8 @@ const routes: Route[] = [
     exact: true,
     component: reactLoadable({
       loading: Loading,
-      loader: () => import('@app/public/components/pages/Homepage' /* webpackChunkName: "homepage" */),
+      loader: () =>
+        import('@app/public/components/pages/Homepage' /* webpackChunkName: "homepage" */),
     }),
     title: 'Home',
     display: 'Volunteering Peel',
@@ -57,7 +58,8 @@ const routes: Route[] = [
     path: '/about/sponsors',
     component: reactLoadable({
       loading: Loading,
-      loader: () => import('@app/public/controllers/pages/Sponsors' /* webpackChunkName: "sponsors" */),
+      loader: () =>
+        import('@app/public/controllers/pages/Sponsors' /* webpackChunkName: "sponsors" */),
     }),
     title: 'Sponsors',
   },

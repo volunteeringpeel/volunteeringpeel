@@ -1,7 +1,7 @@
 // Library Imports
 import axios from 'axios';
 import * as Promise from 'bluebird';
-import * as update from 'immutability-helper';
+import immutabilityHelper from 'immutability-helper';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
@@ -53,7 +53,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
             headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
           },
         ),
-    )
+      )
       .then(this.props.refresh)
       .then(() => this.setState({ selectedShifts: [], submitting: false }));
   }
@@ -194,13 +194,13 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
   }
 
   private selectShift(shiftNum: number) {
-    const newState = update(this.state, {
+    const newState = immutabilityHelper(this.state, {
       // Is the shift is already selected?
       selectedShifts: _.includes(this.state.selectedShifts, shiftNum)
         ? // If yes remove the value
-        { $apply: (oldValue: number[]) => _.pull(oldValue, shiftNum) }
+          { $apply: (oldValue: number[]) => _.pull(oldValue, shiftNum) }
         : // If no push the value
-        { $push: [shiftNum] },
+          { $push: [shiftNum] },
     });
     this.setState(newState);
   }

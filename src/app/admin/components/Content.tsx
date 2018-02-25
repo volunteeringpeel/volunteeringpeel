@@ -19,15 +19,15 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
     return (
       <Grid>
         <Grid.Row style={{ margin: '1em' }}>
-          {
-            this.props.user.status === 'in' && this.props.user.user.user.role_id === 3 ? <>
+          {this.props.user.status === 'in' && this.props.user.user.user.role_id === 3 ? (
+            <>
               <Grid.Column width={3}>
                 <Menu vertical fluid pointing secondary>
                   <Route path="/admin" exact>
                     {({ match }) => (
                       <Menu.Item active={!!match} onClick={() => this.props.push('/admin')}>
                         Home
-                  </Menu.Item>
+                      </Menu.Item>
                     )}
                   </Route>
                   <Menu.Item>Events</Menu.Item>
@@ -59,14 +59,18 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                   {renderRoutes(routes)}
                 </Container>
               </Grid.Column>
-            </> : <Grid.Column width={12}>
-                <Header as="h1" size="huge" />
-                <Divider />
-                <p>Please return to the <a href="/">public site</a>.</p>
-              </Grid.Column>
-          }
+            </>
+          ) : (
+            <Grid.Column width={12}>
+              <Header as="h1" size="huge" />
+              <Divider />
+              <p>
+                Please return to the <a href="/">public site</a>.
+              </p>
+            </Grid.Column>
+          )}
         </Grid.Row>
       </Grid>
-    )
+    );
   }
 }
