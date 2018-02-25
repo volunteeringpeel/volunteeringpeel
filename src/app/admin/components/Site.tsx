@@ -20,13 +20,12 @@ export default class Site extends React.Component<SiteProps> {
   }
 
   public render() {
-    // if (this.props.user.status !== 'in' || this.props.user.user.user.role_id !== 3) return null;
     return (
       <>
         <LoadingDimmer loading={this.props.loading} />
         <Menu inverted fixed="top" stackable>
           <Menu.Item header>Volunteering Peel Admin</Menu.Item>
-          <Menu.Item position="right">Back</Menu.Item>
+          <Menu.Item position="right"><a href="/">Back</a></Menu.Item>
         </Menu>
         <Content />
         <Footer />

@@ -19,26 +19,26 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
     return (
       <Grid>
         <Grid.Row style={{ margin: '1em' }}>
-          <Grid.Column width={3}>
-            <Menu vertical fluid pointing secondary>
-              <Route path="/admin" exact>
-                {({ match }) => (
-                  <Menu.Item active={!!match} onClick={() => this.props.push('/admin')}>
-                    Home
+          {
+            this.props.user.status === 'in' && this.props.user.user.user.role_id === 3 ? <>
+              <Grid.Column width={3}>
+                <Menu vertical fluid pointing secondary>
+                  <Route path="/admin" exact>
+                    {({ match }) => (
+                      <Menu.Item active={!!match} onClick={() => this.props.push('/admin')}>
+                        Home
                   </Menu.Item>
-                )}
-              </Route>
-              <Menu.Item>Events</Menu.Item>
-              <Menu.Item>Volunteers</Menu.Item>
-              <Menu.Item>Execs</Menu.Item>
-              <Menu.Item>Overview</Menu.Item>
-              <Menu.Item>Overview</Menu.Item>
-            </Menu>
-          </Grid.Column>
-          <Grid.Column width={9}>
-            <Container>
-              {
-                this.props.user.status !== 'in' || this.props.user.user.user.role_id !== 3 ? <>
+                    )}
+                  </Route>
+                  <Menu.Item>Events</Menu.Item>
+                  <Menu.Item>Volunteers</Menu.Item>
+                  <Menu.Item>Execs</Menu.Item>
+                  <Menu.Item>Overview</Menu.Item>
+                  <Menu.Item>Overview</Menu.Item>
+                </Menu>
+              </Grid.Column>
+              <Grid.Column width={9}>
+                <Container>
                   <Route
                     path="/admin/:page?/:subpage?"
                     render={({ match }) => {
@@ -56,10 +56,12 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                     }}
                   />
                   {renderRoutes(routes)}
-                </> : <p>Unauthorized. Please return to the public site.</p>
-              }
-            </Container>
-          </Grid.Column>
+                </Container>
+              </Grid.Column>
+            </> : <Grid.Column width={12}>
+                <p>Unauthorized. Please return to the <a href="/">public site</a>.</p>
+              </Grid.Column>
+          }
         </Grid.Row>
       </Grid>
     )
