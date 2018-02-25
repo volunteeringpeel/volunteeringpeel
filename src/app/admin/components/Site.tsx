@@ -23,9 +23,6 @@ export default class Site extends React.Component<SiteProps & RouteComponentProp
   public render() {
     return (
       <>
-        <Route path="/admin" exact>
-          <Redirect to="/admin/home" />
-        </Route>
         <LoadingDimmer loading={this.props.loading} />
         <Menu inverted stackable>
           <Menu.Item header>Volunteering Peel Admin</Menu.Item>

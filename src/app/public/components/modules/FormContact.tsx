@@ -27,6 +27,7 @@ export default class FormContact extends React.Component<{}, FormContactState> {
 
   public handleSubmit = () => {
     const { name, email, phone, message } = this.state;
+    // tslint:disable-next-line:no-console
     console.log(name, email, phone, message);
   };
 

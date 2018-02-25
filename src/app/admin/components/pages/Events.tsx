@@ -1,22 +1,47 @@
 // Library Imports
+import axios from 'axios';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Grid, Header, Menu, Segment } from 'semantic-ui-react';
 
-interface EventState {
-  events: any[];
-  activeEvent: any;
+// Component Imports
+import EditEvent from '@app/admin/components/modules/EditEvent';
+
+interface EventProps {
+  loading: (status: boolean) => any;
 }
 
-export default class Events extends React.Component<{}, EventState> {
-  constructor(props: {}) {
+interface EventState {
+  events: VPEvent[];
+  activeEvent: VPEvent;
+}
+
+export default class Events extends React.Component<EventProps, EventState> {
+  constructor(props: EventProps) {
     super(props);
 
     this.state = {
-      events: _.times(10, i => ({ event_id: i, name: `Test ${i}` })),
+      events: [],
       activeEvent: null,
     };
+  }
+
+  public componentDidMount() {
+    this.refresh();
+  }
+
+  public refresh() {
+    return Promise.resolve(this.props.loading(true))
+      .then(() => {
+        return axios.get('/api/events', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+        });
+      })
+      .then(res => {
+        this.setState({ events: res.data.data });
+        this.props.loading(false);
+      });
   }
 
   public setActiveEvent(event: any) {
@@ -44,7 +69,7 @@ export default class Events extends React.Component<{}, EventState> {
           </Grid.Column>
           <Grid.Column stretched>
             <Segment>
-              {this.state.activeEvent && <Header as="h2">{this.state.activeEvent.name}</Header>}
+              {this.state.activeEvent && <EditEvent originalEvent={this.state.activeEvent} />}
             </Segment>
           </Grid.Column>
         </Grid.Row>

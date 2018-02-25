@@ -54,6 +54,7 @@ export default class FormRequest extends React.Component<{}, FormRequestState> {
       stuff,
     } = this.state;
 
+    // tslint:disable-next-line:no-console
     console.log(
       name,
       email,

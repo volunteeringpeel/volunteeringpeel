@@ -28,7 +28,7 @@ const routes: Route[] = [
     component: reactLoadable({
       loading: Loading,
       loader: () =>
-        import('@app/admin/components/pages/Events' /* webpackChunkName: "admin-events" */),
+        import('@app/admin/controllers/pages/Events' /* webpackChunkName: "admin-events" */),
     }),
     title: 'Events',
   },
