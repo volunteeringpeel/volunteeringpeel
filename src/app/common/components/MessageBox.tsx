@@ -22,7 +22,7 @@ export default class MessageBox extends React.Component<MessageBoxProps> {
   };
 
   public render() {
-    if (!this.props.messages) return null;
+    if (!this.props.messages.length) return null;
     return (
       <Segment as={this.props.as} style={{ paddingTop: '1em' }} vertical>
         {_.map(this.props.messages, message => (

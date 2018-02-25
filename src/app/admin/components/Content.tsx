@@ -20,65 +20,70 @@ interface ContentProps {
 export default class Content extends React.Component<RouteComponentProps<any> & ContentProps> {
   public render() {
     return (
-      <Grid>
-        <Grid.Row style={{ margin: '1em' }}>
-          {this.props.user.status === 'in' && this.props.user.user.user.role_id === 3 ? (
-            <>
-              <Grid.Column width={3}>
-                <Menu vertical fluid pointing secondary>
-                  <Route path="/admin/home">
-                    {({ match }) => (
-                      <Menu.Item active={!!match} onClick={() => this.props.push('/admin/home')}>
-                        Dashboard
-                      </Menu.Item>
-                    )}
-                  </Route>
-                  <Route path="/admin/events">
-                    {({ match }) => (
-                      <Menu.Item active={!!match} onClick={() => this.props.push('/admin/events')}>
-                        Events
-                      </Menu.Item>
-                    )}
-                  </Route>
-                  <Menu.Item>Volunteers</Menu.Item>
-                  <Menu.Item>Execs</Menu.Item>
-                  <Menu.Item>Overview</Menu.Item>
-                  <Menu.Item>Overview</Menu.Item>
-                </Menu>
-              </Grid.Column>
-              <Grid.Column width={13}>
-                <MessageBox />
-                <Route
-                  path="/admin/:page?/:subpage?"
-                  render={({ match }) => {
-                    const page = _.find(routes, ['path', match.url]);
-                    if (!page) {
-                      return () => {
-                        this.props.push('/admin/home');
-                      };
-                    }
-                    return (
-                      <Header as="h1" size="huge">
-                        {page.display ? page.display : page.title}
-                      </Header>
-                    );
-                  }}
-                />
+      <>
+        <MessageBox />
+        <Grid style={{ margin: '1em' }}>
+          <Grid.Row>
+            {this.props.user.status === 'in' && this.props.user.user.user.role_id === 3 ? (
+              <>
+                <Grid.Column width={3}>
+                  <Menu vertical fluid pointing secondary>
+                    <Route path="/admin/home">
+                      {({ match }) => (
+                        <Menu.Item active={!!match} onClick={() => this.props.push('/admin/home')}>
+                          Dashboard
+                        </Menu.Item>
+                      )}
+                    </Route>
+                    <Route path="/admin/events">
+                      {({ match }) => (
+                        <Menu.Item
+                          active={!!match}
+                          onClick={() => this.props.push('/admin/events')}
+                        >
+                          Events
+                        </Menu.Item>
+                      )}
+                    </Route>
+                    <Menu.Item>Volunteers</Menu.Item>
+                    <Menu.Item>Execs</Menu.Item>
+                    <Menu.Item>Overview</Menu.Item>
+                    <Menu.Item>Overview</Menu.Item>
+                  </Menu>
+                </Grid.Column>
+                <Grid.Column width={13}>
+                  <Route
+                    path="/admin/:page?/:subpage?"
+                    render={({ match }) => {
+                      const page = _.find(routes, ['path', match.url]);
+                      if (!page) {
+                        return () => {
+                          this.props.push('/admin/home');
+                        };
+                      }
+                      return (
+                        <Header as="h1" size="huge">
+                          {page.display ? page.display : page.title}
+                        </Header>
+                      );
+                    }}
+                  />
+                  <Divider />
+                  {renderRoutes(routes)}
+                </Grid.Column>
+              </>
+            ) : (
+              <Grid.Column width={12}>
+                <Header as="h1" size="huge" />
                 <Divider />
-                {renderRoutes(routes)}
+                <p>
+                  Please return to the <a href="/">public site</a>.
+                </p>
               </Grid.Column>
-            </>
-          ) : (
-            <Grid.Column width={12}>
-              <Header as="h1" size="huge" />
-              <Divider />
-              <p>
-                Please return to the <a href="/">public site</a>.
-              </p>
-            </Grid.Column>
-          )}
-        </Grid.Row>
-      </Grid>
+            )}
+          </Grid.Row>
+        </Grid>
+      </>
     );
   }
 }
