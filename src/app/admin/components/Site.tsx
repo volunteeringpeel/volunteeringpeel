@@ -1,5 +1,6 @@
 // Library Imports
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router';
 import { Menu } from 'semantic-ui-react';
 
 // Component Imports
@@ -14,7 +15,7 @@ interface SiteProps {
   loadUser: () => void;
 }
 
-export default class Site extends React.Component<SiteProps> {
+export default class Site extends React.Component<SiteProps & RouteComponentProps<any>> {
   public componentDidMount() {
     this.props.loadUser();
   }

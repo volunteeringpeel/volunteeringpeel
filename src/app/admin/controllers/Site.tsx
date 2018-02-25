@@ -22,7 +22,8 @@ const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   },
 });
 
+const connectedSite = connect(mapStateToProps, mapDispatchToProps)(Site);
 // tslint:disable-next-line:variable-name
-const SiteController = connect(mapStateToProps, mapDispatchToProps)(Site);
+const SiteController = withRouter(connectedSite);
 
 export default SiteController;

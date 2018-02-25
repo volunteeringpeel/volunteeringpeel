@@ -14,13 +14,23 @@ interface Route extends RouteConfig {
 
 const routes: Route[] = [
   {
-    path: '/admin',
+    path: '/admin/home',
     exact: true,
     component: reactLoadable({
       loading: Loading,
       loader: () => import('@app/admin/components/pages/Home' /* webpackChunkName: "admin-home" */),
     }),
     title: 'Dashboard',
+  },
+  {
+    path: '/admin/events',
+    exact: true,
+    component: reactLoadable({
+      loading: Loading,
+      loader: () =>
+        import('@app/admin/components/pages/Events' /* webpackChunkName: "admin-events" */),
+    }),
+    title: 'Events',
   },
 ];
 

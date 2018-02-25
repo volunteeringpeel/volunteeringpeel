@@ -2,7 +2,7 @@
 import { LocationDescriptor } from 'history';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Route, RouteComponentProps } from 'react-router';
+import { Route, RouteComponentProps, RouteProps } from 'react-router';
 import { renderRoutes } from 'react-router-config';
 import { Container, Divider, Grid, Header, Menu } from 'semantic-ui-react';
 
@@ -23,14 +23,20 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
             <>
               <Grid.Column width={3}>
                 <Menu vertical fluid pointing secondary>
-                  <Route path="/admin" exact>
+                  <Route path="/admin/home">
                     {({ match }) => (
-                      <Menu.Item active={!!match} onClick={() => this.props.push('/admin')}>
-                        Home
+                      <Menu.Item active={!!match} onClick={() => this.props.push('/admin/home')}>
+                        Dashboard
                       </Menu.Item>
                     )}
                   </Route>
-                  <Menu.Item>Events</Menu.Item>
+                  <Route path="/admin/events">
+                    {({ match }) => (
+                      <Menu.Item active={!!match} onClick={() => this.props.push('/admin/events')}>
+                        Events
+                      </Menu.Item>
+                    )}
+                  </Route>
                   <Menu.Item>Volunteers</Menu.Item>
                   <Menu.Item>Execs</Menu.Item>
                   <Menu.Item>Overview</Menu.Item>
@@ -45,7 +51,7 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                       const page = _.find(routes, ['path', match.url]);
                       if (!page) {
                         return () => {
-                          this.props.push('/admin');
+                          this.props.push('/admin/home');
                         };
                       }
                       return (
