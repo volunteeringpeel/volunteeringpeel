@@ -23,7 +23,7 @@ export default () => (
           </Menu.Item>
         </Menu>
       </Divider>
-      &copy; 2017 Volunteering Peel. All rights reserved. Made with <Icon name="heart" as="i" />.
+      &copy; 2017-{new Date().getFullYear()} Volunteering Peel. All rights reserved. Made with <Icon name="heart" as="i" />.
     </Container>
   </Segment>
 );
