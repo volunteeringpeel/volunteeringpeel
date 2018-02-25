@@ -1,6 +1,6 @@
 // Library Imports
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router';
+import { Redirect, Route, RouteComponentProps } from 'react-router';
 import { Menu } from 'semantic-ui-react';
 
 // Component Imports
@@ -23,6 +23,9 @@ export default class Site extends React.Component<SiteProps & RouteComponentProp
   public render() {
     return (
       <>
+        <Route path="/admin" exact>
+          <Redirect to="/admin/home" />
+        </Route>
         <LoadingDimmer loading={this.props.loading} />
         <Menu inverted fixed="top" stackable>
           <Menu.Item header>Volunteering Peel Admin</Menu.Item>

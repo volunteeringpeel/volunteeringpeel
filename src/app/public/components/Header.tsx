@@ -10,7 +10,7 @@ import Auth from '@app/public/Auth';
 import routes from '@app/public/routes';
 
 // Controller Imports
-import MessageBox from '@app/public/controllers/modules/MessageBox';
+import MessageBox from '@app/common/controllers/MessageBox';
 
 interface HeaderComponentProps {
   user: UserState;
@@ -31,7 +31,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                   icon="user"
                   content={`${this.props.user.user.user.first_name} ${
                     this.props.user.user.user.last_name
-                    }`}
+                  }`}
                 />
                 <Dropdown.Item onClick={() => this.props.push('/user/profile')}>
                   Profile
@@ -39,9 +39,11 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                 <Dropdown.Item onClick={() => this.props.push('/user/dashboard')}>
                   Dashboard
                 </Dropdown.Item>
-                {this.props.user.user.user.role_id === 3 && <Dropdown.Item>
-                  <a href="/admin">Admin</a>
-                </Dropdown.Item>}
+                {this.props.user.user.user.role_id === 3 && (
+                  <Dropdown.Item>
+                    <a href="/admin">Admin</a>
+                  </Dropdown.Item>
+                )}
                 <Dropdown.Divider />
                 <Dropdown.Item onClick={Auth.logout}>Logout</Dropdown.Item>
               </Dropdown.Menu>

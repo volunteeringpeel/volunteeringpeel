@@ -6,6 +6,7 @@ import { push } from 'react-router-redux';
 import { Dispatch } from 'redux';
 
 // App Imports
+import { addMessage } from '@app/common/actions';
 import { loadUser } from '@app/common/utilities';
 
 import Site from '@app/admin/components/Site';
@@ -18,6 +19,7 @@ const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   loadUser: () => {
     loadUser(dispatch).then(success => {
       if (!success) window.location.replace('/');
+      else dispatch(addMessage({ message: 'Logged in successfully', severity: 'positive' }));
     });
   },
 });

@@ -9,6 +9,9 @@ import { Container, Divider, Grid, Header, Menu } from 'semantic-ui-react';
 // App Imports
 import routes from '@app/admin/routes';
 
+// Controller Imports
+import MessageBox from '@app/common/controllers/MessageBox';
+
 interface ContentProps {
   user: UserState;
   push: (path: LocationDescriptor) => void;
@@ -43,8 +46,9 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                   <Menu.Item>Overview</Menu.Item>
                 </Menu>
               </Grid.Column>
-              <Grid.Column width={9}>
+              <Grid.Column width={13}>
                 <Container>
+                  <MessageBox />
                   <Route
                     path="/admin/:page?/:subpage?"
                     render={({ match }) => {
