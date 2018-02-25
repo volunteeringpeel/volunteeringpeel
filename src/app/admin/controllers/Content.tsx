@@ -5,24 +5,20 @@ import { withRouter } from 'react-router';
 import { push } from 'react-router-redux';
 import { Dispatch } from 'redux';
 
-// App Imports
-import { loadUser } from '@app/common/utilities';
-
-import Site from '@app/admin/components/Site';
+import Content from '@app/admin/components/Content';
 
 const mapStateToProps = (state: State) => ({
-  loading: state.loading,
+  user: state.user,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
-  loadUser: () => {
-    loadUser(dispatch).then(success => {
-      if (!success) window.location.replace('/');
-    });
+  push: (path: LocationDescriptor) => {
+    dispatch(push(path));
   },
 });
 
+const connectedController = connect(mapStateToProps, mapDispatchToProps)(Content);
 // tslint:disable-next-line:variable-name
-const SiteController = connect(mapStateToProps, mapDispatchToProps)(Site);
+const ContentController = withRouter(connectedController);
 
-export default SiteController;
+export default ContentController;
