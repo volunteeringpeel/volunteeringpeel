@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Route, RouteComponentProps } from 'react-router';
 import { renderRoutes } from 'react-router-config';
-import { Container, Grid, Header, Menu } from 'semantic-ui-react';
+import { Container, Divider, Grid, Header, Menu } from 'semantic-ui-react';
 
 // App Imports
 import routes from '@app/admin/routes';
@@ -49,17 +49,20 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                         };
                       }
                       return (
-                        <Header as="h1">
+                        <Header as="h1" size="huge">
                           {page.display ? page.display : page.title}
                         </Header>
                       );
                     }}
                   />
+                  <Divider />
                   {renderRoutes(routes)}
                 </Container>
               </Grid.Column>
             </> : <Grid.Column width={12}>
-                <p>Unauthorized. Please return to the <a href="/">public site</a>.</p>
+                <Header as="h1" size="huge" />
+                <Divider />
+                <p>Please return to the <a href="/">public site</a>.</p>
               </Grid.Column>
           }
         </Grid.Row>
