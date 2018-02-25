@@ -291,6 +291,25 @@ const eventQuery = (req: Express.Request, res: Express.Response, authorized: boo
 api.get('/events', (req, res) => eventQuery(req, res, true));
 api.get('/public/events', (req, res) => eventQuery(req, res, false));
 
+// Edit event
+api.post('/events/:id', (req, res) => {
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      return db.query('UPDATE event SET ? WHERE event_id = ?', [req.body, req.params.id]);
+    })
+    .then(() => {
+      res.success('Event updated successfully');
+      db.release();
+    })
+    .catch(error => {
+      res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
+    });
+});
+
 // Signup
 api.post('/signup', (req, res) => {
   let db: mysql.PoolConnection;

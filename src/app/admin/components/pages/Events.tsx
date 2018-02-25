@@ -1,14 +1,15 @@
 // Library Imports
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Grid, Header, Menu, Segment } from 'semantic-ui-react';
 
-// Component Imports
-import EditEvent from '@app/admin/components/modules/EditEvent';
+// Controllers Imports
+import EditEvent from '@app/admin/controllers/modules/EditEvent';
 
 interface EventProps {
+  addMessage: (message: Message) => any;
   loading: (status: boolean) => any;
 }
 
@@ -41,6 +42,13 @@ export default class Events extends React.Component<EventProps, EventState> {
       .then(res => {
         this.setState({ events: res.data.data });
         this.props.loading(false);
+      })
+      .catch((error: AxiosError) => {
+        this.props.addMessage({
+          message: error.response.data.error,
+          more: error.response.data.details,
+          severity: 'negative',
+        });
       });
   }
 
@@ -69,7 +77,11 @@ export default class Events extends React.Component<EventProps, EventState> {
           </Grid.Column>
           <Grid.Column stretched>
             <Segment>
-              {this.state.activeEvent && <EditEvent originalEvent={this.state.activeEvent} />}
+              {this.state.activeEvent ? (
+                <EditEvent originalEvent={this.state.activeEvent} refresh={() => this.refresh()} />
+              ) : (
+                <p>Please select an event to edit</p>
+              )}
             </Segment>
           </Grid.Column>
         </Grid.Row>

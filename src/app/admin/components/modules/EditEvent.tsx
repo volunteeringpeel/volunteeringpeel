@@ -1,11 +1,15 @@
 // Library Imports
+import axios, { AxiosError } from 'axios';
+import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Form } from 'semantic-ui-react';
 
 interface EditEventProps {
-  // loading: (status: boolean) => any;
+  addMessage: (message: Message) => any;
+  loading: (status: boolean) => any;
   originalEvent: VPEvent;
+  refresh: () => void;
 }
 
 interface EditEventState {
@@ -46,6 +50,28 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
     const { name, description, address, transport } = this.state;
     // tslint:disable-next-line:no-console
     console.log(name, description, address, transport);
+    Promise.resolve(this.props.loading(true))
+      .then(() =>
+        axios.post(
+          `/api/events/${this.props.originalEvent.event_id}`,
+          { name, description, address, transport },
+          {
+            headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+          },
+        ),
+      )
+      .then(res => {
+        this.props.addMessage({ message: res.data.data, severity: 'positive' });
+        this.props.refresh();
+      })
+      .catch((error: AxiosError) => {
+        this.props.addMessage({
+          message: error.response.data.error,
+          more: error.response.data.details,
+          severity: 'negative',
+        });
+      })
+      .finally(() => this.props.loading(false));
   };
 
   public render() {
