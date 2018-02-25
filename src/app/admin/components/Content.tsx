@@ -47,27 +47,25 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                 </Menu>
               </Grid.Column>
               <Grid.Column width={13}>
-                <Container>
-                  <MessageBox />
-                  <Route
-                    path="/admin/:page?/:subpage?"
-                    render={({ match }) => {
-                      const page = _.find(routes, ['path', match.url]);
-                      if (!page) {
-                        return () => {
-                          this.props.push('/admin/home');
-                        };
-                      }
-                      return (
-                        <Header as="h1" size="huge">
-                          {page.display ? page.display : page.title}
-                        </Header>
-                      );
-                    }}
-                  />
-                  <Divider />
-                  {renderRoutes(routes)}
-                </Container>
+                <MessageBox />
+                <Route
+                  path="/admin/:page?/:subpage?"
+                  render={({ match }) => {
+                    const page = _.find(routes, ['path', match.url]);
+                    if (!page) {
+                      return () => {
+                        this.props.push('/admin/home');
+                      };
+                    }
+                    return (
+                      <Header as="h1" size="huge">
+                        {page.display ? page.display : page.title}
+                      </Header>
+                    );
+                  }}
+                />
+                <Divider />
+                {renderRoutes(routes)}
               </Grid.Column>
             </>
           ) : (
