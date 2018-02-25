@@ -39,6 +39,9 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                 <Dropdown.Item onClick={() => this.props.push('/user/dashboard')}>
                   Dashboard
                 </Dropdown.Item>
+                {this.props.user.user.user.role_id === 3 && <Dropdown.Item>
+                  <a href="/admin">Admin</a>
+                </Dropdown.Item>}
                 <Dropdown.Divider />
                 <Dropdown.Item onClick={Auth.logout}>Logout</Dropdown.Item>
               </Dropdown.Menu>
