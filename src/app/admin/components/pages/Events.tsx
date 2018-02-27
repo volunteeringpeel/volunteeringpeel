@@ -52,7 +52,7 @@ export default class Events extends React.Component<EventProps, EventState> {
       });
   }
 
-  public setActiveEvent(event: any) {
+  public setActiveEvent(event: VPEvent) {
     this.setState({ activeEvent: event });
   }
 
@@ -73,6 +73,21 @@ export default class Events extends React.Component<EventProps, EventState> {
                   {event.name}
                 </Menu.Item>
               ))}
+              <Menu.Item
+                active={this.state.activeEvent && this.state.activeEvent.event_id === -1}
+                onClick={() =>
+                  this.setActiveEvent({
+                    event_id: -1,
+                    name: '',
+                    description: '',
+                    transport: '',
+                    address: '',
+                    shifts: [],
+                  })
+                }
+              >
+                <em>Add New Event</em>
+              </Menu.Item>
             </Menu>
           </Grid.Column>
           <Grid.Column stretched>

@@ -294,20 +294,46 @@ api.get('/public/events', (req, res) => eventQuery(req, res, false));
 // Edit event
 api.post('/events/:id', (req, res) => {
   let db: mysql.PoolConnection;
-  pool
-    .getConnection()
-    .then(conn => {
-      db = conn;
-      return db.query('UPDATE event SET ? WHERE event_id = ?', [req.body, req.params.id]);
-    })
-    .then(() => {
-      res.success('Event updated successfully');
-      db.release();
-    })
-    .catch(error => {
-      res.error(500, 'Database error', error);
-      if (db && db.end) db.release();
-    });
+
+  if (+req.params.id === -1) {
+    // Add new event
+    pool
+      .getConnection()
+      .then(conn => {
+        db = conn;
+        const { name, description, transport, address } = req.body;
+        return db.query('INSERT INTO event SET ?', {
+          name,
+          description,
+          transport,
+          address,
+        });
+      })
+      .then(() => {
+        res.success('Event added successfully');
+        db.release();
+      })
+      .catch(error => {
+        res.error(500, 'Database error', error);
+        if (db && db.end) db.release();
+      });
+  } else {
+    // Modify event
+    pool
+      .getConnection()
+      .then(conn => {
+        db = conn;
+        return db.query('UPDATE event SET ? WHERE event_id = ?', [req.body, req.params.id]);
+      })
+      .then(() => {
+        res.success('Event updated successfully');
+        db.release();
+      })
+      .catch(error => {
+        res.error(500, 'Database error', error);
+        if (db && db.end) db.release();
+      });
+  }
 });
 
 // Signup
