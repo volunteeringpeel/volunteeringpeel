@@ -295,6 +295,7 @@ api.get('/public/events', (req, res) => eventQuery(req, res, false));
 api.post('/events/:id', (req, res) => {
   let db: mysql.PoolConnection;
 
+  // Cast parameter to number, because numbers are a good
   if (+req.params.id === -1) {
     // Add new event
     pool
@@ -334,6 +335,25 @@ api.post('/events/:id', (req, res) => {
         if (db && db.end) db.release();
       });
   }
+});
+
+// Delete event
+api.delete('/events/:id', (req, res) => {
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      return db.query('DELETE FROM event WHERE event_id = ?', [req.params.id]);
+    })
+    .then(() => {
+      res.success('Event deleted successfully');
+      db.release();
+    })
+    .catch(error => {
+      res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
+    });
 });
 
 // Signup

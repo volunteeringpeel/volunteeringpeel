@@ -74,6 +74,27 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       .finally(() => this.props.loading(false));
   };
 
+  public handleDelete = () => {
+    Promise.resolve(this.props.loading(true))
+      .then(() =>
+        axios.delete(`/api/events/${this.props.originalEvent.event_id}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+        }),
+      )
+      .then(res => {
+        this.props.addMessage({ message: res.data.data, severity: 'positive' });
+        this.props.refresh();
+      })
+      .catch((error: AxiosError) => {
+        this.props.addMessage({
+          message: error.response.data.error,
+          more: error.response.data.details,
+          severity: 'negative',
+        });
+      })
+      .finally(() => this.props.loading(false));
+  };
+
   public render() {
     const { name, description, address, transport } = this.state;
 
@@ -116,6 +137,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
           />
         </Form.Group>
         <Form.Button type="submit" content="Save Changes" />
+        <Form.Button onClick={this.handleDelete} content="Delete Event" />
       </Form>
     );
   }

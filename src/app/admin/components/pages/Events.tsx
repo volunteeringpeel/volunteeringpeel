@@ -40,7 +40,15 @@ export default class Events extends React.Component<EventProps, EventState> {
         });
       })
       .then(res => {
-        this.setState({ events: res.data.data });
+        this.setState({
+          events: res.data.data,
+          // reset active event with new data and/or nothing if event was deleted
+          activeEvent: _.find(res.data.data, [
+            'event_id',
+            // check existence before checking id
+            this.state.activeEvent && this.state.activeEvent.event_id,
+          ]),
+        });
         this.props.loading(false);
       })
       .catch((error: AxiosError) => {
