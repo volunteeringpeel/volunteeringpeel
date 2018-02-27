@@ -101,7 +101,11 @@ export default class Events extends React.Component<EventProps, EventState> {
           <Grid.Column stretched>
             <Segment>
               {this.state.activeEvent ? (
-                <EditEvent originalEvent={this.state.activeEvent} refresh={() => this.refresh()} />
+                <EditEvent
+                  originalEvent={this.state.activeEvent}
+                  refresh={() => this.refresh()}
+                  cancel={() => this.setState({ activeEvent: null })}
+                />
               ) : (
                 <p>Please select an event to edit</p>
               )}

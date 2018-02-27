@@ -7,6 +7,7 @@ import { Form } from 'semantic-ui-react';
 
 interface EditEventProps {
   addMessage: (message: Message) => any;
+  cancel: () => void;
   loading: (status: boolean) => any;
   originalEvent: VPEvent;
   refresh: () => void;
@@ -84,6 +85,8 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       .then(res => {
         this.props.addMessage({ message: res.data.data, severity: 'positive' });
         this.props.refresh();
+        // deselect event (cause it's gone)
+        this.props.cancel();
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
@@ -136,8 +139,23 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
             onChange={this.handleChange}
           />
         </Form.Group>
-        <Form.Button type="submit" content="Save Changes" />
-        <Form.Button onClick={this.handleDelete} content="Delete Event" />
+        <Form.Group>
+          <Form.Button
+            type="submit"
+            content="Save Changes"
+            icon="save"
+            labelPosition="left"
+            primary
+          />
+          <Form.Button
+            onClick={this.handleDelete}
+            content="Delete Event"
+            negative
+            icon="delete"
+            labelPosition="left"
+          />
+          <Form.Button onClick={this.props.cancel} content="Cancel" />
+        </Form.Group>
       </Form>
     );
   }
