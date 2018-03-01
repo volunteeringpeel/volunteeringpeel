@@ -240,10 +240,13 @@ const eventQuery = (req: Express.Request, res: Express.Response, authorized: boo
     .getConnection()
     .then(conn => {
       db = conn;
-      return db.query('SELECT event_id, name, address, transport, description FROM event');
+      // Grab all events
+      return db.query('SELECT event_id, name, address, transport, description, active FROM event');
     })
     .then(events => {
+      // Create a promise for each event
       const promises = events.map((event: VPEvent) => {
+        // If logged in, also check if user is already signed up
         const query = authorized
           ? // Query if logged in
             `SELECT
@@ -263,19 +266,20 @@ const eventQuery = (req: Express.Request, res: Express.Response, authorized: boo
               0 signed_up
             FROM vw_shift s
             WHERE s.event_id = ? AND ?`;
-        const userID = authorized ? req.user.email : -1;
+        const userID = authorized ? req.user.email : -1; // Use -1 if logged out, as -1 will not match any users
         return db.query(query, [event.event_id, userID]).then(shifts => {
           return out.push({
             ...event,
+            active: !!event.active, // Convert to boolean
             shifts: shifts.map((shift: any) => ({
               ...shift,
               meals: shift.meals.split(','),
-              // Deal with booleans
-              signed_up: !!shift.signed_up,
+              signed_up: !!shift.signed_up, // Convert to boolean
             })),
           });
         });
       });
+      // Await all promises to return
       return Promise.all(promises);
     })
     .then(events => {
@@ -288,13 +292,14 @@ const eventQuery = (req: Express.Request, res: Express.Response, authorized: boo
     });
 };
 
+// Endpoint requires JWT (i.e. logged in)
 api.get('/events', (req, res) => eventQuery(req, res, true));
+// Endpoint doesn't require JWT (i.e. not logged in)
 api.get('/public/events', (req, res) => eventQuery(req, res, false));
 
 // Edit event
 api.post('/events/:id', (req, res) => {
   let db: mysql.PoolConnection;
-
   // Cast parameter to number, because numbers are a good
   if (+req.params.id === -1) {
     // Add new event

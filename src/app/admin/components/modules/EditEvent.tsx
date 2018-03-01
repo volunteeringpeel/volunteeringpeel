@@ -3,7 +3,7 @@ import axios, { AxiosError } from 'axios';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Form } from 'semantic-ui-react';
+import { Button, Form, Icon } from 'semantic-ui-react';
 
 interface EditEventProps {
   addMessage: (message: Message) => any;
@@ -18,6 +18,7 @@ interface EditEventState {
   description: string;
   address: string;
   transport: string;
+  active: boolean;
 }
 
 export default class EditEvent extends React.Component<EditEventProps, EditEventState> {
@@ -29,6 +30,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       description: props.originalEvent.description,
       address: props.originalEvent.address,
       transport: props.originalEvent.transport,
+      active: props.originalEvent.active,
     };
   }
 
@@ -39,23 +41,24 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
         description: nextProps.originalEvent.description,
         address: nextProps.originalEvent.address,
         transport: nextProps.originalEvent.transport,
+        active: nextProps.originalEvent.active,
       });
     }
   }
 
-  public handleChange = (e: React.FormEvent<any>, { name, value }: any) => {
-    this.setState({ [name]: value });
+  public handleChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
+    this.setState({ [name]: value || checked });
   };
 
   public handleSubmit = () => {
-    const { name, description, address, transport } = this.state;
+    const { name, description, address, transport, active } = this.state;
     // tslint:disable-next-line:no-console
     console.log(name, description, address, transport);
     Promise.resolve(this.props.loading(true))
       .then(() =>
         axios.post(
           `/api/events/${this.props.originalEvent.event_id}`,
-          { name, description, address, transport },
+          { name, description, address, transport, active },
           {
             headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
           },
@@ -99,7 +102,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   };
 
   public render() {
-    const { name, description, address, transport } = this.state;
+    const { name, description, address, transport, active } = this.state;
 
     return (
       <Form onSubmit={this.handleSubmit}>
@@ -111,6 +114,12 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
           placeholder="A Super Cool Event"
           onChange={this.handleChange}
           required
+        />
+        <Form.Checkbox
+          label="Show event on Events page?"
+          name="active"
+          checked={active}
+          onChange={this.handleChange}
         />
         <Form.TextArea
           label="Description"
@@ -140,21 +149,26 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
           />
         </Form.Group>
         <Form.Group>
-          <Form.Button
-            type="submit"
-            content="Save Changes"
-            icon="save"
-            labelPosition="left"
-            primary
-          />
-          <Form.Button
-            onClick={this.handleDelete}
-            content="Delete Event"
-            negative
-            icon="delete"
-            labelPosition="left"
-          />
-          <Form.Button onClick={this.props.cancel} content="Cancel" />
+          <Button.Group fluid>
+            <Button type="submit" animated="fade" primary>
+              <Button.Content hidden>Save</Button.Content>
+              <Button.Content visible>
+                <Icon name="save" />
+              </Button.Content>
+            </Button>
+            <Button onClick={this.handleDelete} animated="fade" negative>
+              <Button.Content hidden>Delete</Button.Content>
+              <Button.Content visible>
+                <Icon name="trash" />
+              </Button.Content>
+            </Button>
+            <Button onClick={this.props.cancel} animated="fade">
+              <Button.Content hidden>Cancel</Button.Content>
+              <Button.Content visible>
+                <Icon name="delete" />
+              </Button.Content>
+            </Button>
+          </Button.Group>
         </Form.Group>
       </Form>
     );

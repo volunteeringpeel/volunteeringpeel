@@ -46,7 +46,8 @@ export default class Events extends React.Component<EventsProps, EventsState> {
         return axios.get('/api/public/events');
       })
       .then(res => {
-        this.setState({ events: res.data.data });
+        // Only show events that are marked as active in admin console
+        this.setState({ events: _.filter(res.data.data, ['active', true]) });
         this.props.loading(false);
         this.props.loadUser();
       });

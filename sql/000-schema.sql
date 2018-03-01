@@ -15,7 +15,8 @@ create table if not exists event (
   name        varchar(64)   not null                            comment 'Event name',
   address     varchar(256)  not null                            comment 'Event address (full address)',
   transport   varchar(32)   default null                        comment 'Transport origin location (null if none)',
-  description text          not null                            comment 'Event description'
+  description text          not null                            comment 'Event description',
+  active      boolean       not null default 0                  comment 'Event visible on events page?'
 );
 
 create table if not exists shift (

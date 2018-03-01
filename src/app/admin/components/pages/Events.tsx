@@ -91,6 +91,7 @@ export default class Events extends React.Component<EventProps, EventState> {
                     transport: '',
                     address: '',
                     shifts: [],
+                    active: false,
                   })
                 }
               >
@@ -107,8 +108,8 @@ export default class Events extends React.Component<EventProps, EventState> {
                   cancel={() => this.setState({ activeEvent: null })}
                 />
               ) : (
-                <p>Please select an event to edit</p>
-              )}
+                  <p>Please select an event to edit</p>
+                )}
             </Segment>
           </Grid.Column>
         </Grid.Row>
