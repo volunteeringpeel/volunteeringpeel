@@ -21,8 +21,7 @@ const routes: Route[] = [
     exact: true,
     component: reactLoadable({
       loading: Loading,
-      loader: () =>
-        import('@app/public/components/pages/Homepage' /* webpackChunkName: "homepage" */),
+      loader: () => import('@app/public/components/pages/Homepage'),
     }),
     title: 'Home',
     display: 'Volunteering Peel',
@@ -31,7 +30,7 @@ const routes: Route[] = [
     path: '/events',
     component: reactLoadable({
       loading: Loading,
-      loader: () => import('@app/public/controllers/pages/Events' /* webpackChunkName: "events" */),
+      loader: () => import('@app/public/controllers/pages/Events'),
     }),
     title: 'Events',
   },
@@ -41,7 +40,7 @@ const routes: Route[] = [
     exact: true,
     component: reactLoadable({
       loading: Loading,
-      loader: () => import('@app/public/components/pages/About' /* webpackChunkName: "about" */),
+      loader: () => import('@app/public/components/pages/About'),
     }),
     title: 'About',
   },
@@ -49,7 +48,7 @@ const routes: Route[] = [
     path: '/about/faq',
     component: reactLoadable({
       loading: Loading,
-      loader: () => import('@app/public/controllers/pages/FAQ' /* webpackChunkName: "faq" */),
+      loader: () => import('@app/public/controllers/pages/FAQ'),
     }),
     title: 'FAQ',
     display: 'Frequently Asked Questions',
@@ -58,8 +57,7 @@ const routes: Route[] = [
     path: '/about/sponsors',
     component: reactLoadable({
       loading: Loading,
-      loader: () =>
-        import('@app/public/controllers/pages/Sponsors' /* webpackChunkName: "sponsors" */),
+      loader: () => import('@app/public/controllers/pages/Sponsors'),
     }),
     title: 'Sponsors',
   },
@@ -67,7 +65,7 @@ const routes: Route[] = [
     path: '/about/team',
     component: reactLoadable({
       loading: Loading,
-      loader: () => import('@app/public/controllers/pages/Team' /* webpackChunkName: "team" */),
+      loader: () => import('@app/public/controllers/pages/Team'),
     }),
     title: 'Team',
     display: 'Meet the Team',
@@ -88,8 +86,7 @@ const routes: Route[] = [
     path: '/user/dashboard',
     component: reactLoadable({
       loading: Loading,
-      loader: () =>
-        import('@app/public/controllers/pages/UserDashboard' /* webpackChunkName: "user-dashboard" */),
+      loader: () => import('@app/public/controllers/pages/UserDashboard'),
     }),
     title: 'Dashboard',
   },
@@ -97,8 +94,7 @@ const routes: Route[] = [
     path: '/user/profile',
     component: reactLoadable({
       loading: Loading,
-      loader: () =>
-        import('@app/public/controllers/pages/UserProfile' /* webpackChunkName: "user-profile" */),
+      loader: () => import('@app/public/controllers/pages/UserProfile'),
     }),
     title: 'Profile',
   },
@@ -107,8 +103,7 @@ const routes: Route[] = [
     path: '/callback',
     component: reactLoadable({
       loading: Loading,
-      loader: () =>
-        import('@app/public/controllers/pages/LoginCallback' /* webpackChunkName: "login-callback" */),
+      loader: () => import('@app/public/controllers/pages/LoginCallback'),
     }),
     title: 'Logging in...',
   },

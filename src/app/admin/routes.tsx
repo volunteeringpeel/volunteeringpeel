@@ -18,7 +18,7 @@ const routes: Route[] = [
     exact: true,
     component: reactLoadable({
       loading: Loading,
-      loader: () => import('@app/admin/components/pages/Home' /* webpackChunkName: "admin-home" */),
+      loader: () => import('@app/admin/components/pages/Home'),
     }),
     title: 'Dashboard',
   },
@@ -27,8 +27,7 @@ const routes: Route[] = [
     exact: true,
     component: reactLoadable({
       loading: Loading,
-      loader: () =>
-        import('@app/admin/controllers/pages/Events' /* webpackChunkName: "admin-events" */),
+      loader: () => import('@app/admin/controllers/pages/Events'),
     }),
     title: 'Events',
   },
