@@ -2,7 +2,7 @@
 import { LocationDescriptor } from 'history';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Route, RouteComponentProps, RouteProps } from 'react-router';
+import { Redirect, Route, RouteComponentProps, RouteProps } from 'react-router';
 import { renderRoutes } from 'react-router-config';
 import { Container, Divider, Grid, Header, Menu } from 'semantic-ui-react';
 
@@ -57,9 +57,7 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                     render={({ match }) => {
                       const page = _.find(routes, ['path', match.url]);
                       if (!page) {
-                        return () => {
-                          this.props.push('/admin/home');
-                        };
+                        return <Redirect to="/admin/home" />;
                       }
                       return (
                         <Header as="h1" size="huge">

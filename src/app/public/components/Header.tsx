@@ -2,6 +2,7 @@
 import { LocationDescriptor } from 'history';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { Redirect } from 'react-router';
 import { Route, RouteComponentProps } from 'react-router-dom';
 import { Container, Dropdown, Header, Icon, Menu, Message, Segment } from 'semantic-ui-react';
 
@@ -109,9 +110,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
             render={({ match }) => {
               const page = _.find(routes, ['path', match.url]);
               if (!page) {
-                return () => {
-                  this.props.push('/');
-                };
+                return <Redirect to="/" />;
               }
               return (
                 <Container text>
