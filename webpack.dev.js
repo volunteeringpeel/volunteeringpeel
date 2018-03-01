@@ -12,8 +12,8 @@ module.exports = merge(common, {
   // fix things by adding a bunch of middleware
   // (stuff that makes it better, but slower so we don't include it in production)
   entry: {
-    app: ['webpack-hot-middleware/client', './app.tsx'],
-    admin: ['webpack-hot-middleware/client', './admin.tsx'],
+    app: ['webpack-hot-middleware/client', './public/index.tsx'],
+    admin: ['webpack-hot-middleware/client', './admin/index.tsx'],
   },
 
   // obviously need this for debugging

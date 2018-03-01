@@ -9,8 +9,8 @@ module.exports = {
 
   // have two pages, app and admin (/ and /admin)
   entry: {
-    app: './app.tsx',
-    admin: './admin.tsx',
+    app: './public/index.tsx',
+    admin: './admin/index.tsx',
   },
 
   module: {
@@ -48,7 +48,7 @@ module.exports = {
     // extract huge libraries out of main file
     new webpack.optimize.CommonsChunkPlugin({
       name: 'commons',
-      minChunks: function (module) {
+      minChunks: function(module) {
         // This prevents stylesheet resources with the .css or .scss extension
         // from being moved from their original chunk to the vendor chunk
         if (module.resource && /^.*\.(css|less)$/.test(module.resource)) {
@@ -66,7 +66,7 @@ module.exports = {
     new HTMLWebpackPlugin({
       title: 'Volunteering Peel',
       chunks: ['runtime', 'commons', 'app'],
-      filename: './index.html',
+      filename: 'index.html',
       template: 'index.ejs',
     }),
     new HTMLWebpackPlugin({

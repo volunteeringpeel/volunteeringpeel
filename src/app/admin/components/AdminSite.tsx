@@ -15,7 +15,7 @@ interface SiteProps {
   loadUser: () => void;
 }
 
-export default class Site extends React.Component<SiteProps & RouteComponentProps<any>> {
+class Site extends React.Component<SiteProps & RouteComponentProps<any>> {
   public componentDidMount() {
     this.props.loadUser();
   }
@@ -36,3 +36,12 @@ export default class Site extends React.Component<SiteProps & RouteComponentProp
     );
   }
 }
+
+let exportSite = Site;
+
+if (process.env.NODE_ENV !== 'production') {
+  // tslint:disable-next-line:no-var-requires
+  exportSite = require('react-hot-loader').hot(module)(Site);
+}
+
+export default exportSite;

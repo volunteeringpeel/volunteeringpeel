@@ -5,7 +5,7 @@ import { Dispatch } from 'redux';
 
 // App Imports
 import { loadUser } from '@app/common/utilities';
-import Site from '@app/public/components/Site';
+import PublicSite from '@app/public/components/PublicSite';
 
 const mapStateToProps = (state: State) => ({
   loading: state.loading,
@@ -15,8 +15,8 @@ const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   loadUser: loadUser.bind(null, dispatch),
 });
 
-const connectedController = connect(mapStateToProps, mapDispatchToProps)(Site);
+const connectedController = connect(mapStateToProps, mapDispatchToProps)(PublicSite);
 // tslint:disable-next-line:variable-name
-const SiteController = withRouter(connectedController);
+const PublicSiteController = withRouter(connectedController);
 
-export default SiteController;
+export default PublicSiteController;

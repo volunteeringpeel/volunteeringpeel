@@ -8,15 +8,15 @@ import { ConnectedRouter } from 'react-router-redux';
 import { history, store } from '@app/common/utilities';
 import '@app/css/style.less';
 
-// Controller Imports
-import Site from '@app/public/controllers/Site';
+// Components Imports
+import AdminSite from '@app/admin/controllers/AdminSite';
 
-class App extends React.Component {
+class AdminApp extends React.Component {
   public render() {
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
-          <Site />
+          <AdminSite />
         </ConnectedRouter>
       </Provider>
     );
@@ -24,11 +24,11 @@ class App extends React.Component {
 }
 
 // tslint:disable-next-line:variable-name
-let HotApp = App;
+let App = AdminApp;
 
 if (process.env.NODE_ENV !== 'production') {
   // tslint:disable-next-line:no-var-requires
-  HotApp = require('react-hot-loader').hot(module)(App);
+  App = require('react-hot-loader').hot(module)(AdminApp);
 }
 
-ReactDOM.render(<HotApp />, document.getElementById('app'));
+export default App;

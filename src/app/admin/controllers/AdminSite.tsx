@@ -9,7 +9,7 @@ import { Dispatch } from 'redux';
 import { addMessage } from '@app/common/actions';
 import { loadUser } from '@app/common/utilities';
 
-import Site from '@app/admin/components/Site';
+import AdminSite from '@app/admin/components/AdminSite';
 
 const mapStateToProps = (state: State) => ({
   loading: state.loading,
@@ -24,8 +24,8 @@ const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   },
 });
 
-const connectedSite = connect(mapStateToProps, mapDispatchToProps)(Site);
+const connectedAdminSite = connect(mapStateToProps, mapDispatchToProps)(AdminSite);
 // tslint:disable-next-line:variable-name
-const SiteController = withRouter(connectedSite);
+const AdminSiteController = withRouter(connectedAdminSite);
 
-export default SiteController;
+export default AdminSiteController;
