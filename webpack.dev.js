@@ -64,6 +64,16 @@ module.exports = merge(common, {
           },
         ],
       },
+
+      {
+        // library css files
+        test: /\.css$/,
+        use: [
+          { loader: 'cache-loader' },
+          { loader: 'style-loader' },
+          { loader: 'css-loader', options: { sourceMap: true } },
+        ],
+      },
     ],
   },
 

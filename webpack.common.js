@@ -31,7 +31,7 @@ module.exports = {
 
       {
         // images into the image folder
-        test: /\.(png|jpg|jpeg)$/,
+        test: /\.(png|jpg|jpeg|gif)$/,
         use: [
           {
             loader: 'file-loader',

@@ -46,7 +46,7 @@ module.exports = merge(common, {
           use: [
             { loader: 'cache-loader' },
             // use css. also sourcemap.
-            { loader: 'css-loader', options: { minimize: true /* sourceMap: true  */ } },
+            { loader: 'css-loader', options: { minimize: true } },
             {
               // parse less for css-loader
               loader: 'less-loader',
@@ -57,6 +57,19 @@ module.exports = merge(common, {
                 plugins: [new LessPluginAutoPrefix({ browsers: autoprefixerBrowsers })],
               },
             },
+          ],
+        }),
+      },
+
+      {
+        // library css files
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            { loader: 'cache-loader' },
+            { loader: 'style-loader' },
+            { loader: 'css-loader', options: { minimize: true } },
           ],
         }),
       },
