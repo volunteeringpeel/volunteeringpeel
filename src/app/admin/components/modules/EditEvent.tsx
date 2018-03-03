@@ -28,6 +28,7 @@ interface EditEventState {
   active: boolean;
   shifts: Shift[];
   selectedShiftNum: number;
+  deleteShifts: number[];
 }
 
 export default class EditEvent extends React.Component<EditEventProps, EditEventState> {
@@ -42,6 +43,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       active: props.originalEvent.active,
       shifts: props.originalEvent.shifts,
       selectedShiftNum: null,
+      deleteShifts: [],
     };
   }
 
@@ -55,6 +57,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
         active: nextProps.originalEvent.active,
         shifts: nextProps.originalEvent.shifts,
         selectedShiftNum: null,
+        deleteShifts: [],
       });
     }
   }
@@ -119,8 +122,23 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
     this.setState(update(this.state, { shifts: { [selectedShiftIndex]: newState } }));
   };
 
+  public handleShiftDelete = () => {
+    const selectedShift = _.find(this.state.shifts, ['shift_num', this.state.selectedShiftNum]);
+
+    // shift is not newly created, so mark for deletion on server
+    if (selectedShift.shift_id !== -1) {
+      this.setState({ deleteShifts: this.state.deleteShifts.concat([selectedShift.shift_id]) });
+    }
+
+    // delete shift from client
+    this.setState({
+      shifts: _.filter(this.state.shifts, shift => shift.shift_num !== this.state.selectedShiftNum),
+      selectedShiftNum: null,
+    });
+  };
+
   public handleSubmit = () => {
-    const { name, description, address, transport, active, shifts } = this.state;
+    const { name, description, address, transport, active, shifts, deleteShifts } = this.state;
     Promise.resolve(this.props.loading(true))
       .then(() =>
         axios.post(
@@ -131,6 +149,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
             address,
             transport,
             active,
+            deleteShifts,
             shifts: _.map(shifts, shift => ({
               ...shift,
               // format start and end times for MySQL insertion (should probably be done on backend but oh well)
@@ -314,6 +333,12 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
                 required
                 onChange={this.handleShiftChange}
               />
+              <Button negative size="tiny" fluid animated="fade" onClick={this.handleShiftDelete}>
+                <Button.Content visible>Delete Shift</Button.Content>
+                <Button.Content hidden>
+                  <small>don't forget to save!</small>
+                </Button.Content>
+              </Button>
             </>
           ) : (
             <p>Please select a shift to edit, or add a shift by clicking the plus button.</p>

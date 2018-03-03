@@ -300,7 +300,7 @@ api.get('/public/events', (req, res) => eventQuery(req, res, false));
 // Edit event
 api.post('/events/:id', (req, res) => {
   let db: mysql.PoolConnection;
-  const { name, description, transport, address, active, shifts } = req.body;
+  const { name, description, transport, address, active, shifts, deleteShifts } = req.body;
   // Cast parameter to number, because numbers are a good
   if (+req.params.id === -1) {
     // Add new event
@@ -355,6 +355,14 @@ api.post('/events/:id', (req, res) => {
             // Update shift
             return db.query('UPDATE shift SET ? WHERE shift_id = ?', [values, shift.shift_id]);
           }),
+        );
+      })
+      .then(() => {
+        // promise for each shift marked for deletion
+        return Promise.all(
+          (deleteShifts as number[]).map(id =>
+            db.query('DELETE FROM shift WHERE shift_id = ?', id),
+          ),
         );
       })
       .then(() => {
