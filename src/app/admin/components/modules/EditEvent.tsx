@@ -24,7 +24,7 @@ interface EditEventState {
   transport: string;
   active: boolean;
   shifts: Shift[];
-  selectedShiftId: number;
+  selectedShiftNum: number;
 }
 
 export default class EditEvent extends React.Component<EditEventProps, EditEventState> {
@@ -38,7 +38,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       transport: props.originalEvent.transport,
       active: props.originalEvent.active,
       shifts: props.originalEvent.shifts,
-      selectedShiftId: null,
+      selectedShiftNum: null,
     };
   }
 
@@ -51,7 +51,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
         transport: nextProps.originalEvent.transport,
         active: nextProps.originalEvent.active,
         shifts: nextProps.originalEvent.shifts,
-        selectedShiftId: null,
+        selectedShiftNum: null,
       });
     }
   }
@@ -60,10 +60,33 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
     this.setState({ [name]: value || checked });
   };
 
+  public handleAddShift = () => {
+    // find maximum shift_num and add 1
+    const newShiftNum = _.max(_.map(this.state.shifts, 'shift_num')) + 1;
+    this.setState(
+      update(this.state, {
+        shifts: {
+          $push: [
+            {
+              shift_num: newShiftNum,
+              shift_id: -1,
+              start_time: new Date().toISOString(),
+              end_time: new Date().toISOString(),
+              max_spots: 0,
+              meals: [],
+              notes: '',
+            },
+          ],
+        },
+        selectedShiftNum: newShiftNum,
+      }),
+    );
+  };
+
   public handleShiftChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
     const selectedShiftIndex = _.findIndex(this.state.shifts, [
-      'shift_id',
-      this.state.selectedShiftId,
+      'shift_num',
+      this.state.selectedShiftNum,
     ]);
     let newState: Query<any> = {
       [name]: {
@@ -71,10 +94,11 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       },
     };
     // add/remove meal from meals array
-    if (/meals/.test(name)) {
+    if (name.startsWith('meals-')) {
+      // .substr(6) removes 'meals-' from name
       const meals = checked
-        ? this.state.shifts[selectedShiftIndex].meals.concat([name])
-        : _.filter(this.state.shifts[selectedShiftIndex].meals, x => x !== name);
+        ? this.state.shifts[selectedShiftIndex].meals.concat([name.substr(6)])
+        : _.filter(this.state.shifts[selectedShiftIndex].meals, x => x !== name.substr(6));
       newState = {
         meals: {
           $set: meals,
@@ -82,7 +106,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       };
     }
     // save date as a string
-    if (/date/.test(name)) {
+    if (name.endsWith('_date')) {
       newState = {
         shifts: {
           [selectedShiftIndex]: {
@@ -97,12 +121,12 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   };
 
   public handleSubmit = () => {
-    const { name, description, address, transport, active } = this.state;
+    const { name, description, address, transport, active, shifts } = this.state;
     Promise.resolve(this.props.loading(true))
       .then(() =>
         axios.post(
           `/api/events/${this.props.originalEvent.event_id}`,
-          { name, description, address, transport, active },
+          { name, description, address, transport, active, shifts },
           {
             headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
           },
@@ -146,8 +170,8 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   };
 
   public render() {
-    const { name, description, address, transport, active, shifts, selectedShiftId } = this.state;
-    const selectedShift = _.find(shifts, ['shift_id', selectedShiftId]);
+    const { name, description, address, transport, active, shifts, selectedShiftNum } = this.state;
+    const selectedShift = _.find(shifts, ['shift_num', selectedShiftNum]);
 
     return (
       <Form onSubmit={this.handleSubmit}>
@@ -198,16 +222,16 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
             <Menu.Item
               name={`shift-${shift.shift_num}`}
               key={shift.shift_num}
-              active={shift.shift_id === selectedShiftId}
-              onClick={() => this.setState({ selectedShiftId: shift.shift_id })}
+              active={shift.shift_num === selectedShiftNum}
+              onClick={() => this.setState({ selectedShiftNum: shift.shift_num })}
             />
           ))}
           <Menu.Menu position="right">
-            <Menu.Item name="shift-add" content="+" />
+            <Menu.Item name="shift-add" content="+" onClick={this.handleAddShift} />
           </Menu.Menu>
         </Menu>
         <Segment attached="bottom">
-          {_.isFinite(selectedShiftId) ? (
+          {_.isFinite(selectedShiftNum) ? (
             <>
               <Form.Group widths="equal">
                 <Form.Field
@@ -216,6 +240,8 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
                   control={DateTimePicker}
                   name="start_time"
                   value={new Date(selectedShift.start_time)}
+                  // hardcode in a null event and value/name because react-widgets
+                  // doesn't follow normal form event rules
                   onChange={(value: Date) =>
                     this.handleShiftChange(null, { value, name: 'start_time' })
                   }
@@ -239,7 +265,6 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
                 name="max_spots"
                 value={selectedShift.max_spots}
                 type="number"
-                placeholder="420"
                 required
                 onChange={this.handleShiftChange}
               />
