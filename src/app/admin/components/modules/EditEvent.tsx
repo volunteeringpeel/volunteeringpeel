@@ -67,8 +67,8 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   };
 
   public handleAddShift = () => {
-    // find maximum shift_num and add 1
-    const newShiftNum = _.max(_.map(this.state.shifts, 'shift_num')) + 1;
+    // find maximum shift_num, 0 if not exist, and add 1
+    const newShiftNum = (_.max(_.map(this.state.shifts, 'shift_num')) || 0) + 1;
     this.setState({
       shifts: this.state.shifts.concat([
         {
