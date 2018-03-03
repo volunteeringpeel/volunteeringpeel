@@ -7,8 +7,32 @@ import { applyMiddleware, combineReducers, compose, createStore, Dispatch, Store
 import reduxThunk from 'redux-thunk';
 
 // App Imports
-import { addMessage, getUser, getUserFailure, getUserSuccess, loading, logout } from '@app/common/actions';
+import {
+  addMessage,
+  getUser,
+  getUserFailure,
+  getUserSuccess,
+  loading,
+  logout,
+} from '@app/common/actions';
 import * as reducers from '@app/common/reducers';
+
+export function formatDateForMySQL(date: Date): string {
+  const pad = (num: number) => `0${num}`.substr(-2); // add leading 0
+  return (
+    date.getFullYear() +
+    '-' +
+    pad(date.getMonth() + 1) + // month is off by 1 (i.e. Jan = 0)
+    '-' +
+    pad(date.getDate()) +
+    'T' +
+    pad(date.getHours()) +
+    ':' +
+    pad(date.getMinutes()) +
+    ':' +
+    pad(date.getSeconds())
+  );
+}
 
 export function listify(list: string[] | number[], prefix: string = ''): string {
   // If length is 0 or 1, don't bother listing
@@ -34,7 +58,7 @@ export function pluralize(noun: string, number: number): string {
 /**
  * Load the current user into redux store
  * @param dispatch Dispatch to base redux on
- * @returns Promise awaiting success (true) or failure (false)  
+ * @returns Promise awaiting success (true) or failure (false)
  */
 export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
   dispatch(loading(true));
@@ -87,8 +111,7 @@ export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
       );
       return false;
     })
-    .finally(() =>
-      dispatch(loading(false)));
+    .finally(() => dispatch(loading(false)));
 }
 
 export const history = createBrowserHistory();

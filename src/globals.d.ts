@@ -75,10 +75,10 @@ interface Shift {
   shift_num: number;
   start_time: string;
   end_time: string;
-  date: string;
+  date?: string;
   meals: Meal[];
   max_spots: number;
-  spots_taken: number;
+  spots_taken?: number;
   notes: string;
-  signed_up: boolean;
+  signed_up?: boolean;
 }

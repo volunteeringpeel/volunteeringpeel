@@ -9,6 +9,9 @@ import 'react-widgets/dist/css/react-widgets.css';
 import * as DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import { Button, Form, Icon, Menu, Segment } from 'semantic-ui-react';
 
+// App Imports
+import { formatDateForMySQL } from '@app/common/utilities';
+
 interface EditEventProps {
   addMessage: (message: Message) => any;
   cancel: () => void;
@@ -63,24 +66,20 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   public handleAddShift = () => {
     // find maximum shift_num and add 1
     const newShiftNum = _.max(_.map(this.state.shifts, 'shift_num')) + 1;
-    this.setState(
-      update(this.state, {
-        shifts: {
-          $push: [
-            {
-              shift_num: newShiftNum,
-              shift_id: -1,
-              start_time: new Date().toISOString(),
-              end_time: new Date().toISOString(),
-              max_spots: 0,
-              meals: [],
-              notes: '',
-            },
-          ],
+    this.setState({
+      shifts: this.state.shifts.concat([
+        {
+          shift_id: -1,
+          shift_num: newShiftNum,
+          start_time: new Date().toISOString(),
+          end_time: new Date().toISOString(),
+          max_spots: 0,
+          meals: [],
+          notes: '',
         },
-        selectedShiftNum: newShiftNum,
-      }),
-    );
+      ]),
+      selectedShiftNum: newShiftNum,
+    });
   };
 
   public handleShiftChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
@@ -111,7 +110,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
         shifts: {
           [selectedShiftIndex]: {
             [name]: {
-              $set: (value as Date).toISOString(),
+              $set: value.toISOString(),
             },
           },
         },
@@ -126,7 +125,19 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       .then(() =>
         axios.post(
           `/api/events/${this.props.originalEvent.event_id}`,
-          { name, description, address, transport, active, shifts },
+          {
+            name,
+            description,
+            address,
+            transport,
+            active,
+            shifts: _.map(shifts, shift => ({
+              ...shift,
+              // format start and end times for MySQL insertion (should probably be done on backend but oh well)
+              start_time: formatDateForMySQL(new Date(shift.start_time)),
+              end_time: formatDateForMySQL(new Date(shift.end_time)),
+            })),
+          },
           {
             headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
           },

@@ -300,6 +300,7 @@ api.get('/public/events', (req, res) => eventQuery(req, res, false));
 // Edit event
 api.post('/events/:id', (req, res) => {
   let db: mysql.PoolConnection;
+  const { name, description, transport, address, active, shifts } = req.body;
   // Cast parameter to number, because numbers are a good
   if (+req.params.id === -1) {
     // Add new event
@@ -307,12 +308,12 @@ api.post('/events/:id', (req, res) => {
       .getConnection()
       .then(conn => {
         db = conn;
-        const { name, description, transport, address } = req.body;
         return db.query('INSERT INTO event SET ?', {
           name,
           description,
           transport,
           address,
+          active,
         });
       })
       .then(() => {
@@ -324,12 +325,37 @@ api.post('/events/:id', (req, res) => {
         if (db && db.end) db.release();
       });
   } else {
-    // Modify event
+    // Change event
     pool
       .getConnection()
       .then(conn => {
         db = conn;
-        return db.query('UPDATE event SET ? WHERE event_id = ?', [req.body, req.params.id]);
+        return db.query('UPDATE event SET ? WHERE event_id = ?', [
+          { name, description, transport, address, active },
+          req.params.id,
+        ]);
+      })
+      .then(() => {
+        // promise for each shift query
+        return Promise.all(
+          (shifts as Shift[]).map(shift => {
+            const values = {
+              event_id: req.params.id,
+              shift_num: shift.shift_num,
+              max_spots: shift.max_spots,
+              start_time: shift.start_time,
+              end_time: shift.end_time,
+              meals: shift.meals.join(),
+              notes: shift.notes,
+            };
+            if (shift.shift_id === -1) {
+              // Add new shift
+              return db.query('INSERT INTO shift SET ?', values);
+            }
+            // Update shift
+            return db.query('UPDATE shift SET ? WHERE shift_id = ?', [values, shift.shift_id]);
+          }),
+        );
       })
       .then(() => {
         res.success('Event updated successfully');
