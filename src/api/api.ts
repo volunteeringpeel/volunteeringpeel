@@ -301,33 +301,23 @@ api.get('/public/events', (req, res) => eventQuery(req, res, false));
 api.post('/events/:id', (req, res) => {
   let db: mysql.PoolConnection;
   const { name, description, transport, address, active, shifts, deleteShifts } = req.body;
+  let connection: Promise<any> = pool.getConnection();
   // Cast parameter to number, because numbers are a good
   if (+req.params.id === -1) {
     // Add new event
-    pool
-      .getConnection()
-      .then(conn => {
-        db = conn;
-        return db.query('INSERT INTO event SET ?', {
-          name,
-          description,
-          transport,
-          address,
-          active,
-        });
-      })
-      .then(() => {
-        res.success('Event added successfully');
-        db.release();
-      })
-      .catch(error => {
-        res.error(500, 'Database error', error);
-        if (db && db.end) db.release();
+    connection = connection.then(conn => {
+      db = conn;
+      return db.query('INSERT INTO event SET ?', {
+        name,
+        description,
+        transport,
+        address,
+        active,
       });
+    });
   } else {
     // Change event
-    pool
-      .getConnection()
+    connection = connection
       .then(conn => {
         db = conn;
         return db.query('UPDATE event SET ? WHERE event_id = ?', [
@@ -336,44 +326,45 @@ api.post('/events/:id', (req, res) => {
         ]);
       })
       .then(() => {
-        // promise for each shift query
-        return Promise.all(
-          (shifts as Shift[]).map(shift => {
-            const values = {
-              event_id: req.params.id,
-              shift_num: shift.shift_num,
-              max_spots: shift.max_spots,
-              start_time: shift.start_time,
-              end_time: shift.end_time,
-              meals: shift.meals.join(),
-              notes: shift.notes,
-            };
-            if (shift.shift_id === -1) {
-              // Add new shift
-              return db.query('INSERT INTO shift SET ?', values);
-            }
-            // Update shift
-            return db.query('UPDATE shift SET ? WHERE shift_id = ?', [values, shift.shift_id]);
-          }),
-        );
-      })
-      .then(() => {
         // promise for each shift marked for deletion
         return Promise.all(
           (deleteShifts as number[]).map(id =>
             db.query('DELETE FROM shift WHERE shift_id = ?', id),
           ),
         );
-      })
-      .then(() => {
-        res.success('Event updated successfully');
-        db.release();
-      })
-      .catch(error => {
-        res.error(500, 'Database error', error);
-        if (db && db.end) db.release();
       });
   }
+  connection
+    .then(queryResults => {
+      // promise for each shift query
+      return Promise.all(
+        (shifts as Shift[]).map(shift => {
+          const values = {
+            event_id: queryResults.insertId || req.params.id,
+            shift_num: shift.shift_num,
+            max_spots: shift.max_spots,
+            start_time: shift.start_time,
+            end_time: shift.end_time,
+            meals: shift.meals.join(),
+            notes: shift.notes,
+          };
+          if (shift.shift_id === -1) {
+            // Add new shift
+            return db.query('INSERT INTO shift SET ?', values);
+          }
+          // Update shift
+          return db.query('UPDATE shift SET ? WHERE shift_id = ?', [values, shift.shift_id]);
+        }),
+      );
+    })
+    .then(() => {
+      res.success(`Event ${+req.params.id === -1 ? 'added' : 'updated'} successfully`);
+      db.release();
+    })
+    .catch(error => {
+      res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
+    });
 });
 
 // Delete event
