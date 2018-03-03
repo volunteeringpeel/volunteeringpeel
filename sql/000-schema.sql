@@ -28,7 +28,7 @@ create table if not exists shift (
   max_spots   int           not null                            comment 'Maximum number of spots',
   meals       set('breakfast', 'lunch', 'dinner', 'snack')      comment 'Provided food',
   notes       text          not null                            comment 'Shift notes',
-  foreign key fk_shift_event (event_id) references event(event_id),
+  foreign key fk_shift_event (event_id) references event(event_id) on update cascade on delete cascade,
   unique key uk_shift (event_id, shift_num)
 );
 
@@ -40,18 +40,21 @@ create table if not exists role (
 create table if not exists user (
   user_id     int           not null auto_increment primary key comment 'Unique user ID',
   email       varchar(128)  not null unique                     comment 'Email',
-  role_id     int           not null                            comment 'Volunteer/organizer/executive',
+  role_id     int           not null default 1                  comment 'Volunteer/organizer/executive',
   first_name  varchar(32)   not null                            comment 'First name',
   last_name   varchar(32)   not null                            comment 'Last name',
   phone_1     varchar(15)                                       comment 'Phone contact #1 (for volunteers/organizers)',
   phone_2     varchar(15)                                       comment 'Phone contact #2 (for volunteers)',
   mail_list   boolean       not null default 0                  comment 'Is user on mailing list?',
-  bio         text                                              comment 'For execs, bio for about page'
+  bio         text                                              comment 'For execs, bio for about page',
+  foreign key fk_user_role (role_id) references role(role_id)
 );
 
 create table if not exists user_shift (
   shift_id    int           not null                            comment 'Shift ID',
   user_id     int           not null                            comment 'User ID',
+  foreign key fk_user_shift_shift (shift_id) references shift(shift_id) on update cascade on delete cascade,
+  foreign key fk_user_shift_user (user_id) references user(user_id) on update cascade on delete cascade,
   unique key uk_user_shift (user_id, shift_id)
 );
 
@@ -73,7 +76,7 @@ create table if not exists request (
   jobs        text          not null                            comment 'Volunteer jobs available',
   bring       text          not null                            comment 'What volunteers need to bring',
   transport   text          not null                            comment 'Transportation (if necessary)',
-  foreign key fk_request_user (user_id) references user(user_id)
+  foreign key fk_request_user (user_id) references user(user_id) on update set null on delete set null
 );
 
 create table if not exists contact (
@@ -82,7 +85,7 @@ create table if not exists contact (
   email       varchar(64)   not null                            comment 'Contacter email',
   exec_id     int           not null                            comment 'Preferred executive (attn)',
   message     text          not null                            comment 'Message',
-  foreign key fk_contact_user (exec_id) references user(user_id)
+  foreign key fk_contact_user (exec_id) references user(user_id) on update set null on delete set null
 );
 
 create table if not exists sponsor (
