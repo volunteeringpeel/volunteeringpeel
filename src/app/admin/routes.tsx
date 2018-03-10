@@ -31,6 +31,15 @@ const routes: Route[] = [
     }),
     title: 'Events',
   },
+  {
+    path: '/admin/users',
+    exact: true,
+    component: reactLoadable({
+      loading: Loading,
+      loader: () => import('@app/admin/controllers/pages/Users'),
+    }),
+    title: 'Users',
+  },
 ];
 
 export default routes;
