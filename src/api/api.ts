@@ -66,6 +66,25 @@ api.use((err: any, req: Express.Request, res: Express.Response, next: Express.Ne
   }
 });
 
+// Get all users
+api.get('/user', (req, res) => {
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      return db.query('SELECT * from user');
+    })
+    .then(users => {
+      res.success(users);
+      db.release();
+    })
+    .catch(error => {
+      res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
+    });
+});
+
 // Get current user
 api.get('/user/current', (req, res) => {
   let db: mysql.PoolConnection;
@@ -136,6 +155,7 @@ api.get('/user/current', (req, res) => {
     });
 });
 
+// Update current user
 api.post('/user/current', (req, res) => {
   // get parameters from request body
   const { first_name, last_name, phone_1, phone_2 } = req.body;

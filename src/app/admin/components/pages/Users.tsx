@@ -14,7 +14,7 @@ interface EventProps {
 }
 
 interface EventState {
-  users: UserData[];
+  users: User[];
 }
 
 export default class Events extends React.Component<EventProps, EventState> {
@@ -33,7 +33,7 @@ export default class Events extends React.Component<EventProps, EventState> {
   public refresh() {
     return Promise.resolve(this.props.loading(true))
       .then(() => {
-        return axios.get('/api/events', {
+        return axios.get('/api/user', {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
         });
       })
@@ -55,28 +55,26 @@ export default class Events extends React.Component<EventProps, EventState> {
       <Table celled>
         <Table.Header>
           <Table.Row>
-            <Table.HeaderCell>Header</Table.HeaderCell>
-            <Table.HeaderCell>Header</Table.HeaderCell>
-            <Table.HeaderCell>Header</Table.HeaderCell>
+            <Table.HeaderCell>First Name</Table.HeaderCell>
+            <Table.HeaderCell>Last Name</Table.HeaderCell>
+            <Table.HeaderCell>Email</Table.HeaderCell>
+            <Table.HeaderCell>Phone 1</Table.HeaderCell>
+            <Table.HeaderCell>Phone 2</Table.HeaderCell>
+            <Table.HeaderCell>Role</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
 
         <Table.Body>
-          <Table.Row>
-            <Table.Cell>First</Table.Cell>
-            <Table.Cell>Cell</Table.Cell>
-            <Table.Cell>Cell</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell>Cell</Table.Cell>
-            <Table.Cell>Cell</Table.Cell>
-            <Table.Cell>Cell</Table.Cell>
-          </Table.Row>
-          <Table.Row>
-            <Table.Cell>Cell</Table.Cell>
-            <Table.Cell>Cell</Table.Cell>
-            <Table.Cell>Cell</Table.Cell>
-          </Table.Row>
+          {this.state.users.map(user => (
+            <Table.Row>
+              <Table.Cell>{user.first_name}</Table.Cell>
+              <Table.Cell>{user.last_name}</Table.Cell>
+              <Table.Cell>{user.email}</Table.Cell>
+              <Table.Cell>{user.phone_1}</Table.Cell>
+              <Table.Cell>{user.phone_2}</Table.Cell>
+              <Table.Cell>{user.role_id}</Table.Cell>
+            </Table.Row>
+          ))}
         </Table.Body>
       </Table>
     );
