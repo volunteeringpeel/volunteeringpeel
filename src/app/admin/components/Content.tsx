@@ -28,27 +28,15 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
               <>
                 <Grid.Column width={3}>
                   <Menu vertical fluid pointing secondary>
-                    <Route path="/admin/home">
-                      {({ match }) => (
-                        <Menu.Item active={!!match} onClick={() => this.props.push('/admin/home')}>
-                          Dashboard
-                        </Menu.Item>
-                      )}
-                    </Route>
-                    <Route path="/admin/events">
-                      {({ match }) => (
-                        <Menu.Item
-                          active={!!match}
-                          onClick={() => this.props.push('/admin/events')}
-                        >
-                          Events
-                        </Menu.Item>
-                      )}
-                    </Route>
-                    <Menu.Item>Volunteers</Menu.Item>
-                    <Menu.Item>Execs</Menu.Item>
-                    <Menu.Item>Overview</Menu.Item>
-                    <Menu.Item>Overview</Menu.Item>
+                    {routes.map(route => (
+                      <Route path={route.path}>
+                        {({ match }) => (
+                          <Menu.Item active={!!match} onClick={() => this.props.push(route.path)}>
+                            {route.title}
+                          </Menu.Item>
+                        )}
+                      </Route>
+                    ))}
                   </Menu>
                 </Grid.Column>
                 <Grid.Column width={13}>
