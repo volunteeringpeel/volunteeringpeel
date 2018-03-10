@@ -4,7 +4,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Action } from 'redux-actions';
-import { Container, Message, Segment } from 'semantic-ui-react';
+import { Button, Container, Message, Segment } from 'semantic-ui-react';
 
 // App Imports
 import { dismissMessage } from '@app/common/actions';
@@ -14,6 +14,7 @@ interface MessageBoxProps {
   as?: any;
   messages: Message[];
   dismissMessage: (id: number) => () => Action<number>;
+  dismissAllMessages: () => Action<void>;
 }
 
 export default class MessageBox extends React.Component<MessageBoxProps> {
@@ -22,9 +23,9 @@ export default class MessageBox extends React.Component<MessageBoxProps> {
   };
 
   public render() {
-    if (!this.props.messages.length) return null;
+    if (this.props.messages.length === 0) return null;
     return (
-      <Segment as={this.props.as} style={{ paddingTop: '1em' }} vertical>
+      <Container as={this.props.as} style={{ paddingTop: '1em' }}>
         {_.map(this.props.messages, message => (
           <Message
             key={message.id}
@@ -34,7 +35,9 @@ export default class MessageBox extends React.Component<MessageBoxProps> {
             {...{ [message.severity]: true }}
           />
         ))}
-      </Segment>
+        <hr />
+        <Button content="Clear All" basic size="mini" onClick={this.props.dismissAllMessages} />
+      </Container>
     );
   }
 }

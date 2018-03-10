@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
 // App Imports
-import { dismissMessage } from '@app/common/actions';
+import { dismissAllMessages, dismissMessage } from '@app/common/actions';
 
 // Component Inputs
 import MessageBox from '@app/common/components/MessageBox';
@@ -14,6 +14,7 @@ const mapStateToProps = (state: State) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<number>) => ({
   dismissMessage: (id: number) => () => dispatch(dismissMessage(id)),
+  dismissAllMessages: () => dispatch(dismissAllMessages()),
 });
 
 // tslint:disable-next-line:variable-name
