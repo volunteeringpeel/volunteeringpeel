@@ -15,7 +15,6 @@ interface Route extends RouteConfig {
 const routes: Route[] = [
   {
     path: '/admin/home',
-    exact: true,
     component: reactLoadable({
       loading: Loading,
       loader: () => import('@app/admin/components/pages/Home'),
@@ -24,7 +23,6 @@ const routes: Route[] = [
   },
   {
     path: '/admin/events',
-    exact: true,
     component: reactLoadable({
       loading: Loading,
       loader: () => import('@app/admin/controllers/pages/Events'),
@@ -33,7 +31,6 @@ const routes: Route[] = [
   },
   {
     path: '/admin/users',
-    exact: true,
     component: reactLoadable({
       loading: Loading,
       loader: () => import('@app/admin/controllers/pages/Users'),

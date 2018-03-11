@@ -1,8 +1,10 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
+import { LocationDescriptor } from 'history';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router';
+import { Link, Route } from 'react-router-dom';
 import { Grid, Header, Menu, Segment } from 'semantic-ui-react';
 
 // Controllers Imports
@@ -11,6 +13,7 @@ import EditEvent from '@app/admin/controllers/modules/EditEvent';
 interface EventProps {
   addMessage: (message: Message) => any;
   loading: (status: boolean) => any;
+  push: (location: LocationDescriptor) => any;
 }
 
 interface EventState {
@@ -18,8 +21,11 @@ interface EventState {
   activeEvent: VPEvent;
 }
 
-export default class Events extends React.Component<EventProps, EventState> {
-  constructor(props: EventProps) {
+export default class Events extends React.Component<
+  EventProps & RouteComponentProps<any>,
+  EventState
+> {
+  constructor(props: EventProps & RouteComponentProps<any>) {
     super(props);
 
     this.state = {
@@ -60,56 +66,62 @@ export default class Events extends React.Component<EventProps, EventState> {
       });
   }
 
-  public setActiveEvent(event: VPEvent) {
-    this.setState({ activeEvent: event });
-  }
-
   public render() {
     return (
       <Grid>
         <Grid.Row columns={2}>
           <Grid.Column>
             <Menu fluid vertical secondary pointing>
-              {_.map(this.state.events, event => (
-                <Menu.Item
-                  key={event.event_id}
-                  active={
-                    this.state.activeEvent && event.event_id === this.state.activeEvent.event_id
-                  }
-                  onClick={() => this.setActiveEvent(event)}
-                >
-                  {event.name}
-                </Menu.Item>
+              {this.state.events.map(event => (
+                <Route path={`/admin/events/${event.event_id}`} key={event.event_id}>
+                  {({ match }) => (
+                    <Menu.Item
+                      active={!!match}
+                      onClick={() => this.props.push(`/admin/events/${event.event_id}`)}
+                    >
+                      {event.name}
+                    </Menu.Item>
+                  )}
+                </Route>
               ))}
-              <Menu.Item
-                active={this.state.activeEvent && this.state.activeEvent.event_id === -1}
-                onClick={() =>
-                  this.setActiveEvent({
-                    event_id: -1,
-                    name: '',
-                    description: '',
-                    transport: '',
-                    address: '',
-                    shifts: [],
-                    active: false,
-                  })
-                }
-              >
-                <em>Add New Event</em>
-              </Menu.Item>
+              <Route path="/admin/events/-1">
+                {({ match }) => (
+                  <Menu.Item active={!!match} onClick={() => this.props.push('/admin/events/-1')}>
+                    <em>Add New Event</em>
+                  </Menu.Item>
+                )}
+              </Route>
             </Menu>
           </Grid.Column>
           <Grid.Column stretched>
             <Segment>
-              {this.state.activeEvent ? (
-                <EditEvent
-                  originalEvent={this.state.activeEvent}
-                  refresh={() => this.refresh()}
-                  cancel={() => this.setState({ activeEvent: null })}
-                />
-              ) : (
-                  <p>Please select an event to edit</p>
-                )}
+              {this.state.events.length && (
+                <Route path="/admin/events/:id?">
+                  {({ match }) =>
+                    +match.params.id ? (
+                      <EditEvent
+                        originalEvent={
+                          +match.params.id < 0
+                            ? {
+                                event_id: +match.params.id,
+                                name: '',
+                                description: '',
+                                address: '',
+                                transport: '',
+                                active: false,
+                                shifts: [],
+                              }
+                            : _.find(this.state.events, ['event_id', +match.params.id])
+                        }
+                        refresh={() => this.refresh()}
+                        cancel={() => this.setState({ activeEvent: null })}
+                      />
+                    ) : (
+                      <p>Please select an event to edit</p>
+                    )
+                  }
+                </Route>
+              )}
             </Segment>
           </Grid.Column>
         </Grid.Row>
