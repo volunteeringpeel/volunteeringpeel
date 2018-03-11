@@ -90,10 +90,22 @@ api.post('/user/:id', (req, res) => {
   const { first_name, last_name, email, phone_1, phone_2, role_id } = req.body;
 
   let db: mysql.PoolConnection;
-  pool
-    .getConnection()
-    .then(conn => {
-      db = conn;
+  const connection = pool.getConnection().then(conn => {
+    db = conn;
+  });
+  if (+req.params.id === -1) {
+    connection.then(() => {
+      return db.query('INSERT INTO user SET ?', {
+        first_name,
+        last_name,
+        email,
+        phone_1,
+        phone_2,
+        role_id,
+      });
+    });
+  } else {
+    connection.then(() => {
       // update the profile in the database
       return db.query('UPDATE user SET ? WHERE ?', [
         // fields to update
@@ -101,9 +113,29 @@ api.post('/user/:id', (req, res) => {
         // find the user with this email
         { user_id: req.params.id },
       ]);
-    })
+    });
+  }
+  connection
     .then(result => {
-      res.success('User updated successfully');
+      res.success(`User ${req.params.id === -1 ? 'added' : 'updated'} successfully`);
+      db.release();
+    })
+    .catch(error => {
+      res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
+    });
+});
+
+api.delete('/user/:id', (req, res) => {
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      return db.query('DELETE FROM user WHERE user_id = ?', [req.params.id]);
+    })
+    .then(() => {
+      res.success('User deleted successfully');
       db.release();
     })
     .catch(error => {

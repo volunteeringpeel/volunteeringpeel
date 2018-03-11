@@ -26,7 +26,7 @@ export default class UserModal extends React.Component<UserModalProps, User> {
       email: props.user.email || '',
       phone_1: props.user.phone_1 || '',
       phone_2: props.user.phone_2 || '',
-      role_id: props.user.role_id,
+      role_id: props.user.role_id || 1,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -40,7 +40,7 @@ export default class UserModal extends React.Component<UserModalProps, User> {
         email: nextProps.user.email || '',
         phone_1: nextProps.user.phone_1 || '',
         phone_2: nextProps.user.phone_2 || '',
-        role_id: nextProps.user.role_id,
+        role_id: nextProps.user.role_id || 1,
       });
     }
   }

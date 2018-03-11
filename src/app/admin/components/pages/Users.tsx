@@ -1,5 +1,6 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
+import * as Promise from 'bluebird';
 import * as React from 'react';
 import { Button, Dropdown, Header, Label, Menu, Segment, Table } from 'semantic-ui-react';
 
@@ -30,6 +31,27 @@ export default class Events extends React.Component<EventProps, EventState> {
     this.refresh();
   }
 
+  public handleDelete = (id: number) => {
+    Promise.resolve(this.props.loading(true))
+      .then(() =>
+        axios.delete(`/api/user/${id}`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+        }),
+      )
+      .then(res => {
+        this.props.addMessage({ message: res.data.data, severity: 'positive' });
+        this.refresh();
+      })
+      .catch((error: AxiosError) => {
+        this.props.addMessage({
+          message: error.response.data.error || error.name,
+          more: error.response.data.details || error.message,
+          severity: 'negative',
+        });
+      })
+      .finally(() => this.props.loading(false));
+  };
+
   public refresh() {
     return Promise.resolve(this.props.loading(true))
       .then(() => {
@@ -51,7 +73,34 @@ export default class Events extends React.Component<EventProps, EventState> {
   }
 
   public render() {
-    const headerRow = ['', 'First Name', 'Last Name', 'Email', 'Phone 1', 'Phone 2', 'Actions'];
+    const headerRow = [
+      '',
+      'First Name',
+      'Last Name',
+      'Email',
+      'Phone 1',
+      'Phone 2',
+      <th>
+        <Button
+          size="mini"
+          content="Add"
+          icon="add"
+          onClick={() =>
+            this.setState({
+              selectedUser: {
+                user_id: -1,
+                first_name: '',
+                last_name: '',
+                email: '',
+                phone_1: '',
+                phone_2: '',
+                role_id: 1,
+              },
+            })
+          }
+        />
+      </th>,
+    ];
     const renderBodyRow = (user: User, i: number) => ({
       key: `row-${i}`,
       cells: [
@@ -89,7 +138,11 @@ export default class Events extends React.Component<EventProps, EventState> {
                 text="Edit"
                 onClick={() => this.setState({ selectedUser: user })}
               />
-              <Dropdown.Item icon="trash" text="Delete" />
+              <Dropdown.Item
+                icon="trash"
+                text="Delete"
+                onClick={() => this.handleDelete(user.user_id)}
+              />
               <Dropdown.Item icon="delete" text="Blacklist" />
             </Dropdown.Menu>
           </Dropdown>
