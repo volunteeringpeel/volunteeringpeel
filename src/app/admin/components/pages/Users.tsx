@@ -85,7 +85,7 @@ export default class Events extends React.Component<
       'Email',
       'Phone 1',
       'Phone 2',
-      <th>
+      <th key="add">
         <Button
           size="mini"
           content="Add"
