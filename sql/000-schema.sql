@@ -76,7 +76,7 @@ create table if not exists request (
   jobs        text          not null                            comment 'Volunteer jobs available',
   bring       text          not null                            comment 'What volunteers need to bring',
   transport   text          not null                            comment 'Transportation (if necessary)',
-  foreign key fk_request_user (user_id) references user(user_id) on update set null on delete set null
+  foreign key fk_request_user (user_id) references user(user_id)
 );
 
 create table if not exists contact (
@@ -85,7 +85,7 @@ create table if not exists contact (
   email       varchar(64)   not null                            comment 'Contacter email',
   exec_id     int           not null                            comment 'Preferred executive (attn)',
   message     text          not null                            comment 'Message',
-  foreign key fk_contact_user (exec_id) references user(user_id) on update set null on delete set null
+  foreign key fk_contact_user (exec_id) references user(user_id)
 );
 
 create table if not exists sponsor (
