@@ -77,7 +77,7 @@ export default class UserModal extends React.Component<UserModalProps, User> {
         <Modal.Header>
           Edit {this.state.first_name} {this.state.last_name}
         </Modal.Header>
-        <Modal.Content scrolling>
+        <Modal.Content>
           <MessageBox />
           <br />
           <Form onSubmit={this.handleSubmit}>
@@ -107,17 +107,31 @@ export default class UserModal extends React.Component<UserModalProps, User> {
                 label="Phone 1"
                 name="phone_1"
                 value={this.state.phone_1}
-                placeholder="4165555555"
+                placeholder="1234567890"
                 onChange={this.handleChange}
               />
               <Form.Input
                 label="Phone 2"
                 name="phone_2"
                 value={this.state.phone_2}
-                placeholder="9055555555"
+                placeholder="1234567890"
                 onChange={this.handleChange}
               />
             </Form.Group>
+            <Form.Dropdown
+              label="Role"
+              name="role_id"
+              value={this.state.role_id}
+              placeholder="Select..."
+              fluid
+              selection
+              options={[
+                { text: 'Volunteer', value: 1 },
+                { text: 'Organizer', value: 2 },
+                { text: 'Executive', value: 3 },
+              ]}
+              onChange={this.handleChange}
+            />
           </Form>
         </Modal.Content>
         <Modal.Actions>

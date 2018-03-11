@@ -87,7 +87,7 @@ api.get('/user', (req, res) => {
 
 api.post('/user/:id', (req, res) => {
   // get parameters from request body
-  const { first_name, last_name, email, phone_1, phone_2 } = req.body;
+  const { first_name, last_name, email, phone_1, phone_2, role_id } = req.body;
 
   let db: mysql.PoolConnection;
   pool
@@ -97,13 +97,13 @@ api.post('/user/:id', (req, res) => {
       // update the profile in the database
       return db.query('UPDATE user SET ? WHERE ?', [
         // fields to update
-        { first_name, last_name, phone_1, phone_2 },
+        { first_name, last_name, email, phone_1, phone_2, role_id },
         // find the user with this email
         { user_id: req.params.id },
       ]);
     })
     .then(result => {
-      res.success('Profile updated successfully');
+      res.success('User updated successfully');
       db.release();
     })
     .catch(error => {
