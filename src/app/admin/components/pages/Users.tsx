@@ -1,12 +1,10 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
-import * as _ from 'lodash';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
-import { Button, Header, Menu, Segment, Table, Label, Dropdown } from 'semantic-ui-react';
+import { Button, Dropdown, Header, Label, Menu, Segment, Table } from 'semantic-ui-react';
 
-// Controllers Imports
-import EditEvent from '@app/admin/controllers/modules/EditEvent';
+// Controller Imports
+import UserModal from '@app/admin/controllers/modules/UserModal';
 
 interface EventProps {
   addMessage: (message: Message) => any;
@@ -15,6 +13,7 @@ interface EventProps {
 
 interface EventState {
   users: User[];
+  selectedUser: User;
 }
 
 export default class Events extends React.Component<EventProps, EventState> {
@@ -23,6 +22,7 @@ export default class Events extends React.Component<EventProps, EventState> {
 
     this.state = {
       users: [],
+      selectedUser: null,
     };
   }
 
@@ -74,7 +74,11 @@ export default class Events extends React.Component<EventProps, EventState> {
         <td>
           <Dropdown>
             <Dropdown.Menu>
-              <Dropdown.Item icon="edit" text="Edit" />
+              <Dropdown.Item
+                icon="edit"
+                text="Edit"
+                onClick={() => this.setState({ selectedUser: user })}
+              />
               <Dropdown.Item icon="trash" text="Delete" />
               <Dropdown.Item icon="delete" text="Blacklist" />
             </Dropdown.Menu>
@@ -83,14 +87,17 @@ export default class Events extends React.Component<EventProps, EventState> {
       ],
     });
     return (
-      <Table
-        compact
-        celled
-        definition
-        headerRow={headerRow}
-        renderBodyRow={renderBodyRow}
-        tableData={this.state.users}
-      />
+      <>
+        <Table
+          compact
+          celled
+          definition
+          headerRow={headerRow}
+          renderBodyRow={renderBodyRow}
+          tableData={this.state.users}
+        />
+        {this.state.selectedUser && <UserModal user={this.state.selectedUser} />}
+      </>
     );
   }
 }
