@@ -41,16 +41,12 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                 </Grid.Column>
                 <Grid.Column width={13}>
                   <Route
-                    path="/admin/:page?/:subpage?/*?"
+                    path="/admin/:page"
                     render={({ match }) => {
-                      const page = _.find(routes, route =>
-                        route.path.match(
-                          new RegExp(
-                            `^\/admin\/${match.params.page}(\/${match.params.subpage})?`,
-                            'gi',
-                          ),
-                        ),
-                      );
+                      const page = _.find(routes, route => {
+                        const regex = new RegExp(`^\/admin\/${match.params.page}`, 'gi');
+                        return route.path.match(regex);
+                      });
 
                       if (!page) {
                         return <Redirect to="/admin/home" />;
