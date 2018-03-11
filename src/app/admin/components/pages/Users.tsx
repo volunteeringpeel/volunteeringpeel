@@ -55,7 +55,7 @@ export default class Events extends React.Component<EventProps, EventState> {
     const renderBodyRow = (user: User, i: number) => ({
       key: i,
       cells: [
-        [null, 'Volunteer', 'Organizer', 'Executive'][user.role_id],
+        { key: 'role', content: [null, 'Volunteer', 'Organizer', 'Executive'][user.role_id] },
         user.first_name || {
           key: 'first_name',
           icon: 'attention',
@@ -69,8 +69,18 @@ export default class Events extends React.Component<EventProps, EventState> {
           warning: true,
         },
         user.email,
-        user.phone_1 || { key: 'phone_1', icon: 'attention', content: 'Missing', warning: true },
-        user.phone_2 || { key: 'phone_2', icon: 'attention', content: 'Missing', warning: true },
+        {
+          key: 'phone_1',
+          icon: user.phone_1 ? null : 'attention',
+          content: user.phone_1 || 'Missing',
+          warning: !user.phone_1,
+        },
+        {
+          key: 'phone_2',
+          icon: user.phone_2 ? null : 'attention',
+          content: user.phone_2 || 'Missing',
+          warning: !user.phone_2,
+        },
         <td>
           <Dropdown>
             <Dropdown.Menu>
@@ -96,7 +106,12 @@ export default class Events extends React.Component<EventProps, EventState> {
           renderBodyRow={renderBodyRow}
           tableData={this.state.users}
         />
-        {this.state.selectedUser && <UserModal user={this.state.selectedUser} />}
+        {this.state.selectedUser && (
+          <UserModal
+            user={this.state.selectedUser}
+            cancel={() => this.setState({ selectedUser: null })}
+          />
+        )}
       </>
     );
   }

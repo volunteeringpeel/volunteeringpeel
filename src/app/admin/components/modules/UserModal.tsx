@@ -7,6 +7,7 @@ import { Button, Form, Modal } from 'semantic-ui-react';
 interface UserModalProps {
   addMessage: (message: Message) => any;
   loading: (status: boolean) => any;
+  cancel: () => void;
   user: User;
 }
 
@@ -31,7 +32,7 @@ export default class UserModal extends React.Component<UserModalProps, User> {
 
   public render() {
     return (
-      <Modal open>
+      <Modal open closeIcon onClose={this.props.cancel}>
         <Modal.Header>
           Edit {this.state.first_name} {this.state.last_name}
         </Modal.Header>
@@ -63,14 +64,14 @@ export default class UserModal extends React.Component<UserModalProps, User> {
                 label="Phone 1"
                 name="phone_1"
                 value={this.state.phone_1}
-                placeholder="1234567890"
+                placeholder="4165555555"
                 onChange={this.handleChange}
               />
               <Form.Input
                 label="Phone 2"
                 name="phone_2"
                 value={this.state.phone_2}
-                placeholder="1234567890"
+                placeholder="9055555555"
                 onChange={this.handleChange}
               />
             </Form.Group>
@@ -78,8 +79,8 @@ export default class UserModal extends React.Component<UserModalProps, User> {
         </Modal.Content>
         <Modal.Actions>
           <Button.Group>
-            <Button primary icon="save" content="Save" />
-            <Button basic icon="delete" content="Cancel" />
+            <Button primary icon="save" content="Save" onClick={this.handleSubmit} />
+            <Button basic icon="delete" content="Cancel" onClick={this.props.cancel} />
           </Button.Group>
         </Modal.Actions>
       </Modal>
