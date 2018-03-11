@@ -1,29 +1,34 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
 import * as Promise from 'bluebird';
+import { LocationDescriptor } from 'history';
 import * as React from 'react';
+import { Route, RouteComponentProps } from 'react-router';
 import { Button, Dropdown, Header, Label, Menu, Segment, Table } from 'semantic-ui-react';
 
 // Controller Imports
 import UserModal from '@app/admin/controllers/modules/UserModal';
+import * as _ from 'lodash';
 
 interface EventProps {
   addMessage: (message: Message) => any;
   loading: (status: boolean) => any;
+  push: (location: LocationDescriptor) => any;
 }
 
 interface EventState {
   users: User[];
-  selectedUser: User;
 }
 
-export default class Events extends React.Component<EventProps, EventState> {
-  constructor(props: EventProps) {
+export default class Events extends React.Component<
+  EventProps & RouteComponentProps<any>,
+  EventState
+> {
+  constructor(props: EventProps & RouteComponentProps<any>) {
     super(props);
 
     this.state = {
       users: [],
-      selectedUser: null,
     };
   }
 
@@ -85,19 +90,7 @@ export default class Events extends React.Component<EventProps, EventState> {
           size="mini"
           content="Add"
           icon="add"
-          onClick={() =>
-            this.setState({
-              selectedUser: {
-                user_id: -1,
-                first_name: '',
-                last_name: '',
-                email: '',
-                phone_1: '',
-                phone_2: '',
-                role_id: 1,
-              },
-            })
-          }
+          onClick={() => this.props.push('/admin/users/-1')}
         />
       </th>,
     ];
@@ -136,7 +129,7 @@ export default class Events extends React.Component<EventProps, EventState> {
               <Dropdown.Item
                 icon="edit"
                 text="Edit"
-                onClick={() => this.setState({ selectedUser: user })}
+                onClick={() => this.props.push(`/admin/users/${user.user_id}`)}
               />
               <Dropdown.Item
                 icon="trash"
@@ -159,11 +152,28 @@ export default class Events extends React.Component<EventProps, EventState> {
           renderBodyRow={renderBodyRow}
           tableData={this.state.users}
         />
-        {this.state.selectedUser && (
-          <UserModal
-            user={this.state.selectedUser}
-            cancel={() => this.setState({ selectedUser: null })}
-            refresh={() => this.refresh()}
+        {this.state.users.length && (
+          <Route
+            path="/admin/users/:id"
+            component={({ match }: RouteComponentProps<any>) => (
+              <UserModal
+                user={
+                  +match.params.id < 0
+                    ? {
+                        user_id: -1,
+                        first_name: '',
+                        last_name: '',
+                        email: '',
+                        phone_1: '',
+                        phone_2: '',
+                        role_id: 1,
+                      }
+                    : _.find(this.state.users, ['user_id', +match.params.id])
+                }
+                cancel={() => this.props.push('/admin/users')}
+                refresh={() => this.refresh()}
+              />
+            )}
           />
         )}
       </>
