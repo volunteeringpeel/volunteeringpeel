@@ -85,6 +85,33 @@ api.get('/user', (req, res) => {
     });
 });
 
+api.post('/user/:id', (req, res) => {
+  // get parameters from request body
+  const { first_name, last_name, email, phone_1, phone_2 } = req.body;
+
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      // update the profile in the database
+      return db.query('UPDATE user SET ? WHERE ?', [
+        // fields to update
+        { first_name, last_name, phone_1, phone_2 },
+        // find the user with this email
+        { user_id: req.params.id },
+      ]);
+    })
+    .then(result => {
+      res.success('Profile updated successfully');
+      db.release();
+    })
+    .catch(error => {
+      res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
+    });
+});
+
 // Get current user
 api.get('/user/current', (req, res) => {
   let db: mysql.PoolConnection;

@@ -53,7 +53,7 @@ export default class Events extends React.Component<EventProps, EventState> {
   public render() {
     const headerRow = ['', 'First Name', 'Last Name', 'Email', 'Phone 1', 'Phone 2', 'Actions'];
     const renderBodyRow = (user: User, i: number) => ({
-      key: i,
+      key: `row-${i}`,
       cells: [
         { key: 'role', content: [null, 'Volunteer', 'Organizer', 'Executive'][user.role_id] },
         user.first_name || {
@@ -81,7 +81,7 @@ export default class Events extends React.Component<EventProps, EventState> {
           content: user.phone_2 || 'Missing',
           warning: !user.phone_2,
         },
-        <td>
+        <td key="actions">
           <Dropdown>
             <Dropdown.Menu>
               <Dropdown.Item
@@ -110,6 +110,7 @@ export default class Events extends React.Component<EventProps, EventState> {
           <UserModal
             user={this.state.selectedUser}
             cancel={() => this.setState({ selectedUser: null })}
+            refresh={() => this.refresh()}
           />
         )}
       </>

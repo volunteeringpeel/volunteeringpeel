@@ -1,13 +1,18 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
+import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
+
+// Controller Imports
+import MessageBox from '@app/common/controllers/MessageBox';
 
 interface UserModalProps {
   addMessage: (message: Message) => any;
   loading: (status: boolean) => any;
   cancel: () => void;
+  refresh: () => void;
   user: User;
 }
 
@@ -15,16 +20,52 @@ export default class UserModal extends React.Component<UserModalProps, User> {
   constructor(props: UserModalProps) {
     super(props);
 
-    this.state = props.user;
+    this.state = {
+      first_name: props.user.first_name || '',
+      last_name: props.user.last_name || '',
+      email: props.user.email || '',
+      phone_1: props.user.phone_1 || '',
+      phone_2: props.user.phone_2 || '',
+      role_id: props.user.role_id,
+    };
+
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   public componentWillReceiveProps(nextProps: UserModalProps) {
     if (!_.isEqual(this.props.user, nextProps.user)) {
-      this.setState(nextProps.user);
+      this.setState({
+        first_name: nextProps.user.first_name || '',
+        last_name: nextProps.user.last_name || '',
+        email: nextProps.user.email || '',
+        phone_1: nextProps.user.phone_1 || '',
+        phone_2: nextProps.user.phone_2 || '',
+        role_id: nextProps.user.role_id,
+      });
     }
   }
 
-  public handleSubmit() {}
+  public handleSubmit() {
+    Promise.resolve(this.props.loading(true))
+      .then(() =>
+        axios.post(`/api/user/${this.props.user.user_id}`, this.state, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+        }),
+      )
+      .then(res => {
+        this.props.addMessage({ message: res.data.data, severity: 'positive' });
+        this.props.refresh();
+        this.props.cancel();
+      })
+      .catch((error: AxiosError) => {
+        this.props.addMessage({
+          message: error.response.data.error || error.name,
+          more: error.response.data.details || error.message,
+          severity: 'negative',
+        });
+      })
+      .finally(() => this.props.loading(false));
+  }
 
   public handleChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
     this.setState({ [name]: value || checked });
@@ -37,6 +78,8 @@ export default class UserModal extends React.Component<UserModalProps, User> {
           Edit {this.state.first_name} {this.state.last_name}
         </Modal.Header>
         <Modal.Content scrolling>
+          <MessageBox />
+          <br />
           <Form onSubmit={this.handleSubmit}>
             <Form.Group widths="equal">
               <Form.Input

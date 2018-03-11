@@ -29,7 +29,7 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                 <Grid.Column width={3}>
                   <Menu vertical fluid pointing secondary>
                     {routes.map(route => (
-                      <Route path={route.path}>
+                      <Route path={route.path} key={route.path}>
                         {({ match }) => (
                           <Menu.Item active={!!match} onClick={() => this.props.push(route.path)}>
                             {route.title}
