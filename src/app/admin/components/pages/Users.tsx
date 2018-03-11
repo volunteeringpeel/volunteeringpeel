@@ -3,7 +3,7 @@ import axios, { AxiosError } from 'axios';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { Header, Menu, Segment, Table } from 'semantic-ui-react';
+import { Button, Header, Menu, Segment, Table, Label, Dropdown } from 'semantic-ui-react';
 
 // Controllers Imports
 import EditEvent from '@app/admin/controllers/modules/EditEvent';
@@ -51,32 +51,46 @@ export default class Events extends React.Component<EventProps, EventState> {
   }
 
   public render() {
+    const headerRow = ['', 'First Name', 'Last Name', 'Email', 'Phone 1', 'Phone 2', 'Actions'];
+    const renderBodyRow = (user: User, i: number) => ({
+      key: i,
+      cells: [
+        [null, 'Volunteer', 'Organizer', 'Executive'][user.role_id],
+        user.first_name || {
+          key: 'first_name',
+          icon: 'attention',
+          content: 'Missing',
+          warning: true,
+        },
+        user.last_name || {
+          key: 'last_name',
+          icon: 'attention',
+          content: 'Missing',
+          warning: true,
+        },
+        user.email,
+        user.phone_1 || { key: 'phone_1', icon: 'attention', content: 'Missing', warning: true },
+        user.phone_2 || { key: 'phone_2', icon: 'attention', content: 'Missing', warning: true },
+        <td>
+          <Dropdown>
+            <Dropdown.Menu>
+              <Dropdown.Item icon="edit" text="Edit" />
+              <Dropdown.Item icon="trash" text="Delete" />
+              <Dropdown.Item icon="delete" text="Blacklist" />
+            </Dropdown.Menu>
+          </Dropdown>
+        </td>,
+      ],
+    });
     return (
-      <Table celled>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>First Name</Table.HeaderCell>
-            <Table.HeaderCell>Last Name</Table.HeaderCell>
-            <Table.HeaderCell>Email</Table.HeaderCell>
-            <Table.HeaderCell>Phone 1</Table.HeaderCell>
-            <Table.HeaderCell>Phone 2</Table.HeaderCell>
-            <Table.HeaderCell>Role</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-
-        <Table.Body>
-          {this.state.users.map(user => (
-            <Table.Row>
-              <Table.Cell>{user.first_name}</Table.Cell>
-              <Table.Cell>{user.last_name}</Table.Cell>
-              <Table.Cell>{user.email}</Table.Cell>
-              <Table.Cell>{user.phone_1}</Table.Cell>
-              <Table.Cell>{user.phone_2}</Table.Cell>
-              <Table.Cell>{user.role_id}</Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
+      <Table
+        compact
+        celled
+        definition
+        headerRow={headerRow}
+        renderBodyRow={renderBodyRow}
+        tableData={this.state.users}
+      />
     );
   }
 }

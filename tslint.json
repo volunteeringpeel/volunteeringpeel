@@ -4,6 +4,7 @@
     "jsx-no-multiline-js": false,
     "jsx-boolean-value": ["never"],
     "jsx-no-lambda": false,
+    "jsx-key": false,
     "curly": [true, "ignore-same-line"],
     "interface-name": false,
     "object-literal-sort-keys": [true, "match-declaration-order"],
