@@ -65,8 +65,8 @@ export default () => (
               facilitate volunteer opportunities for students by initiating contact with event
               organizers, organizing events, and helping students work towards their 40 hours and
               beyond. If you are a student or organization who wants to get involved with
-              Volunteering Peel, please contact us <Link to="/contact">here</Link>! Our work could
-              not be possible without our wonderful student leadership team, and{' '}
+              Volunteering Peel, please contact us <Link to="/about/contact">here</Link>! Our work
+              could not be possible without our wonderful student leadership team, and{' '}
               <Link to="/sponsors">our sponsors</Link>.
             </p>
           </Grid.Column>
