@@ -35,7 +35,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
   }
 
   public componentDidMount() {
-    if (this.props.user.status !== 'in') this.props.push('/');
+    if (this.props.user.status === 'out') this.props.push('/');
 
     this.setState({
       first_name: this.props.user.user.user.first_name || '',
@@ -75,8 +75,8 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
         },
       )
-      .then(() => {
-        this.props.addMessage({ message: 'Info changed successfully', severity: 'positive' });
+      .then(res => {
+        this.props.addMessage({ message: res.data.data, severity: 'positive' });
         this.props.loadUser();
       })
       .catch((error: AxiosError) => {
@@ -88,7 +88,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       });
 
   public render() {
-    if (this.props.user.status !== 'in') return <Redirect to="/" />;
+    if (this.props.user.status === 'out') return <Redirect to="/" />;
 
     return (
       <Container>
@@ -142,7 +142,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
               checked={this.state.mail_list}
               onChange={this.handleChange}
             />
-            <Form.Button content="Submit" />
+            <Form.Button type="submit" content="Submit" />
           </Form>
         </Segment>
       </Container>

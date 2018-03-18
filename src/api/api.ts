@@ -82,8 +82,8 @@ api.get('/user', (req, res) => {
       db = conn;
       return db.query('SELECT * from user');
     })
-    .then(users => {
-      res.success(users);
+    .then((users: User[]) => {
+      res.success(_.map(users, user => ({ ...user, mail_list: !!user.mail_list })));
       db.release();
     })
     .catch(error => {
@@ -93,46 +93,84 @@ api.get('/user', (req, res) => {
 });
 
 api.post('/user/:id', (req, res) => {
-  if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
-  // get parameters from request body
-  const { first_name, last_name, email, phone_1, phone_2, role_id, mail_list } = req.body;
-
   let db: mysql.PoolConnection;
   const connection = pool.getConnection().then(conn => {
     db = conn;
   });
-  if (+req.params.id === -1) {
-    connection.then(() => {
-      return db.query('INSERT INTO user SET ?', {
-        first_name,
-        last_name,
-        email,
-        phone_1,
-        phone_2,
-        role_id,
-        mail_list,
+  if (req.params.id === 'current') {
+    // get parameters from request body
+    const { first_name, last_name, phone_1, phone_2, mail_list } = req.body;
+    // ensure that all parameters exist
+    if (!first_name || !last_name || !phone_1 || !phone_2) {
+      return res.error(
+        400,
+        'Missing required field!',
+        'Hmmm...the website should have stopped you from doing this.',
+      );
+    }
+
+    pool
+      .getConnection()
+      .then(conn => {
+        db = conn;
+        // update the profile in the database
+        return db.query('UPDATE user SET ? WHERE ?', [
+          // fields to update
+          { first_name, last_name, phone_1, phone_2, mail_list: +mail_list },
+          // find the user with this email
+          { email: req.user.email },
+        ]);
+      })
+      .then(result => {
+        if (result.affectedRows !== 1) {
+          res.error(500, 'Profile could not update.', 'Please try again or contact us for help.');
+        } else {
+          res.success('Profile updated successfully');
+        }
+        db.release();
+      })
+      .catch(error => {
+        res.error(500, 'Database error', error);
+        if (db && db.end) db.release();
       });
-    });
   } else {
-    connection.then(() => {
-      // update the profile in the database
-      return db.query('UPDATE user SET ? WHERE ?', [
-        // fields to update
-        { first_name, last_name, email, phone_1, phone_2, role_id, mail_list },
-        // find the user with this email
-        { user_id: req.params.id },
-      ]);
-    });
+    if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+    // get parameters from request body
+    const { first_name, last_name, email, phone_1, phone_2, role_id, mail_list } = req.body;
+
+    if (+req.params.id === -1) {
+      connection.then(() => {
+        return db.query('INSERT INTO user SET ?', {
+          first_name,
+          last_name,
+          email,
+          phone_1,
+          phone_2,
+          role_id,
+          mail_list,
+        });
+      });
+    } else {
+      connection.then(() => {
+        // update the profile in the database
+        return db.query('UPDATE user SET ? WHERE ?', [
+          // fields to update
+          { first_name, last_name, email, phone_1, phone_2, role_id, mail_list },
+          // find the user with this email
+          { user_id: req.params.id },
+        ]);
+      });
+    }
+    connection
+      .then(result => {
+        res.success(`User ${req.params.id === -1 ? 'added' : 'updated'} successfully`);
+        db.release();
+      })
+      .catch(error => {
+        res.error(500, 'Database error', error);
+        if (db && db.end) db.release();
+      });
   }
-  connection
-    .then(result => {
-      res.success(`User ${req.params.id === -1 ? 'added' : 'updated'} successfully`);
-      db.release();
-    })
-    .catch(error => {
-      res.error(500, 'Database error', error);
-      if (db && db.end) db.release();
-    });
 });
 
 api.delete('/user/:id', (req, res) => {
@@ -221,46 +259,6 @@ api.get('/user/current', (req, res) => {
     .catch(error => {
       res.error(500, 'Database error', error);
       console.log(db, error);
-      if (db && db.end) db.release();
-    });
-});
-
-// Update current user
-api.post('/user/current', (req, res) => {
-  // get parameters from request body
-  const { first_name, last_name, phone_1, phone_2, mail_list } = req.body;
-  // ensure that all parameters exist
-  if (!first_name || !last_name || !phone_1 || !phone_2) {
-    return res.error(
-      400,
-      'Missing required field!',
-      'Hmmm...the website should have stopped you from doing this.',
-    );
-  }
-
-  let db: mysql.PoolConnection;
-  pool
-    .getConnection()
-    .then(conn => {
-      db = conn;
-      // update the profile in the database
-      return db.query('UPDATE user SET ? WHERE ?', [
-        // fields to update
-        { first_name, last_name, phone_1, phone_2, mail_list: +mail_list },
-        // find the user with this email
-        { email: req.user.email },
-      ]);
-    })
-    .then(result => {
-      if (result.affectedRows !== 1) {
-        res.error(500, 'Profile could not update.', 'Please try again or contact us for help.');
-      } else {
-        res.success('Profile updated successfully');
-      }
-      db.release();
-    })
-    .catch(error => {
-      res.error(500, 'Database error', error);
       if (db && db.end) db.release();
     });
 });
