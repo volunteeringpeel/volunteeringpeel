@@ -37,6 +37,14 @@ const routes: Route[] = [
     }),
     title: 'Users',
   },
+  {
+    path: '/admin/mailing-list',
+    component: reactLoadable({
+      loading: Loading,
+      loader: () => import('@app/admin/components/pages/MailingList'),
+    }),
+    title: 'Mailing List',
+  },
 ];
 
 export default routes;

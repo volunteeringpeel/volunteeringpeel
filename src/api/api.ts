@@ -271,7 +271,7 @@ api.get('/mailing-list', (req, res) => {
     .getConnection()
     .then(conn => {
       db = conn;
-      return db.query('SELECT email from user');
+      return db.query('SELECT email from user WHERE mail_list = 1');
     })
     .then(users => {
       res.success(_.map(users, 'email'));
