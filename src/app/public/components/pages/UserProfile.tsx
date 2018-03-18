@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Redirect } from 'react-router';
 import { RouterAction } from 'react-router-redux';
 import { Container, Form, InputOnChangeData, Segment } from 'semantic-ui-react';
+import * as _ from 'lodash';
 
 interface UserProfileProps {
   user: UserState;
@@ -19,6 +20,8 @@ interface UserProfileState {
   phone_1: string;
   phone_2: string;
   mail_list: boolean;
+  title: string;
+  bio: string;
 }
 
 export default class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
@@ -31,28 +34,37 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       phone_1: '',
       phone_2: '',
       mail_list: false,
+      title: null,
+      bio: null,
     };
   }
 
   public componentDidMount() {
     if (this.props.user.status === 'out') this.props.push('/');
 
+    const user = this.props.user.user.user;
+
     this.setState({
-      first_name: this.props.user.user.user.first_name || '',
-      last_name: this.props.user.user.user.last_name || '',
-      phone_1: this.props.user.user.user.phone_1 || '',
-      phone_2: this.props.user.user.user.phone_2 || '',
-      mail_list: this.props.user.user.user.mail_list || false,
+      first_name: user.first_name || '',
+      last_name: user.last_name || '',
+      phone_1: user.phone_1 || '',
+      phone_2: user.phone_2 || '',
+      mail_list: user.mail_list || false,
+      title: user.role_id === 3 ? (user as Exec).title : null,
+      bio: user.role_id === 3 ? (user as Exec).bio : null,
     });
   }
 
   public componentWillReceiveProps(nextProps: UserProfileProps) {
+    const user = nextProps.user.user.user;
     this.setState({
-      first_name: nextProps.user.user.user.first_name || '',
-      last_name: nextProps.user.user.user.last_name || '',
-      phone_1: nextProps.user.user.user.phone_1 || '',
-      phone_2: nextProps.user.user.user.phone_2 || '',
-      mail_list: this.props.user.user.user.mail_list || false,
+      first_name: user.first_name || '',
+      last_name: user.last_name || '',
+      phone_1: user.phone_1 || '',
+      phone_2: user.phone_2 || '',
+      mail_list: user.mail_list || false,
+      title: user.role_id === 3 ? (user as Exec).title : null,
+      bio: user.role_id === 3 ? (user as Exec).bio : null,
     });
   }
 
@@ -60,21 +72,21 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
     this.setState({ [name]: checked || value });
   };
 
-  public handleSubmit = () =>
+  public handleSubmit = () => {
+    const data = {
+      first_name: this.state.first_name,
+      last_name: this.state.last_name,
+      phone_1: this.state.phone_1,
+      phone_2: this.state.phone_2,
+      mail_list: this.state.mail_list,
+      title: this.state.title,
+      bio: this.state.bio,
+    };
+
     axios
-      .post(
-        '/api/user/current',
-        {
-          first_name: this.state.first_name,
-          last_name: this.state.last_name,
-          phone_1: this.state.phone_1,
-          phone_2: this.state.phone_2,
-          mail_list: this.state.mail_list,
-        },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
-        },
-      )
+      .post('/api/user/current', data, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+      })
       .then(res => {
         this.props.addMessage({ message: res.data.data, severity: 'positive' });
         this.props.loadUser();
@@ -86,6 +98,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
           severity: 'negative',
         });
       });
+  };
 
   public render() {
     if (this.props.user.status === 'out') return <Redirect to="/" />;
@@ -142,6 +155,26 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
               checked={this.state.mail_list}
               onChange={this.handleChange}
             />
+            {this.props.user.user.user.role_id === 3 && (
+              <>
+                <Form.Input
+                  label="Title"
+                  data-tooltip="Please don't write anything stupid (or do)."
+                  name="title"
+                  value={this.state.title}
+                  onChange={this.handleChange}
+                  required
+                />
+                <Form.TextArea
+                  label="Bio"
+                  data-tooltip="Keep it PG."
+                  name="bio"
+                  value={this.state.bio}
+                  onChange={this.handleChange}
+                  required
+                />
+              </>
+            )}
             <Form.Button type="submit" content="Submit" />
           </Form>
         </Segment>

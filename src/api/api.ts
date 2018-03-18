@@ -99,7 +99,7 @@ api.post('/user/:id', (req, res) => {
   });
   if (req.params.id === 'current') {
     // get parameters from request body
-    const { first_name, last_name, phone_1, phone_2, mail_list } = req.body;
+    const { first_name, last_name, phone_1, phone_2, mail_list, bio, title } = req.body;
     // ensure that all parameters exist
     if (!first_name || !last_name || !phone_1 || !phone_2) {
       return res.error(
@@ -116,7 +116,7 @@ api.post('/user/:id', (req, res) => {
         // update the profile in the database
         return db.query('UPDATE user SET ? WHERE ?', [
           // fields to update
-          { first_name, last_name, phone_1, phone_2, mail_list: +mail_list },
+          { first_name, last_name, phone_1, phone_2, mail_list: +mail_list, bio, title },
           // find the user with this email
           { email: req.user.email },
         ]);
@@ -136,26 +136,30 @@ api.post('/user/:id', (req, res) => {
   } else {
     if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
     // get parameters from request body
-    const { first_name, last_name, email, phone_1, phone_2, role_id, mail_list } = req.body;
+    const {
+      first_name,
+      last_name,
+      email,
+      phone_1,
+      phone_2,
+      role_id,
+      mail_list,
+      bio,
+      title,
+    } = req.body;
+
+    const data = { first_name, last_name, email, phone_1, phone_2, role_id, mail_list, bio, title };
 
     if (+req.params.id === -1) {
       connection.then(() => {
-        return db.query('INSERT INTO user SET ?', {
-          first_name,
-          last_name,
-          email,
-          phone_1,
-          phone_2,
-          role_id,
-          mail_list,
-        });
+        return db.query('INSERT INTO user SET ?', data);
       });
     } else {
       connection.then(() => {
         // update the profile in the database
         return db.query('UPDATE user SET ? WHERE ?', [
           // fields to update
-          { first_name, last_name, email, phone_1, phone_2, role_id, mail_list },
+          data,
           // find the user with this email
           { user_id: req.params.id },
         ]);
@@ -328,7 +332,9 @@ api.get('/public/execs', (req, res) => {
     .getConnection()
     .then(conn => {
       db = conn;
-      return db.query('SELECT user_id, first_name, last_name, bio FROM user WHERE role_id = 3');
+      return db.query(
+        'SELECT user_id, first_name, last_name, title, bio FROM user WHERE role_id = 3',
+      );
     })
     .then(execs => {
       res.success(execs);

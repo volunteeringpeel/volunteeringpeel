@@ -49,7 +49,9 @@ interface User {
 }
 
 interface Exec extends User {
+  role_id: 3;
   bio: string;
+  title: string;
 }
 
 interface Sponsor {

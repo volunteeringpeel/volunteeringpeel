@@ -1,5 +1,5 @@
 interface UserData {
-  user: User;
+  user: User | Exec;
   new: boolean;
   events: any[];
 }

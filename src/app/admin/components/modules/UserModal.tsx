@@ -13,10 +13,10 @@ interface UserModalProps {
   loading: (status: boolean) => any;
   cancel: () => void;
   refresh: () => void;
-  user: User;
+  user: User | Exec;
 }
 
-export default class UserModal extends React.Component<UserModalProps, User> {
+export default class UserModal extends React.Component<UserModalProps, User | Exec> {
   constructor(props: UserModalProps) {
     super(props);
 
@@ -28,6 +28,8 @@ export default class UserModal extends React.Component<UserModalProps, User> {
       phone_2: props.user.phone_2 || '',
       role_id: props.user.role_id || 1,
       mail_list: props.user.mail_list || false,
+      title: (props.user as Exec).title || null,
+      bio: (props.user as Exec).bio || null,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -43,6 +45,8 @@ export default class UserModal extends React.Component<UserModalProps, User> {
         phone_2: nextProps.user.phone_2 || '',
         role_id: nextProps.user.role_id || 1,
         mail_list: nextProps.user.mail_list || false,
+        title: nextProps.user.role_id === 3 ? (nextProps.user as Exec).title : null,
+        bio: nextProps.user.role_id === 3 ? (nextProps.user as Exec).bio : null,
       });
     }
   }
@@ -134,6 +138,26 @@ export default class UserModal extends React.Component<UserModalProps, User> {
               ]}
               onChange={this.handleChange}
             />
+            {this.state.role_id === 3 && (
+              <>
+                <Form.Input
+                  label="Title"
+                  data-tooltip="Please don't write anything stupid (or do)."
+                  name="title"
+                  value={(this.state as Exec).title}
+                  onChange={this.handleChange}
+                  required
+                />
+                <Form.TextArea
+                  label="Bio"
+                  data-tooltip="Keep it PG."
+                  name="bio"
+                  value={(this.state as Exec).bio}
+                  onChange={this.handleChange}
+                  required
+                />
+              </>
+            )}
             <Form.Checkbox
               label="Subscribed to mailing list"
               name="mail_list"

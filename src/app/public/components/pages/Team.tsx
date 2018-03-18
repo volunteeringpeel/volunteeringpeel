@@ -46,7 +46,7 @@ export default class Team extends React.Component<TeamProps, TeamState> {
                   <Card.Header>
                     {exec.first_name} {exec.last_name}
                   </Card.Header>
-                  <Card.Meta>Position Goes Here</Card.Meta>
+                  <Card.Meta>{exec.title}</Card.Meta>
                 </Card.Content>
                 <Card.Content extra>
                   <Card.Description>
