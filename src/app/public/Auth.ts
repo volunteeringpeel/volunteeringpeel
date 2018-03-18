@@ -7,19 +7,20 @@ import { addMessage, dismissAllMessages, logout } from '@app/common/actions';
 import { loadUser, store } from '@app/common/utilities';
 
 class Auth {
-  private auth0 = new auth0.WebAuth({
-    domain: 'volunteering-peel.auth0.com',
-    clientID: 'XVYrcvpmYz5nrJ77qkJJFEqtkREB1vVE',
-    redirectUri: 'http://localhost:19847/callback',
-    audience: 'https://volunteeringpeel.org/api',
-    responseType: 'token id_token',
-    scope: 'openid email',
-  });
+  private auth0: auth0.WebAuth;
 
   constructor() {
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
     this.handleAuthentication = this.handleAuthentication.bind(this);
+    this.auth0 = new auth0.WebAuth({
+      domain: 'volunteering-peel.auth0.com',
+      clientID: 'XVYrcvpmYz5nrJ77qkJJFEqtkREB1vVE',
+      redirectUri: window.location.origin + '/callback',
+      audience: 'https://volunteeringpeel.org/api',
+      responseType: 'token id_token',
+      scope: 'openid email',
+    });
   }
 
   public login() {
