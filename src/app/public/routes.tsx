@@ -21,7 +21,7 @@ const routes: Route[] = [
     exact: true,
     component: reactLoadable({
       loading: Loading,
-      loader: () => import('@app/public/components/pages/Homepage'),
+      loader: () => import('@app/public/controllers/pages/Homepage'),
     }),
     title: 'Home',
     display: 'Volunteering Peel',

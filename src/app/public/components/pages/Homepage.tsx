@@ -1,4 +1,6 @@
 // Library Imports
+import axios, { AxiosError } from 'axios';
+import * as Promise from 'bluebird';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -14,7 +16,46 @@ import {
   Segment,
 } from 'semantic-ui-react';
 
-export default class Homepage extends React.Component {
+interface HomepageProps {
+  addMessage: (message: Message) => void;
+}
+
+interface HomepageState {
+  subscribeEmail: string;
+  subscribeLoading: boolean;
+}
+
+export default class Homepage extends React.Component<HomepageProps, HomepageState> {
+  constructor(props: HomepageProps) {
+    super(props);
+
+    this.state = {
+      subscribeEmail: '',
+      subscribeLoading: false,
+    };
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  public handleSubmit = () => {
+    Promise.resolve(this.setState({ subscribeLoading: true }))
+      .then(() => axios.post('/api/public/mailing-list', { email: this.state.subscribeEmail }))
+      .then(res => {
+        this.props.addMessage({ message: res.data.data, severity: 'positive' });
+      })
+      .catch((error: AxiosError) => {
+        this.props.addMessage({
+          message: error.response.data.error,
+          more: error.response.data.details,
+          severity: 'negative',
+        });
+      })
+      .finally(() => {
+        this.setState({ subscribeLoading: false });
+        window.scrollTo(0, 0);
+      });
+  };
+
   public render() {
     return (
       <div className="large text">
@@ -92,9 +133,15 @@ export default class Homepage extends React.Component {
             <Header as="h3">
               Subscribe to our monthly news letter to get updates on the latest volunteering events!
             </Header>
-            <Form>
-              <Form.Input placeholder="Email Address" />
-              <Button size="large" type="submit">
+            <Form onSubmit={this.handleSubmit}>
+              <Form.Input
+                placeholder="Email Address"
+                name="email"
+                type="email"
+                value={this.state.subscribeEmail}
+                onChange={(e, { value }) => this.setState({ subscribeEmail: value })}
+              />
+              <Button size="large" type="submit" loading={this.state.subscribeLoading}>
                 Subscribe
               </Button>
             </Form>

@@ -283,6 +283,27 @@ api.get('/mailing-list', (req, res) => {
     });
 });
 
+api.post('/public/mailing-list', (req, res) => {
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      return db.query(
+        'INSERT INTO user (email, mail_list) VALUES (?, 1) ON DUPLICATE KEY UPDATE mail_list = 1',
+        req.body.email,
+      );
+    })
+    .then(users => {
+      res.success(`${req.body.email} added to mailing list!`);
+      db.release();
+    })
+    .catch(error => {
+      res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
+    });
+});
+
 // FAQ's
 api.get('/public/faq', (req, res) => {
   let db: mysql.PoolConnection;
