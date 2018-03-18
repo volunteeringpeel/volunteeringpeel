@@ -27,6 +27,7 @@ export default class UserModal extends React.Component<UserModalProps, User> {
       phone_1: props.user.phone_1 || '',
       phone_2: props.user.phone_2 || '',
       role_id: props.user.role_id || 1,
+      mail_list: props.user.mail_list || false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -41,6 +42,7 @@ export default class UserModal extends React.Component<UserModalProps, User> {
         phone_1: nextProps.user.phone_1 || '',
         phone_2: nextProps.user.phone_2 || '',
         role_id: nextProps.user.role_id || 1,
+        mail_list: nextProps.user.mail_list || false,
       });
     }
   }
@@ -130,6 +132,12 @@ export default class UserModal extends React.Component<UserModalProps, User> {
                 { text: 'Organizer', value: 2 },
                 { text: 'Executive', value: 3 },
               ]}
+              onChange={this.handleChange}
+            />
+            <Form.Checkbox
+              label="Subscribed to mailing list"
+              name="mail_list"
+              checked={this.state.mail_list}
               onChange={this.handleChange}
             />
           </Form>

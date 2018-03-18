@@ -18,6 +18,7 @@ interface UserProfileState {
   last_name: string;
   phone_1: string;
   phone_2: string;
+  mail_list: boolean;
   verification: boolean;
 }
 
@@ -30,6 +31,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       last_name: '',
       phone_1: '',
       phone_2: '',
+      mail_list: false,
       verification: false,
     };
   }
@@ -42,6 +44,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       last_name: this.props.user.user.user.last_name || '',
       phone_1: this.props.user.user.user.phone_1 || '',
       phone_2: this.props.user.user.user.phone_2 || '',
+      mail_list: this.props.user.user.user.mail_list || false,
     });
   }
 
@@ -51,14 +54,12 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       last_name: nextProps.user.user.user.last_name || '',
       phone_1: nextProps.user.user.user.phone_1 || '',
       phone_2: nextProps.user.user.user.phone_2 || '',
+      mail_list: this.props.user.user.user.mail_list || false,
     });
   }
 
-  public handleChange = (
-    event: React.SyntheticEvent<HTMLInputElement>,
-    data: InputOnChangeData,
-  ) => {
-    this.setState({ [data.name]: data.value });
+  public handleChange = (event: React.FormEvent<any>, { name, value, checked }: any) => {
+    this.setState({ [name]: checked || value });
     if (this.state.first_name && this.state.last_name && this.state.phone_1 && this.state.phone_2) {
       this.setState({ verification: true });
     } else {
@@ -75,6 +76,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
           last_name: this.state.last_name,
           phone_1: this.state.phone_1,
           phone_2: this.state.phone_2,
+          mail_list: this.state.mail_list,
         },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
@@ -137,6 +139,12 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
                 onChange={this.handleChange}
               />
             </Form.Group>
+            <Form.Checkbox
+              label="Subscribe to mailing list"
+              name="mail_list"
+              checked={this.state.mail_list}
+              onChange={this.handleChange}
+            />
             <Form.Button content="Submit" disabled={!this.state.verification} />
           </Form>
         </Segment>

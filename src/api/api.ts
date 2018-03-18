@@ -95,7 +95,7 @@ api.get('/user', (req, res) => {
 api.post('/user/:id', (req, res) => {
   if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
   // get parameters from request body
-  const { first_name, last_name, email, phone_1, phone_2, role_id } = req.body;
+  const { first_name, last_name, email, phone_1, phone_2, role_id, mail_list } = req.body;
 
   let db: mysql.PoolConnection;
   const connection = pool.getConnection().then(conn => {
@@ -110,6 +110,7 @@ api.post('/user/:id', (req, res) => {
         phone_1,
         phone_2,
         role_id,
+        mail_list,
       });
     });
   } else {
@@ -117,7 +118,7 @@ api.post('/user/:id', (req, res) => {
       // update the profile in the database
       return db.query('UPDATE user SET ? WHERE ?', [
         // fields to update
-        { first_name, last_name, email, phone_1, phone_2, role_id },
+        { first_name, last_name, email, phone_1, phone_2, role_id, mail_list },
         // find the user with this email
         { user_id: req.params.id },
       ]);
@@ -180,6 +181,7 @@ api.get('/user/current', (req, res) => {
           phone_1: null as string,
           phone_2: null as string,
           role_id: 1,
+          mail_list: false,
         };
         // Don't insert for now. Uncomment and delete Promise.resolve to enable INSERT.
         // return db
@@ -226,7 +228,7 @@ api.get('/user/current', (req, res) => {
 // Update current user
 api.post('/user/current', (req, res) => {
   // get parameters from request body
-  const { first_name, last_name, phone_1, phone_2 } = req.body;
+  const { first_name, last_name, phone_1, phone_2, mail_list } = req.body;
   // ensure that all parameters exist
   if (!first_name || !last_name || !phone_1 || !phone_2) {
     return res.error(
@@ -244,7 +246,7 @@ api.post('/user/current', (req, res) => {
       // update the profile in the database
       return db.query('UPDATE user SET ? WHERE ?', [
         // fields to update
-        { first_name, last_name, phone_1, phone_2 },
+        { first_name, last_name, phone_1, phone_2, mail_list: +mail_list },
         // find the user with this email
         { email: req.user.email },
       ]);

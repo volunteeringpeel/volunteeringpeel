@@ -45,6 +45,7 @@ interface User {
   phone_1: string;
   phone_2: string;
   role_id: number;
+  mail_list: boolean;
 }
 
 interface Exec extends User {
