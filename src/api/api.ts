@@ -3,6 +3,7 @@ import * as Promise from 'bluebird';
 import * as Express from 'express';
 import * as jwt from 'express-jwt';
 import * as jwksRsa from 'jwks-rsa';
+import * as _ from 'lodash';
 import * as mysql from 'promise-mysql';
 
 const passwordsJson = require('./passwords');
@@ -246,6 +247,25 @@ api.post('/user/current', (req, res) => {
       } else {
         res.success('Profile updated successfully');
       }
+      db.release();
+    })
+    .catch(error => {
+      res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
+    });
+});
+
+// Mailing list
+api.get('/mailing-list', (req, res) => {
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      return db.query('SELECT email from user');
+    })
+    .then(users => {
+      res.success(_.map(users, 'email'));
       db.release();
     })
     .catch(error => {
