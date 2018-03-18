@@ -221,10 +221,8 @@ api.get('/user/current', (req, res) => {
           role_id: 1,
           mail_list: false,
         };
-        // Don't insert for now. Uncomment and delete Promise.resolve to enable INSERT.
-        // return db
-        //   .query('INSERT INTO user SET ?', newUser)
-        return Promise.resolve().then(events => {
+
+        return db.query('INSERT INTO user SET ?', newUser).then(events => {
           out.user = newUser;
           out.new = true;
           return;
