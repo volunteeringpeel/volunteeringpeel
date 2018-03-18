@@ -5,7 +5,7 @@ const common = require('./webpack.common.js');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const LessPluginAutoPrefix = require('less-plugin-autoprefix');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+const MinifyPlugin = require('babel-minify-webpack-plugin');
 
 // this was copypasted from a faq should cover just about everybody ever
 const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 'android 4'];
@@ -96,13 +96,7 @@ module.exports = merge(common, {
         NODE_ENV: JSON.stringify('production'), // make sure that we think we're in prod
       },
     }),
-    new UglifyJSPlugin({
-      // minify everything
-      extractComments: true,
-      parallel: true,
-      cache: true,
-      // sourceMap: true, // but keep the sourcemap for debugging
-    }),
+    new MinifyPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(), // merge chunks
   ],
 });
