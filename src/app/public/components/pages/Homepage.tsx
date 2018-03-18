@@ -21,6 +21,7 @@ interface HomepageProps {
 }
 
 interface HomepageState {
+  subscribed: boolean;
   subscribeEmail: string;
   subscribeLoading: boolean;
 }
@@ -30,6 +31,7 @@ export default class Homepage extends React.Component<HomepageProps, HomepageSta
     super(props);
 
     this.state = {
+      subscribed: false,
       subscribeEmail: '',
       subscribeLoading: false,
     };
@@ -51,7 +53,7 @@ export default class Homepage extends React.Component<HomepageProps, HomepageSta
         });
       })
       .finally(() => {
-        this.setState({ subscribeLoading: false });
+        this.setState({ subscribeLoading: false, subscribeEmail: '', subscribed: true });
         window.scrollTo(0, 0);
       });
   };
@@ -133,18 +135,22 @@ export default class Homepage extends React.Component<HomepageProps, HomepageSta
             <Header as="h3">
               Subscribe to our monthly news letter to get updates on the latest volunteering events!
             </Header>
-            <Form onSubmit={this.handleSubmit}>
-              <Form.Input
-                placeholder="Email Address"
-                name="email"
-                type="email"
-                value={this.state.subscribeEmail}
-                onChange={(e, { value }) => this.setState({ subscribeEmail: value })}
-              />
-              <Button size="large" type="submit" loading={this.state.subscribeLoading}>
-                Subscribe
-              </Button>
-            </Form>
+            {!this.state.subscribed ? (
+              <Form onSubmit={this.handleSubmit}>
+                <Form.Input
+                  placeholder="Email Address"
+                  name="email"
+                  type="email"
+                  value={this.state.subscribeEmail}
+                  onChange={(e, { value }) => this.setState({ subscribeEmail: value })}
+                />
+                <Button size="large" type="submit" loading={this.state.subscribeLoading}>
+                  Subscribe
+                </Button>
+              </Form>
+            ) : (
+              <p>Thanks for subscribing!</p>
+            )}
           </Container>
         </Segment>
 
