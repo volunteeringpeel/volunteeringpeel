@@ -19,7 +19,6 @@ interface UserProfileState {
   phone_1: string;
   phone_2: string;
   mail_list: boolean;
-  verification: boolean;
 }
 
 export default class UserProfile extends React.Component<UserProfileProps, UserProfileState> {
@@ -32,7 +31,6 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       phone_1: '',
       phone_2: '',
       mail_list: false,
-      verification: false,
     };
   }
 
@@ -60,11 +58,6 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
 
   public handleChange = (event: React.FormEvent<any>, { name, value, checked }: any) => {
     this.setState({ [name]: checked || value });
-    if (this.state.first_name && this.state.last_name && this.state.phone_1 && this.state.phone_2) {
-      this.setState({ verification: true });
-    } else {
-      this.setState({ verification: false });
-    }
   };
 
   public handleSubmit = () =>
@@ -108,6 +101,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
                 name="first_name"
                 value={this.state.first_name}
                 onChange={this.handleChange}
+                required
               />
               <Form.Input
                 label="Last Name"
@@ -115,6 +109,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
                 name="last_name"
                 value={this.state.last_name}
                 onChange={this.handleChange}
+                required
               />
             </Form.Group>
             <Form.Input
@@ -130,6 +125,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
                 name="phone_1"
                 value={this.state.phone_1}
                 onChange={this.handleChange}
+                required
               />
               <Form.Input
                 label="Phone #2"
@@ -137,6 +133,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
                 name="phone_2"
                 value={this.state.phone_2}
                 onChange={this.handleChange}
+                required
               />
             </Form.Group>
             <Form.Checkbox
@@ -145,7 +142,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
               checked={this.state.mail_list}
               onChange={this.handleChange}
             />
-            <Form.Button content="Submit" disabled={!this.state.verification} />
+            <Form.Button content="Submit" />
           </Form>
         </Segment>
       </Container>
