@@ -8,6 +8,11 @@ import * as mysql from 'promise-mysql';
 
 const passwordsJson = require('./passwords');
 
+// Roles
+const ROLE_VOLUNTEER = 1;
+const ROLE_ORGANIZER = 2;
+const ROLE_EXECUTIVE = 3;
+
 // Initialize API
 const api = Express.Router();
 
@@ -69,6 +74,7 @@ api.use((err: any, req: Express.Request, res: Express.Response, next: Express.Ne
 
 // Get all users
 api.get('/user', (req, res) => {
+  if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
   let db: mysql.PoolConnection;
   pool
     .getConnection()
@@ -87,6 +93,7 @@ api.get('/user', (req, res) => {
 });
 
 api.post('/user/:id', (req, res) => {
+  if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
   // get parameters from request body
   const { first_name, last_name, email, phone_1, phone_2, role_id } = req.body;
 
@@ -128,6 +135,7 @@ api.post('/user/:id', (req, res) => {
 });
 
 api.delete('/user/:id', (req, res) => {
+  if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
   let db: mysql.PoolConnection;
   pool
     .getConnection()
@@ -257,6 +265,7 @@ api.post('/user/current', (req, res) => {
 
 // Mailing list
 api.get('/mailing-list', (req, res) => {
+  if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
   let db: mysql.PoolConnection;
   pool
     .getConnection()
@@ -398,6 +407,7 @@ api.get('/public/events', (req, res) => eventQuery(req, res, false));
 
 // Edit event
 api.post('/events/:id', (req, res) => {
+  if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
   let db: mysql.PoolConnection;
   const { name, description, transport, address, active, shifts, deleteShifts } = req.body;
   let connection: Promise<any> = pool.getConnection();
@@ -468,6 +478,7 @@ api.post('/events/:id', (req, res) => {
 
 // Delete event
 api.delete('/events/:id', (req, res) => {
+  if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
   let db: mysql.PoolConnection;
   pool
     .getConnection()
