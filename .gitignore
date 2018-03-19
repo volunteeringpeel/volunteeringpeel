@@ -7,4 +7,3 @@ dist
 !.babelrc
 
 passwords.js
-*.json
