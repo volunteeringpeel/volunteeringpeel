@@ -5,6 +5,7 @@ drop table if exists contact;
 drop table if exists request;
 drop table if exists faq;
 drop table if exists user_shift;
+drop table if exists confirm_level;
 drop table if exists user;
 drop table if exists role;
 drop table if exists shift;
@@ -51,11 +52,22 @@ create table if not exists user (
   foreign key fk_user_role (role_id) references role(role_id)
 );
 
+create table if not exists confirm_level (
+  confirm_level_id  int           not null primary key,
+  name              varchar(32)   not null unique                 comment 'Name of level',
+  description       text                                          comment 'Quick description'
+);
+
 create table if not exists user_shift (
-  shift_id    int           not null                            comment 'Shift ID',
-  user_id     int           not null                            comment 'User ID',
+  user_shift_id     int           not null auto_increment primary key,
+  shift_id          int           not null                        comment 'Shift ID',
+  user_id           int           not null                        comment 'User ID',
+  start_override    datetime                                      comment 'Start of shift (otherwise uses shift value)',
+  end_override      datetime                                      comment 'End of shift (otherwise uses shift value)',
+  confirm_level_id  int           not null default 0              comment 'Status',
   foreign key fk_user_shift_shift (shift_id) references shift(shift_id) on update cascade on delete cascade,
   foreign key fk_user_shift_user (user_id) references user(user_id) on update cascade on delete cascade,
+  foreign key fk_user_shift_confirm_level (confirm_level_id) references confirm_level(confirm_level_id) on update cascade,
   unique key uk_user_shift (user_id, shift_id)
 );
 

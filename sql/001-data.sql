@@ -6,6 +6,7 @@ truncate table contact;
 truncate table request;
 truncate table faq;
 truncate table user_shift;
+truncate table confirm_level;
 truncate table user;
 truncate table role;
 truncate table shift;
@@ -17,7 +18,17 @@ insert into role (role_id, name) values
 	(2, "Event Organizer"),
 	(3, "Executive");
 
--- Password is 'password'.
+insert into confirm_level (confirm_level_id, name, description) values
+	-- Standard levels
+	(0, "signed-up", "Just signed up"),
+	(1, "email", "Email confirmation complete"),
+	(2, "phone", "Phone confirmation complete"),
+	(3, "attended", "Event attended"),
+	-- Failure levels
+	(-1, "cancelled", "Volunteer cancelled"),
+	(-2, "ghosted", "Volunteer did not respond to confirmation"),
+	(-3, "missed", "Volunteer was absent from shift");
+
 insert into user (email, role_id, first_name, last_name) values
 	("volunteer@mailinator.com", 1, "Volunteer", "Test"),
 	("organizer@mailinator.com", 2, "Organizer", "Test"),
