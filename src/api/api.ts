@@ -116,7 +116,7 @@ api.post('/user/:id', (req, res) => {
         // update the profile in the database
         return db.query('UPDATE user SET ? WHERE ?', [
           // fields to update
-          { first_name, last_name, phone_1, phone_2, mail_list: +mail_list, bio, title },
+          { first_name, last_name, phone_1, phone_2, bio, title, mail_list: +mail_list },
           // find the user with this email
           { email: req.user.email },
         ]);
