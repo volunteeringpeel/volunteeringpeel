@@ -5,6 +5,18 @@ This includes hosting your own database, etc.
 If you just want to test the site, please use the current live version [hosted by me](volunteeringpeel.retrocraft.ca).
 If the hosted site has not been updated recently, just drop me a message and I'll update it.
 
+## Table of Contents
+
+<!-- toc -->
+
+- [Introduction](#introduction)
+- [Dependencies](#dependencies)
+- [Getting the Code](#getting-the-code)
+- [Database Setup](#database-setup)
+- [Server Setup](#server-setup)
+
+<!-- tocstop -->
+
 ## Introduction
 
 I would hope you have a basic understanding of the following:
