@@ -1,4 +1,4 @@
-# Installation
+# Volunteering Peel Server Installation
 
 These instructions are for anyone who wishes to install their own **local** version of the Volunteering Peel site.
 This includes hosting your own database, etc.
@@ -138,3 +138,74 @@ In this tab, check DELETE, INSERT, SELECT, and UPDATE (red), then press "Apply" 
 ![MySQL Workbench assign permissions](https://i.imgur.com/f9H7SkB.png)
 
 This completes the database creation and setup.
+
+## Server Setup
+
+Remember that terminal you have open? Find it.
+Once you found it, install everything automagically by running `yarn`.
+The output should look something like the following, and take a few minutes to complete:
+
+```
+yarn install v1.3.2
+[1/4] Resolving packages...
+[2/4] Fetching packages...
+info fsevents@1.1.3: The platform "linux" is incompatible with this module.
+info "fsevents@1.1.3" is an optional dependency and failed compatibility check. Excluding it from installation.
+[3/4] Linking dependencies...
+warning " > babel-loader@7.1.3" has unmet peer dependency "babel-core@6".
+warning " > less-loader@4.0.5" has incorrect peer dependency "less@^2.3.1".
+[4/4] Building fresh packages...
+$ node scripts/fix-semantic.js
+Done in 52.96s.
+```
+
+Don't worry about warnings or info messages.
+There'll always be a few kinks here or there, and they shouldn't cause any problems.
+
+Now, run `yarn run dev` to start up the development server.
+This server will automagically recompile and (if the stars are aligned) replace the content on your web browser when you make a change to the source code.
+
+The output will look something like this.
+I cut out some lines because the full output is huge.
+
+```
+yarn run v1.3.2
+$ nodemon
+[nodemon] 1.15.1
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching: /mnt/d/Documents/GitHub/volunteeringpeel/src/**/*
+[nodemon] starting `ts-node -P tsconfig.server.json ./src/index.ts`
+webpack building...
+Listening on http://localhost:19847
+[JARVIS] Starting dashboard on: http://localhost:1337
+
+[at-loader] Using typescript@2.7.2 from typescript and "tsconfig.json" from /mnt/d/Documents/GitHub/volunteeringpeel/tsconfig.json.
+
+[at-loader] Checking started in a separate process...
+
+[at-loader] Ok, 1.242 sec.
+webpack built 20d683e6ee279afdd680 in 1943ms
+ℹ ｢wdm｣: Hash: 20d683e6ee279afdd680
+Version: webpack 3.11.0
+Time: 12943ms
+                  Asset       Size  Chunks                    Chunk Names
+               admin.js    67.2 kB      15  [emitted]         admin
+         commons.js.map    3.73 MB      13  [emitted]         commons
+             app.js.map      58 kB      14  [emitted]         app
+           admin.js.map    38.1 kB      15  [emitted]         admin
+         runtime.js.map    33.4 kB      16  [emitted]         runtime
+             index.html  469 bytes          [emitted]
+             admin.html  477 bytes          [emitted]
+   [0] ./node_modules/react/index.js 190 bytes {13} [built]
+  [59] ./node_modules/moment/moment.js 132 kB {13} [built]
+  [76] (webpack)/buildin/module.js 517 bytes {13} [built]
+ℹ ｢wdm｣: Compiled successfully.
+```
+
+Don't worry if you get hung at certain points.
+The barrier at 69% (unintentional, I swear) and 92% can take a while to get past.
+Give it a few minutes on the first run.
+
+If you want to see some fancy colours while it's compiling, point your favorite web browser at http://localhost:1337 during compilation.
+
+The site should now be accessible at http://localhost:19847.
