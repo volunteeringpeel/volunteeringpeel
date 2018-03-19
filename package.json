@@ -8,8 +8,7 @@
   "scripts": {
     "test": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
     "build": "yarn run build:server && yarn run build:client",
-    "build:server":
-      "webpack --config webpack.server.js; cp ./src/api/passwords.js ./dist/passwords.js || :",
+    "build:server": "webpack --config webpack.server.js; cp ./src/api/passwords.js ./dist/passwords.js || :",
     "build:client": "webpack --progress --config webpack.prod.js",
     "dev": "nodemon",
     "postinstall": "node scripts/fix-semantic.js"
