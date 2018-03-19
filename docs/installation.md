@@ -5,6 +5,9 @@ This includes hosting your own database, etc.
 If you just want to test the site, please use the current live version [hosted by me](volunteeringpeel.retrocraft.ca).
 If the hosted site has not been updated recently, just drop me a message and I'll update it.
 
+**THIS IS ONLY FOR PEOPLE WHO WISH TO EDIT THE CODE AND VIEW THEIR OWN VERSION ON THEIR OWN COMPUTER!!**
+**IF YOU JUST WANT TO PLAY AROUND WITH THE SITE, USE THE HOSTED VERSION**
+
 ## Table of Contents
 
 <!-- toc -->
@@ -14,6 +17,7 @@ If the hosted site has not been updated recently, just drop me a message and I'l
 - [Getting the Code](#getting-the-code)
 - [Database Setup](#database-setup)
 - [Server Setup](#server-setup)
+- [Building a Distribution](#building-a-distribution)
 
 <!-- tocstop -->
 
@@ -155,6 +159,11 @@ This completes the database creation and setup.
 
 Remember that terminal you have open? Find it.
 Once you found it, install everything automagically by running `yarn`.
+
+```
+yarn
+```
+
 The output should look something like the following, and take a few minutes to complete:
 
 ```
@@ -174,8 +183,26 @@ Done in 52.96s.
 Don't worry about warnings or info messages.
 There'll always be a few kinks here or there, and they shouldn't cause any problems.
 
-Now, run `yarn run dev` to start up the development server.
+There's one file of code that's actually missing from your generated folder.
+That's the database password.
+You picked it earlier when creating the `volunteeringpeel` user.
+Create a file called `passwords.js` inside of `src/api`.
+Put this inside, and put the password in (don't delete the quotes though).
+
+```javascript
+module.exports = {
+  mysql: {
+    password: 'password-goes-here',
+  },
+};
+```
+
+Now, to start up the development server.
 This server will automagically recompile and (if the stars are aligned) replace the content on your web browser when you make a change to the source code.
+
+```bash
+yarn run dev
+```
 
 The output will look something like this.
 I cut out some lines because the full output is huge.
@@ -221,3 +248,80 @@ Give it a few minutes on the first run.
 If you want to see some fancy colours while it's compiling, point your favorite web browser at http://localhost:1337 during compilation.
 
 The site should now be accessible at http://localhost:19847.
+
+You can stop here if you'd like.
+The next section is only for production copies.
+
+## Building a Distribution
+
+You can also build a production copy.
+This build will be minified and optimized for download.
+It should not be used for testing.
+Run the build script.
+
+```
+yarn run build
+```
+
+It will have a very similar output to the dev script.
+Once again, I have deleted a large number of lines for brevity's sake.
+
+```
+yarn run v1.3.2
+$ yarn run build:server && yarn run build:client
+$ webpack --config webpack.server.js; cp ./src/api/passwords.js ./dist/passwords.js || :
+
+[at-loader] Using typescript@2.7.2 from typescript and "tsconfig.json" from /mnt/d/Documents/GitHub/volunteeringpeel/tsconfig.server.json.
+
+[at-loader] Checking started in a separate process...
+
+[at-loader] Ok, 0.81 sec.
+Hash: b1c73ce74afa6cc5634b
+Version: webpack 3.11.0
+Time: 2417ms
+   Asset     Size  Chunks             Chunk Names
+index.js  26.1 kB       0  [emitted]  main
+   [1] ./src/index.ts 2.67 kB {0} [built]
+   [4] ./src/api/api.ts 17.1 kB {0} [built]
+    + 10 hidden modules
+$ webpack --progress --config webpack.prod.js
+clean-webpack-plugin: /mnt/d/Documents/GitHub/volunteeringpeel/dist/app has been removed.
+[JARVIS] Starting dashboard on: http://localhost:1337
+[at-loader] Using typescript@2.7.2 from typescript and "tsconfig.json" from /mnt/d/Documents/GitHub/volunteeringpeel/tsconfig.json.
+[at-loader] Checking started in a separate process...
+
+[at-loader] Ok, 0.683 sec.                                                                                                                                                      Hash: e46fca6643740fa16540
+Version: webpack 3.11.0
+Time: 42999ms
+                          Asset       Size  Chunks                    Chunk Names
+commons.13756224bdfa58808729.js     811 kB      11  [emitted]  [big]  commons
+    app.5686220d9d4295580388.js    40.6 kB      12  [emitted]         app
+  admin.cf4bd47465b1f466547e.js    24.6 kB      13  [emitted]         admin
+runtime.bc295df70d4a2ec2bf4a.js    1.65 kB      14  [emitted]         runtime
+                      style.css  447 bytes  12, 13  [emitted]         app, admin
+                     index.html  573 bytes          [emitted]
+                     admin.html  581 bytes          [emitted]
+[1UUV] ./public/routes.tsx 2.88 kB {12} [built]
+[Ctyq] ./common/actions.ts 3.92 kB {12} {13} [built]
+[E4vQ] (webpack)/buildin/module.js 517 bytes {11} [built]
+[Ehch] ./css/style.less 41 bytes {12} {13} [built]
+    + 1230 hidden modules
+Done in 48.93s.
+```
+
+The distribution will be found in the `dist` folder.
+This may be uploaded to another server, or run on your own machine.
+To run the distribution, simply `cd` into the `dist` folder, and run `index.js`
+
+```bash
+cd dist
+node index.js
+```
+
+The output will be one line:
+
+```
+Listening on http://localhost:19847
+```
+
+The server is once again accessible from http://localhost:19847.
