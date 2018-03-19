@@ -101,7 +101,7 @@ api.post('/user/:id', (req, res) => {
     // get parameters from request body
     const { first_name, last_name, phone_1, phone_2, mail_list, bio, title } = req.body;
     // ensure that all parameters exist
-    if (!first_name || !last_name || !phone_1 || !phone_2) {
+    if (!first_name || !last_name || !phone_1) {
       return res.error(
         400,
         'Missing required field!',

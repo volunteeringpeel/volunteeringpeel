@@ -146,7 +146,6 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
                 name="phone_2"
                 value={this.state.phone_2}
                 onChange={this.handleChange}
-                required
               />
             </Form.Group>
             <Form.Checkbox
