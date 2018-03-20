@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Link, Route } from 'react-router-dom';
-import { Dropdown, Header, Segment } from 'semantic-ui-react';
+import { Dropdown, Header, Segment, Table } from 'semantic-ui-react';
 
 // Controllers Imports
 import EditEvent from '@app/admin/controllers/modules/EditEvent';
@@ -100,7 +100,24 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
           value={this.state.activeEntry ? this.state.activeEntry : null}
           onChange={(e, { value }) => this.setState({ activeEntry: +value })}
         />
-        {this.state.activeEntry}
+        {this.state.activeEntry && (
+          <Table
+            compact
+            celled
+            headerRow={['Status', 'First Name', 'Last Name', 'Start', 'End']}
+            renderBodyRow={(entry: AttendanceEntry) => ({
+              key: entry.user_shift_id,
+              cells: [
+                entry.confirmLevel.name,
+                entry.user.first_name,
+                entry.user.last_name,
+                entry.shift.start_time,
+                entry.shift.end_time,
+              ],
+            })}
+            tableData={_.filter(this.state.attendance, ['shift.shift_id', this.state.activeEntry])}
+          />
+        )}
       </>
     );
   }
