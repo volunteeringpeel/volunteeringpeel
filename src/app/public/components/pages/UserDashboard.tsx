@@ -28,23 +28,16 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
   public render() {
     if (this.props.user.status !== 'in') return <Redirect to="/" />;
 
-    const pastHours = timeFormat(
-      _.reduce(
-        _.filter(this.props.user.user.events, event =>
-          moment(event.end_time).isBefore(moment.now()),
-        ),
-        (acc: moment.Duration, event) => acc.add(event.hours),
-        moment.duration(),
-      ),
+    const confirmedHours = _.sumBy(
+      _.filter(this.props.user.user.userShifts, userShift => userShift.confirmLevel.id > 100),
+      'hours',
     );
-    const plannedHours = timeFormat(
-      _.reduce(
-        _.filter(this.props.user.user.events, event =>
-          moment(event.end_time).isAfter(moment.now()),
-        ),
-        (acc: moment.Duration, event) => acc.add(event.hours),
-        moment.duration(),
+    const plannedHours = _.sumBy(
+      _.filter(
+        this.props.user.user.userShifts,
+        userShift => userShift.confirmLevel.id >= 0 && userShift.confirmLevel.id < 100,
       ),
+      'hours',
     );
     return (
       <Container>
@@ -52,35 +45,37 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
           <Statistic.Group
             widths={3}
             items={[
-              { key: 'events', label: 'Events', value: this.props.user.user.events.length },
-              { key: 'completed', label: 'Completed', value: pastHours },
+              { key: 'events', label: 'Shifts', value: this.props.user.user.userShifts.length },
               { key: 'planned', label: 'Planned', value: plannedHours },
+              { key: 'confirmed', label: 'Confirmed', value: confirmedHours },
             ]}
           />
         </Segment>
         <Segment style={{ padding: '2em 0' }} vertical>
           <Header as="h2" content="Events" />
-          {this.props.user.user.events.length > 0 ? (
+          {this.props.user.user.userShifts.length > 0 ? (
             <Table compact celled definition>
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell />
+                  <Table.HeaderCell>Status</Table.HeaderCell>
                   <Table.HeaderCell>Event</Table.HeaderCell>
                   <Table.HeaderCell>Shift</Table.HeaderCell>
                   <Table.HeaderCell>Hours</Table.HeaderCell>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {_.map(this.props.user.user.events, event => (
-                  <Table.Row>
+                {_.map(this.props.user.user.userShifts, userShift => (
+                  <Table.Row key={userShift.user_shift_id}>
                     <Table.Cell collapsing>
                       <Button size="mini" primary>
                         ...
                       </Button>
                     </Table.Cell>
-                    <Table.Cell>{event.name}</Table.Cell>
-                    <Table.Cell>{event.shift_num}</Table.Cell>
-                    <Table.Cell>{event.hours}</Table.Cell>
+                    <Table.Cell>{_.lowerCase(userShift.confirmLevel.name)}</Table.Cell>
+                    <Table.Cell>{userShift.parentEvent.name}</Table.Cell>
+                    <Table.Cell>{userShift.shift.shift_num}</Table.Cell>
+                    <Table.Cell>{userShift.hours}</Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>
