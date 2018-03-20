@@ -199,7 +199,11 @@ api.delete('/user/:id', (req, res) => {
 // Get current user
 api.get('/user/current', (req, res) => {
   let db: mysql.PoolConnection;
-  const out: { user: User; new: boolean; events: any[] } = { user: null, new: false, events: null };
+  const out: UserData = {
+    user: null,
+    new: false,
+    userShifts: [],
+  };
   pool
     .getConnection()
     .then(conn => {
@@ -207,9 +211,9 @@ api.get('/user/current', (req, res) => {
       // Try selecting a user
       return db.query('SELECT * from user WHERE email = ?', [req.user.email]);
     })
-    .then(user => {
+    .then(([user]) => {
       // User does not exist, create a new user account
-      if (!user[0]) {
+      if (!user) {
         console.log(req.user);
         // tslint:disable-next-line:variable-name
         const [first_name, last_name] = req.user.name ? req.user.name.split(/ (.+)/) : ['', ''];
@@ -233,28 +237,34 @@ api.get('/user/current', (req, res) => {
         });
       }
       return db
-        .query(
-          `SELECT
-              e.event_id, e.name, e.address, e.transport, e.description,
-              s.shift_id, s.shift_num,
-              s.start_time, s.end_time, s.hours,
-              s.meals, s.notes
-            FROM vw_shift s
-            JOIN event e ON e.event_id = s.event_id
-            JOIN user u
-            JOIN user_shift us ON us.shift_id = s.shift_id
-              AND us.user_id = u.user_id
-            WHERE u.email = ?`,
-          [req.user.email],
-        )
-        .then(events => {
-          out.user = user[0];
-          out.events = events;
+        .query(`SELECT * from vw_user_shift WHERE user_id = ?`, [user.user_id])
+        .then((userShifts: any[]) => {
+          out.user = user;
+          out.userShifts = _.map(userShifts, userShift => ({
+            user_shift_id: +userShift.user_shift_id,
+            confirmLevel: {
+              id: +userShift.confirm_level_id,
+              name: userShift.confirm_level,
+              description: userShift.confirm_description,
+            },
+            hours: userShift.hours,
+            shift: {
+              shift_id: +userShift.shift_id,
+              shift_num: +userShift.shift_num,
+              start_time: userShift.start_time,
+              end_time: userShift.end_time,
+              meals: userShift.meals,
+              notes: userShift.notes,
+            },
+            parentEvent: {
+              event_id: +userShift.event_id,
+              name: userShift.name,
+            },
+          }));
         });
     })
     .then(() => {
       // output an empty array if no events are found
-      out.events = out.events || [];
       res.success(out, out.new ? 201 : 200);
       db.release();
     })

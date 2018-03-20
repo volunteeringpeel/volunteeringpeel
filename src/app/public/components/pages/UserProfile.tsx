@@ -1,11 +1,11 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
 import { LocationDescriptor } from 'history';
+import * as _ from 'lodash';
 import * as React from 'react';
 import { Redirect } from 'react-router';
 import { RouterAction } from 'react-router-redux';
 import { Container, Form, InputOnChangeData, Segment } from 'semantic-ui-react';
-import * as _ from 'lodash';
 
 interface UserProfileProps {
   user: UserState;

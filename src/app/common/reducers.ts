@@ -28,7 +28,7 @@ const loading = handleAction<boolean, boolean>(
   false,
 );
 
-const defaultUser: UserState = { user: { user: null, new: false, events: [] }, status: 'out' };
+const defaultUser: UserState = { user: { user: null, new: false, userShifts: [] }, status: 'out' };
 const user = handleActions<UserState, any>(
   {
     [GET_USER]: (state: UserState, action: Action<Promise<any>>): UserState => {

@@ -1,7 +1,7 @@
 interface UserData {
   user: User | Exec;
   new: boolean;
-  events: any[];
+  userShifts: UserShift[];
 }
 
 interface UserState {

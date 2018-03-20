@@ -80,8 +80,25 @@ interface Shift {
   end_time: string;
   date?: string;
   meals: Meal[];
-  max_spots: number;
+  max_spots?: number;
   spots_taken?: number;
   notes: string;
   signed_up?: boolean;
+}
+
+interface UserShift {
+  user_shift_id: number;
+  hours: number;
+  confirmLevel: ConfirmLevel;
+  shift: Shift;
+  parentEvent: {
+    event_id: number;
+    name: number;
+  };
+}
+
+interface ConfirmLevel {
+  id: number;
+  name: string;
+  description: string;
 }

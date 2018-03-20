@@ -20,14 +20,16 @@ insert into role (role_id, name) values
 
 insert into confirm_level (confirm_level_id, name, description) values
 	-- Standard levels
-	(0, "signed-up", "Just signed up"),
-	(1, "email", "Email confirmation complete"),
-	(2, "phone", "Phone confirmation complete"),
-	(3, "attended", "Event attended"),
-	-- Failure levels
-	(-1, "cancelled", "Volunteer cancelled"),
-	(-2, "ghosted", "Volunteer did not respond to confirmation"),
-	(-3, "missed", "Volunteer was absent from shift");
+    -- <0: something bad
+    -- =0: default
+    -- >0: something good
+    -- >100: confirm and count hours
+	(0, "Signed Up", "Just signed up"),
+	(1, "Confirmed", "Confirmation complete"),
+	(100, "Attended", "Event attended"),
+	(-1, "Cancelled", "Volunteer cancelled"),
+	(-2, "Ghosted", "Volunteer did not respond to confirmation"),
+	(-3, "Missed", "Volunteer was absent from shift");
 
 insert into user (email, role_id, first_name, last_name) values
 	("volunteer@mailinator.com", 1, "Volunteer", "Test"),
