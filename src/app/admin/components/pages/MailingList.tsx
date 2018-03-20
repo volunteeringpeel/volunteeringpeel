@@ -42,7 +42,7 @@ export default class MailingList extends React.Component<{}, MailingListState> {
     return (
       <>
         <p>
-          Copy paste the text below and paste into the <em>To:</em> section of your favourite email
+          Copy paste the text below and paste into the <em>Bcc:</em> section of your favourite email
           client. Sending emails from this page is a WIP.
         </p>
         <Form>
