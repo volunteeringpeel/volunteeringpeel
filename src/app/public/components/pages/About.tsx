@@ -67,7 +67,7 @@ export default () => (
               beyond. If you are a student or organization who wants to get involved with
               Volunteering Peel, please contact us <Link to="/about/contact">here</Link>! Our work
               could not be possible without our wonderful student leadership team, and{' '}
-              <Link to="/sponsors">our sponsors</Link>.
+              <Link to="/about/sponsors">our sponsors</Link>.
             </p>
           </Grid.Column>
         </Grid.Row>
