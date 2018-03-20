@@ -275,6 +275,56 @@ api.get('/user/current', (req, res) => {
     });
 });
 
+// Get user shifts (but formatted)
+api.get('/attendance', (req, res) => {
+  if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+  let db: mysql.PoolConnection;
+  pool
+    .getConnection()
+    .then(conn => {
+      db = conn;
+      // grab user's first and last name as well as vw_user_shift
+      return db.query(`
+        SELECT us.*, u.first_name, u.last_name
+        FROM vw_user_shift us
+        JOIN user u ON u.user_id = us.user_id
+      `);
+    })
+    .then((userShifts: any[]) => {
+      res.success(
+        _.map(userShifts, userShift => ({
+          user_shift_id: +userShift.user_shift_id,
+          confirmLevel: {
+            id: +userShift.confirm_level_id,
+            name: userShift.confirm_level,
+            description: userShift.confirm_description,
+          },
+          hours: userShift.hours,
+          shift: {
+            shift_id: +userShift.shift_id,
+            shift_num: +userShift.shift_num,
+            start_time: userShift.start_time,
+            end_time: userShift.end_time,
+          },
+          parentEvent: {
+            event_id: +userShift.event_id,
+            name: userShift.name,
+          },
+          user: {
+            user_id: +userShift.user_id,
+            first_name: userShift.first_name,
+            last_name: userShift.last_name,
+          },
+        })),
+      );
+      db.release();
+    })
+    .catch(error => {
+      res.error(500, 'Database error', error);
+      if (db && db.end) db.release();
+    });
+});
+
 // Mailing list
 api.get('/mailing-list', (req, res) => {
   if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
