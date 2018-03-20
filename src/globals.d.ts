@@ -88,7 +88,7 @@ interface Shift {
 
 interface UserShift {
   user_shift_id: number;
-  hours: number;
+  hours: string;
   confirmLevel: ConfirmLevel;
   shift: Shift;
   parentEvent: {

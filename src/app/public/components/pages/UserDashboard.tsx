@@ -28,16 +28,22 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
   public render() {
     if (this.props.user.status !== 'in') return <Redirect to="/" />;
 
-    const confirmedHours = _.sumBy(
-      _.filter(this.props.user.user.userShifts, userShift => userShift.confirmLevel.id > 100),
-      'hours',
-    );
-    const plannedHours = _.sumBy(
-      _.filter(
-        this.props.user.user.userShifts,
-        userShift => userShift.confirmLevel.id >= 0 && userShift.confirmLevel.id < 100,
+    const confirmedHours = timeFormat(
+      _.reduce(
+        _.filter(this.props.user.user.userShifts, userShift => userShift.confirmLevel.id > 100),
+        (acc: moment.Duration, event) => acc.add(event.hours),
+        moment.duration(),
       ),
-      'hours',
+    );
+    const plannedHours = timeFormat(
+      _.reduce(
+        _.filter(
+          this.props.user.user.userShifts,
+          userShift => userShift.confirmLevel.id >= 0 && userShift.confirmLevel.id < 100,
+        ),
+        (acc: moment.Duration, event) => acc.add(event.hours),
+        moment.duration(),
+      ),
     );
     return (
       <Container>
