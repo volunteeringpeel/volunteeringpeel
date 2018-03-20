@@ -38,6 +38,14 @@ const routes: Route[] = [
     title: 'Users',
   },
   {
+    path: '/admin/attendance',
+    component: reactLoadable({
+      loading: Loading,
+      loader: () => import('@app/admin/controllers/pages/Attendance'),
+    }),
+    title: 'Attendance + Management',
+  },
+  {
     path: '/admin/mailing-list',
     component: reactLoadable({
       loading: Loading,
