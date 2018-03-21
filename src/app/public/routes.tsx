@@ -82,7 +82,7 @@ const routes: Route[] = [
       loading: Loading,
       loader: () => import('@app/public/components/pages/Legal'),
     }),
-    title: 'Contact',
+    title: 'Legal',
   },
   // USER PAGES
   {
