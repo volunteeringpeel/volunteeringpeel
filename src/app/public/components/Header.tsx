@@ -90,6 +90,9 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                       <Dropdown.Item onClick={() => this.props.push('/about/contact')}>
                         Contact
                       </Dropdown.Item>
+                      <Dropdown.Item onClick={() => this.props.push('/about/legal')}>
+                        Legal
+                      </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                 )}

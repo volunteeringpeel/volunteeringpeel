@@ -7,8 +7,6 @@ import { Redirect } from 'react-router-dom';
 // App Imports
 import Loading from '@app/common/components/Loading';
 
-import Contact from '@app/public/components/pages/Contact';
-
 interface Route extends RouteConfig {
   title: string;
   display?: string;
@@ -72,7 +70,18 @@ const routes: Route[] = [
   },
   {
     path: '/about/contact',
-    component: Contact,
+    component: reactLoadable({
+      loading: Loading,
+      loader: () => import('@app/public/components/pages/Contact'),
+    }),
+    title: 'Contact',
+  },
+  {
+    path: '/about/legal',
+    component: reactLoadable({
+      loading: Loading,
+      loader: () => import('@app/public/components/pages/Legal'),
+    }),
     title: 'Contact',
   },
   // USER PAGES

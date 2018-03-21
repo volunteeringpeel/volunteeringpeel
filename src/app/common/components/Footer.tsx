@@ -1,5 +1,6 @@
 // Library Imports
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { Container, Divider, Icon, Menu, Segment } from 'semantic-ui-react';
 
 export default () => (
@@ -23,7 +24,12 @@ export default () => (
           </Menu.Item>
         </Menu>
       </Divider>
-      &copy; 2017-{new Date().getFullYear()} Volunteering Peel. All rights reserved. Made with <Icon name="heart" as="i" />.
+      &copy; 2017-{new Date().getFullYear()} Volunteering Peel. All rights reserved. Made with{' '}
+      <Icon name="heart" as="i" />.
+      <br />
+      <Link to="/about/legal">
+        <small>Legal</small>
+      </Link>
     </Container>
   </Segment>
 );
