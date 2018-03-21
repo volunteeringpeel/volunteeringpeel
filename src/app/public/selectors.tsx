@@ -19,8 +19,7 @@ export const userAbleToRegister = createSelector([getUser], user => {
   if (
     !user.user.user.first_name ||
     !user.user.user.last_name ||
-    !user.user.user.phone_1 ||
-    !user.user.user.phone_2
+    !user.user.user.phone_1
   ) {
     return 'Please complete profile (name and phone #) to register';
   }
