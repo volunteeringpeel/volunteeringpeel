@@ -23,7 +23,7 @@ export async function getAllUsers(req: Express.Request, res: Express.Response) {
   [err, users] = await to(
     Bluebird.all(
       users.map(async user => {
-        const mailLists = await Bluebird.resolve(getUserMailLists(user.email, db));
+        const mailLists = await Bluebird.resolve(getUserMailLists(user.user_id, db));
         return { ...user, mail_lists: mailLists };
       }),
     ),
@@ -107,7 +107,7 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
   }));
 
   // Mail lists
-  [err, out.user.mail_lists] = await to(Bluebird.resolve(getUserMailLists(out.user.email, db)));
+  [err, out.user.mail_lists] = await to(Bluebird.resolve(getUserMailLists(out.user.user_id, db)));
   if (err) return res.error(500, 'Error finding mail list data', err, db);
   res.success(out, out.new ? 201 : 200, db);
 }
@@ -210,18 +210,15 @@ export async function updateUser(req: Express.Request, res: Express.Response) {
   }
 }
 
-export async function getUserMailLists(
-  email: string,
-  db: mysql.PoolConnection,
-): Promise<MailList[]> {
+export async function getUserMailLists(id: number, db: mysql.PoolConnection): Promise<MailList[]> {
   return _.map(
     await db.query(
-      `SELECT
-      mail_list_id, display_name, description,
-      (CASE WHEN email = ? THEN 1 ELSE 0 END) subscribed
-      FROM vw_user_mail_list
-      GROUP BY mail_list_id`,
-      email,
+      `SELECT m.mail_list_id, m.display_name, m.description, NOT ISNULL(user_mail_list_id) subscribed
+      FROM user u
+      JOIN mail_list m
+      LEFT JOIN user_mail_list uml on uml.user_id = u.user_id AND uml.mail_list_id = m.mail_list_id
+      WHERE u.user_id = ?`,
+      id,
     ),
     (list: MailList) => ({ ...list, subscribed: !!list.subscribed }),
   );
