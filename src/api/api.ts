@@ -148,22 +148,15 @@ api.delete('/mailing-list/:id', MailingListAPI.deleteMailingList);
 api.post('/public/mailing-list/:id', MailingListAPI.signup);
 
 // FAQ's
-api.get('/public/faq', (req, res) => {
-  let db: mysql.PoolConnection;
-  pool
-    .getConnection()
-    .then(conn => {
-      db = conn;
-      return db.query('SELECT question, answer FROM faq ORDER BY priority');
-    })
-    .then(faqs => {
-      res.success(faqs);
-      db.release();
-    })
-    .catch(error => {
-      res.error(500, 'Database error', error);
-      if (db && db.end) db.release();
-    });
+api.get('/public/faq', async (req, res) => {
+  let err, db: mysql.PoolConnection;
+  [err, db] = await to(req.pool.getConnection());
+  if (err) return res.error(500, 'Error connecting to database', err, db);
+
+  let faqs;
+  [err, faqs] = await to(db.query('SELECT question, answer FROM faq ORDER BY priority'));
+  if (err) return res.error(500, 'Error retrieving FAQs', err, db);
+  res.success(faqs, 200, db);
 });
 
 // Execs
