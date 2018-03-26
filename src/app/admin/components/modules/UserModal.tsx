@@ -1,6 +1,7 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
 import * as Promise from 'bluebird';
+import immutabilityHelper from 'immutability-helper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Button, Form, Modal } from 'semantic-ui-react';
@@ -27,7 +28,7 @@ export default class UserModal extends React.Component<UserModalProps, User | Ex
       phone_1: props.user.phone_1 || '',
       phone_2: props.user.phone_2 || '',
       role_id: props.user.role_id || 1,
-      mail_list: props.user.mail_list || false,
+      mail_lists: props.user.mail_lists || [],
       title: (props.user as Exec).title || null,
       bio: (props.user as Exec).bio || null,
     };
@@ -44,7 +45,7 @@ export default class UserModal extends React.Component<UserModalProps, User | Ex
         phone_1: nextProps.user.phone_1 || '',
         phone_2: nextProps.user.phone_2 || '',
         role_id: nextProps.user.role_id || 1,
-        mail_list: nextProps.user.mail_list || false,
+        mail_lists: nextProps.user.mail_lists || [],
         title: nextProps.user.role_id === 3 ? (nextProps.user as Exec).title : null,
         bio: nextProps.user.role_id === 3 ? (nextProps.user as Exec).bio : null,
       });
@@ -158,12 +159,25 @@ export default class UserModal extends React.Component<UserModalProps, User | Ex
                 />
               </>
             )}
-            <Form.Checkbox
-              label="Subscribed to mailing list"
-              name="mail_list"
-              checked={this.state.mail_list}
-              onChange={this.handleChange}
-            />
+            
+            <Form.Group inline>
+              <label>Sign up for mailing lists</label>
+              {_.map(this.state.mail_lists, (list, i) => (
+                <Form.Checkbox
+                  key={list.mail_list_id}
+                  label={list.display_name}
+                  checked={list.subscribed}
+                  data-tooltip={list.description}
+                  onChange={(e, { checked }) =>
+                    this.setState(
+                      immutabilityHelper(this.state, {
+                        mail_lists: { [i]: { subscribed: { $set: checked } } },
+                      }),
+                    )
+                  }
+                />
+              ))}
+            </Form.Group>
           </Form>
         </Modal.Content>
         <Modal.Actions>
