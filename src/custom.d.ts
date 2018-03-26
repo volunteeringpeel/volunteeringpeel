@@ -5,8 +5,8 @@ import promiseMysql = require('promise-mysql');
 declare global {
   namespace Express {
     interface Response {
-      error(status: number, error: string, details?: any): void;
-      success(success?: any, status?: number): void;
+      error(status: number, error: string, details?: any, db?: promiseMysql.PoolConnection): void;
+      success(success?: any, status?: number, db?: promiseMysql.PoolConnection): void;
     }
 
     interface Request {

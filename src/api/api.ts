@@ -1,5 +1,6 @@
-/* tslint:disable:no-console no-var-requires */
-import * as Promise from 'bluebird';
+/* tslint:disable:no-console no-var-requires import-name */
+import to from '@lib/await-to-js';
+import * as Bluebird from 'bluebird';
 import * as Express from 'express';
 import * as jwt from 'express-jwt';
 import * as jwksRsa from 'jwks-rsa';
@@ -49,14 +50,16 @@ const checkJwt = jwt({
 
 // Success/error functions
 api.use((req, res, next) => {
-  res.error = (status, error, details) => {
+  res.error = (status, error, details, db?) => {
     res
       .status(status)
       .json({ error, details: details || 'No further information', status: 'error' });
+    if (db) db.release();
   };
-  res.success = (data, status = 200) => {
+  res.success = (data, status = 200, db?) => {
     if (data) res.status(status).json({ data, status: 'success' });
     else res.status(status).json({ status: 'success' });
+    if (db) db.release();
   };
 
   // Store pool connection inside of req for access by other API files
@@ -72,24 +75,40 @@ api.use((err: any, req: Express.Request, res: Express.Response, next: Express.Ne
   }
 });
 
+async function getMailLists(email: string, db: mysql.PoolConnection): Promise<MailList[]> {
+  return db.query(
+    `SELECT
+      mail_list_id, display_name, description,
+      (CASE WHEN email = ? THEN 1 ELSE 0 END) subscribed
+      FROM vw_user_mail_list
+      GROUP BY mail_list_id`,
+    email,
+  );
+}
+
 // Get all users
-api.get('/user', (req, res) => {
+api.get('/user', async (req, res) => {
   if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
-  let db: mysql.PoolConnection;
-  pool
-    .getConnection()
-    .then(conn => {
-      db = conn;
-      return db.query('SELECT * from user');
-    })
-    .then((users: User[]) => {
-      res.success(_.map(users, user => ({ ...user, mail_list: !!user.mail_list })));
-      db.release();
-    })
-    .catch(error => {
-      res.error(500, 'Database error', error);
-      if (db && db.end) db.release();
-    });
+
+  let err, db: mysql.PoolConnection, users: User[];
+
+  [err, db] = await to(pool.getConnection());
+  if (err) res.error(500, 'Error connecting to database', err, db);
+
+  [err, users] = await to(db.query('SELECT * from user'));
+  if (err) res.error(500, 'Error getting user data', err, db);
+
+  // get mailing list data
+  users = await Promise.all(
+    users.map(async user => {
+      let mailLists;
+      [err, mailLists] = await to(Bluebird.resolve(getMailLists(user.email, db)));
+      if (err) res.error(500, 'Error getting mail list data', err, db);
+      return { ...user, mail_lists: mailLists };
+    }),
+  );
+
+  res.success(users, 200, db);
 });
 
 api.post('/user/:id', (req, res) => {
@@ -197,82 +216,83 @@ api.delete('/user/:id', (req, res) => {
 });
 
 // Get current user
-api.get('/user/current', (req, res) => {
-  let db: mysql.PoolConnection;
+api.get('/user/current', async (req, res) => {
+  let err, db: mysql.PoolConnection, user: User, result: any;
+
   const out: UserData = {
     user: null,
     new: false,
     userShifts: [],
   };
-  pool
-    .getConnection()
-    .then(conn => {
-      db = conn;
-      // Try selecting a user
-      return db.query('SELECT * from user WHERE email = ?', [req.user.email]);
-    })
-    .then(([user]) => {
-      // User does not exist, create a new user account
-      if (!user) {
-        console.log(req.user);
-        // tslint:disable-next-line:variable-name
-        const [first_name, last_name] = req.user.name ? req.user.name.split(/ (.+)/) : ['', ''];
-        const newUser = {
-          // might be the same as email cause auth0 is weird af
-          first_name,
-          // the name can be email if none is provided by auth0,
-          // so if last name isn't a thing, make it a blank string
-          last_name: last_name || '',
-          email: req.user.email,
-          phone_1: null as string,
-          phone_2: null as string,
-          role_id: 1,
-          mail_list: false,
-        };
 
-        return db.query('INSERT INTO user SET ?', newUser).then(events => {
-          out.user = newUser;
-          out.new = true;
-          return;
-        });
-      }
-      return db
-        .query(`SELECT * from vw_user_shift WHERE user_id = ?`, [user.user_id])
-        .then((userShifts: any[]) => {
-          out.user = user;
-          out.userShifts = _.map(userShifts, userShift => ({
-            user_shift_id: +userShift.user_shift_id,
-            confirmLevel: {
-              id: +userShift.confirm_level_id,
-              name: userShift.confirm_level,
-              description: userShift.confirm_description,
-            },
-            hours: userShift.hours,
-            shift: {
-              shift_id: +userShift.shift_id,
-              shift_num: +userShift.shift_num,
-              start_time: userShift.start_time,
-              end_time: userShift.end_time,
-              meals: userShift.meals,
-              notes: userShift.notes,
-            },
-            parentEvent: {
-              event_id: +userShift.event_id,
-              name: userShift.name,
-            },
-          }));
-        });
-    })
-    .then(() => {
-      // output an empty array if no events are found
-      res.success(out, out.new ? 201 : 200);
-      db.release();
-    })
-    .catch(error => {
-      res.error(500, 'Database error', error);
-      console.log(db, error);
-      if (db && db.end) db.release();
-    });
+  [err, db] = await to(pool.getConnection());
+  if (err) res.error(500, 'Error connecting to database', err, db);
+  // Try selecting a user
+  [err, user] = await to(
+    db.query('SELECT * from user WHERE email = ?', [req.user.email]).then(__ => __[0]),
+  );
+  if (err) res.error(500, 'Error searching for user', err, db);
+
+  // User does not exist, create a new user account
+  if (!user) {
+    console.log(req.user);
+    // tslint:disable-next-line:variable-name
+    const [first_name, last_name] = req.user.name ? req.user.name.split(/ (.+)/) : ['', ''];
+    const newUser: User = {
+      // might be the same as email cause auth0 is weird af
+      first_name,
+      // the name can be email if none is provided by auth0,
+      // so if last name isn't a thing, make it a blank string
+      last_name: last_name || '',
+      email: req.user.email,
+      phone_1: null as string,
+      phone_2: null as string,
+      role_id: 1,
+      mail_lists: [],
+    };
+
+    [err, result] = await to(db.query('INSERT INTO user SET ?', newUser));
+    if (err) res.error(500, 'Error creating user', err, db);
+
+    out.user = newUser;
+    out.user.user_id = result.insertId;
+    out.new = true;
+  } else {
+    out.user = user;
+  }
+
+  // Get shifts
+  let userShifts: any[];
+  [err, userShifts] = await to(
+    db.query(`SELECT * from vw_user_shift WHERE user_id = ?`, [user.user_id]),
+  );
+  if (err) res.error(500, 'Error finding user shifts', err, db);
+  out.userShifts = _.map(userShifts, userShift => ({
+    user_shift_id: +userShift.user_shift_id,
+    confirmLevel: {
+      id: +userShift.confirm_level_id,
+      name: userShift.confirm_level,
+      description: userShift.confirm_description,
+    },
+    hours: userShift.hours,
+    shift: {
+      shift_id: +userShift.shift_id,
+      shift_num: +userShift.shift_num,
+      start_time: userShift.start_time,
+      end_time: userShift.end_time,
+      meals: userShift.meals,
+      notes: userShift.notes,
+    },
+    parentEvent: {
+      event_id: +userShift.event_id,
+      name: userShift.name,
+    },
+  }));
+
+  // Mail lists
+  [err, out.user.mail_lists] = await to(Bluebird.resolve(getMailLists(out.user.email, db)));
+  if (err) res.error(500, 'Error finding mail list data', err, db);
+  res.success(out, out.new ? 201 : 200, db);
 });
 
 // Get user shifts (but formatted)
@@ -522,7 +542,7 @@ api.post('/events/:id', (req, res) => {
   if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
   let db: mysql.PoolConnection;
   const { name, description, transport, address, active, shifts, deleteShifts } = req.body;
-  let connection: Promise<any> = pool.getConnection();
+  let connection: Bluebird<any> = pool.getConnection();
   // Cast parameter to number, because numbers are a good
   if (+req.params.id === -1) {
     // Add new event

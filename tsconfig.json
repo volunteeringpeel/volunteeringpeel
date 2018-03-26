@@ -9,7 +9,8 @@
     "jsx": "react",
     "baseUrl": ".",
     "paths": {
-      "@app/*": ["src/app/*"]
+      "@app/*": ["src/app/*"],
+      "@lib/*": ["lib/*"]
     }
   },
   "exclude": ["node_modules"]

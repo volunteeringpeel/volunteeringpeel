@@ -9,6 +9,7 @@
     "interface-name": false,
     "object-literal-sort-keys": [true, "match-declaration-order"],
     "no-submodule-imports": false,
-    "no-implicit-dependencies": false
+    "no-implicit-dependencies": false,
+    "one-variable-per-declaration": false
   }
 }

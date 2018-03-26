@@ -5,7 +5,10 @@
     "target": "es2015",
     "moduleResolution": "node",
     "jsx": "react",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@lib/*": ["./lib/*"]
+    }
   },
   "exclude": ["node_modules", "./src/app"]
 }
