@@ -117,7 +117,12 @@ export default class Events extends React.Component<
           content: user.phone_1 || 'Missing',
           warning: !user.phone_1,
         },
-        user.phone_2,
+        {
+          key: 'phone_2',
+          icon: user.phone_2 ? null : 'attention',
+          content: user.phone_2 || 'Missing',
+          warning: !user.phone_2,
+        },
         <td key="actions">
           <Dropdown>
             <Dropdown.Menu>
@@ -162,7 +167,7 @@ export default class Events extends React.Component<
                         phone_1: '',
                         phone_2: '',
                         role_id: 1,
-                        mail_list: false,
+                        mail_lists: [],
                       }
                     : _.find(this.state.users, ['user_id', +match.params.id])
                 }

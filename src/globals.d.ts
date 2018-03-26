@@ -45,13 +45,20 @@ interface User {
   phone_1: string;
   phone_2: string;
   role_id: number;
-  mail_list: boolean;
+  mail_lists?: MailList[];
 }
 
 interface Exec extends User {
   role_id: 3;
   bio: string;
   title: string;
+}
+
+interface MailList {
+  mail_list_id: number;
+  display_name: string;
+  description: string;
+  subscribed: boolean;
 }
 
 interface Sponsor {

@@ -1,3 +1,4 @@
+create database if not exists volunteeringpeel;
 use volunteeringpeel;
 
 drop table if exists sponsor;
@@ -6,6 +7,8 @@ drop table if exists request;
 drop table if exists faq;
 drop table if exists user_shift;
 drop table if exists confirm_level;
+drop table if exists user_mail_list;
+drop table if exists mail_list;
 drop table if exists user;
 drop table if exists role;
 drop table if exists shift;
@@ -41,6 +44,7 @@ create table if not exists role (
 create table if not exists user (
   user_id     int           not null auto_increment primary key comment 'Unique user ID',
   email       varchar(128)  not null unique                     comment 'Email',
+  signup_time timestamp     not null default current_timestamp  comment 'Date user signed up (required by law)',
   role_id     int           not null default 1                  comment 'Volunteer/organizer/executive',
   first_name  varchar(32)                                       comment 'First name',
   last_name   varchar(32)                                       comment 'Last name',
@@ -50,6 +54,22 @@ create table if not exists user (
   title       varchar(32)                                       comment 'For execs, title',
   bio         text                                              comment 'For execs, bio for about page',
   foreign key fk_user_role (role_id) references role(role_id)
+);
+
+create table if not exists mail_list (
+  mail_list_id      int           not null auto_increment primary key,
+  display_name      varchar(32)   not null unique                       comment 'Display name',
+  description       text                                                comment 'Short description',
+  system			boolean		  not null default 0					comment 'Required by website to function'
+);
+
+create table if not exists user_mail_list (
+  user_mail_list_id int           not null auto_increment primary key,
+  user_id           int           not null                              comment 'User ID',
+  mail_list_id      int           not null                              comment 'Mail list ID',
+  foreign key fk_user_mail_list_user (user_id) references user(user_id) on update cascade on delete cascade,
+  foreign key fk_user_mail_list_mail_list (mail_list_id) references mail_list(mail_list_id) on update cascade on delete cascade,
+  unique key uk_user_mail_list (user_id, mail_list_id)
 );
 
 create table if not exists confirm_level (

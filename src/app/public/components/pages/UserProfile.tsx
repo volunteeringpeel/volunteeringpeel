@@ -1,11 +1,12 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
 import { LocationDescriptor } from 'history';
+import immutabilityHelper from 'immutability-helper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Redirect } from 'react-router';
 import { RouterAction } from 'react-router-redux';
-import { Container, Form, InputOnChangeData, Segment } from 'semantic-ui-react';
+import { Container, Form, InputOnChangeData, Label, Segment } from 'semantic-ui-react';
 
 interface UserProfileProps {
   user: UserState;
@@ -19,7 +20,7 @@ interface UserProfileState {
   last_name: string;
   phone_1: string;
   phone_2: string;
-  mail_list: boolean;
+  mail_lists: MailList[];
   title: string;
   bio: string;
 }
@@ -33,7 +34,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       last_name: '',
       phone_1: '',
       phone_2: '',
-      mail_list: false,
+      mail_lists: [],
       title: null,
       bio: null,
     };
@@ -49,7 +50,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       last_name: user.last_name || '',
       phone_1: user.phone_1 || '',
       phone_2: user.phone_2 || '',
-      mail_list: user.mail_list || false,
+      mail_lists: user.mail_lists || [],
       title: user.role_id === 3 ? (user as Exec).title : null,
       bio: user.role_id === 3 ? (user as Exec).bio : null,
     });
@@ -62,7 +63,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       last_name: user.last_name || '',
       phone_1: user.phone_1 || '',
       phone_2: user.phone_2 || '',
-      mail_list: user.mail_list || false,
+      mail_lists: user.mail_lists || [],
       title: user.role_id === 3 ? (user as Exec).title : null,
       bio: user.role_id === 3 ? (user as Exec).bio : null,
     });
@@ -78,7 +79,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       last_name: this.state.last_name,
       phone_1: this.state.phone_1,
       phone_2: this.state.phone_2,
-      mail_list: this.state.mail_list,
+      mail_lists: this.state.mail_lists,
       title: this.state.title,
       bio: this.state.bio,
     };
@@ -148,12 +149,6 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
                 onChange={this.handleChange}
               />
             </Form.Group>
-            <Form.Checkbox
-              label="Subscribe to mailing list"
-              name="mail_list"
-              checked={this.state.mail_list}
-              onChange={this.handleChange}
-            />
             {this.props.user.user.user.role_id === 3 && (
               <>
                 <Form.Input
@@ -174,6 +169,24 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
                 />
               </>
             )}
+            <Form.Group inline>
+              <label>Sign up for mailing lists</label>
+              {_.map(this.state.mail_lists, (list, i) => (
+                <Form.Checkbox
+                  key={list.mail_list_id}
+                  label={list.display_name}
+                  checked={list.subscribed}
+                  data-tooltip={list.description}
+                  onChange={(e, { checked }) =>
+                    this.setState(
+                      immutabilityHelper(this.state, {
+                        mail_lists: { [i]: { subscribed: { $set: checked } } },
+                      }),
+                    )
+                  }
+                />
+              ))}
+            </Form.Group>
             <Form.Button type="submit" content="Submit" />
           </Form>
         </Segment>

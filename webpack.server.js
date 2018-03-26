@@ -58,6 +58,8 @@ module.exports = {
     modules: [path.resolve(__dirname, './node_modules')],
     alias: {
       '@app': path.resolve(__dirname, 'src', 'app'),
+      '@api': path.resolve(__dirname, 'src', 'api'),
+      '@lib': path.resolve(__dirname, 'lib'),
     },
   },
 };
