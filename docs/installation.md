@@ -12,12 +12,12 @@ If the hosted site has not been updated recently, just drop me a message and I'l
 
 <!-- toc -->
 
-- [Introduction](#introduction)
-- [Dependencies](#dependencies)
-- [Getting the Code](#getting-the-code)
-- [Database Setup](#database-setup)
-- [Server Setup](#server-setup)
-- [Building a Distribution](#building-a-distribution)
+* [Introduction](#introduction)
+* [Dependencies](#dependencies)
+* [Getting the Code](#getting-the-code)
+* [Database Setup](#database-setup)
+* [Server Setup](#server-setup)
+* [Building a Distribution](#building-a-distribution)
 
 <!-- tocstop -->
 
@@ -60,7 +60,7 @@ To change the current _working directory_, use the `cd` command by typing `cd fo
 The following command will create a directory called `volunteeringpeel` in whichever directory you are currently in, and download the code into it.
 
 ```bash
-git clone https://github.com/retrocraft/volunteeringpeel.git
+git clone https://github.com/volunteeringpeel/volunteeringpeel.git
 ```
 
 The output should look similar to the following:
