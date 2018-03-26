@@ -1,9 +1,10 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
 import * as Promise from 'bluebird';
+import immutabilityHelper from 'immutability-helper';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Form, Message, TextArea, Header } from 'semantic-ui-react';
+import { Form, Header, Message, TextArea } from 'semantic-ui-react';
 
 interface MailingListState {
   // tslint:disable-next-line:prefer-array-literal
@@ -11,6 +12,8 @@ interface MailingListState {
   active: number;
   loading: boolean;
   message: Message;
+  editedDescription: string;
+  editedDisplayName: string;
 }
 
 interface MailListMember {
@@ -28,25 +31,13 @@ export default class MailingList extends React.Component<{}, MailingListState> {
       active: null,
       loading: false,
       message: null,
+      editedDescription: '',
+      editedDisplayName: '',
     };
   }
 
   public componentWillMount() {
-    Promise.resolve(this.setState({ loading: true }))
-      .then(() =>
-        axios.get('/api/mailing-list', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
-        }),
-      )
-      .then(res => {
-        this.setState({ lists: res.data.data });
-      })
-      .catch((error: AxiosError) => {
-        this.setState({ message: { message: 'Error loading data', severity: 'negative' } });
-      })
-      .finally(() => {
-        this.setState({ loading: false });
-      });
+    this.refresh();
   }
 
   public formatList = (members: MailListMember[]): string => {
@@ -70,7 +61,73 @@ export default class MailingList extends React.Component<{}, MailingListState> {
     return joined;
   };
 
+  public handleSubmit = (shouldDelete: boolean) => () => {
+    let request;
+    if (shouldDelete) {
+      request = axios.delete(`/api/mailing-list/${this.state.active}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+      });
+    } else {
+      request = axios.post(
+        `/api/mailing-list/${this.state.active}`,
+        {
+          display_name: this.state.editedDisplayName,
+          description: this.state.editedDescription,
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+        },
+      );
+    }
+    request
+      .then(res => {
+        this.setState({ message: { message: res.data.data, severity: 'positive' } });
+        this.refresh();
+      })
+      .catch((error: AxiosError) => {
+        this.setState({
+          message: {
+            message: 'Error processing request',
+            more: error.message,
+            severity: 'negative',
+          },
+        });
+      });
+  };
+
+  public refresh() {
+    Promise.resolve(this.setState({ loading: true }))
+      .then(() =>
+        axios.get('/api/mailing-list', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+        }),
+      )
+      .then(res => {
+        this.setState({ lists: res.data.data });
+      })
+      .catch((error: AxiosError) => {
+        this.setState({ message: { message: 'Error loading data', severity: 'negative' } });
+      })
+      .finally(() => {
+        this.setState({ loading: false });
+      });
+  }
+
+  public selectList(id: number) {
+    const list = _.find(this.state.lists, ['mail_list_id', id]);
+
+    this.setState({
+      active: id,
+      editedDescription: list.description,
+      editedDisplayName: list.display_name,
+    });
+  }
+
   public render() {
+    const activeList = this.state.active
+      ? _.find(this.state.lists, ['mail_list_id', this.state.active])
+      : null;
+
     return (
       <>
         {this.state.message && (
@@ -81,7 +138,7 @@ export default class MailingList extends React.Component<{}, MailingListState> {
             {...{ [this.state.message.severity]: true }}
           />
         )}
-        <Form>
+        <Form onSubmit={this.handleSubmit(false)}>
           <Form.Dropdown
             placeholder="Select a mailing list"
             fluid
@@ -102,24 +159,36 @@ export default class MailingList extends React.Component<{}, MailingListState> {
               ),
             }))}
             value={this.state.active}
-            onChange={(e, { value }) => this.setState({ active: +value })}
+            onChange={(e, { value }) => this.selectList(+value)}
           />
-          <p>
-            Copy paste the text below and paste into the <em>Bcc:</em> section of your favourite
-            email client. Sending emails from this page is a WIP.
-          </p>
-          <TextArea
-            disabled
-            value={
-              this.state.loading
-                ? 'Loading...'
-                : this.formatList(
-                    this.state.active
-                      ? _.find(this.state.lists, ['mail_list_id', this.state.active]).members
-                      : null,
-                  )
-            }
-          />
+          {this.state.active && (
+            <>
+              <p>
+                Copy paste the text below and paste into the <em>Bcc:</em> section of your favourite
+                email client. Sending emails from this page is a WIP.
+              </p>
+              <TextArea disabled value={this.formatList(activeList.members)} />
+              <Header content="Mailing List Properties" />
+              <Form.Group inline>
+                <Form.Input
+                  name="display_name"
+                  label="Display Name"
+                  value={this.state.editedDisplayName}
+                  onChange={(e, { value }) => this.setState({ editedDisplayName: value })}
+                  required
+                />
+                <Form.Input
+                  name="description"
+                  label="Description"
+                  value={this.state.editedDescription}
+                  onChange={(e, { value }) => this.setState({ editedDescription: value })}
+                  required
+                />
+                <Form.Button type="submit" content="Save" primary />
+                <Form.Button content="Delete" onClick={this.handleSubmit(true)} negative />
+              </Form.Group>
+            </>
+          )}
         </Form>
       </>
     );
