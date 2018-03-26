@@ -65,7 +65,6 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
       phone_1: null as string,
       phone_2: null as string,
       role_id: 1,
-      mail_lists: [],
     };
 
     [err, result] = await to(db.query('INSERT INTO user SET ?', newUser));

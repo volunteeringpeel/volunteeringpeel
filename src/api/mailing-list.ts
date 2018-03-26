@@ -48,6 +48,47 @@ export async function getMailingList(req: Express.Request, res: Express.Response
   res.success(lists, 200, db);
 }
 
+export async function deleteMailingList(req: Express.Request, res: Express.Response) {
+  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+
+  let err, db: mysql.PoolConnection;
+
+  [err, db] = await to(req.pool.getConnection());
+  if (err) return res.error(500, 'Error connecting to database', err, db);
+
+  [err] = await to(db.query('DELETE FROM mail_list WHERE mail_list_id = ?', +req.params.id));
+  if (err) return res.error(500, 'Error deleting mail list', err, db);
+  res.success('Mail list deleted successfully', 200, db);
+}
+
+export async function updateMailingList(req: Express.Request, res: Express.Response) {
+  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+
+  let err, db: mysql.PoolConnection;
+
+  [err, db] = await to(req.pool.getConnection());
+  if (err) return res.error(500, 'Error connecting to database', err, db);
+
+  const { display_name, description } = req.body;
+
+  // insert new mail list
+  if (+req.params.id === -1) {
+    [err] = await to(db.query('INSERT INTO mail_list SET ?', { display_name, description }));
+    if (err) return res.error(500, 'Error creating mail list', err, db);
+    return res.success('Mail list created successfully', 201, db);
+  }
+
+  // update existing mail list
+  [err] = await to(
+    db.query('UPDATE mail_list SET ? WHERE ?', [
+      { display_name, description },
+      { mail_list_id: +req.params.id },
+    ]),
+  );
+  if (err) return res.error(500, 'Error creating mail list', err, db);
+  res.success('Mail list updated successfully', 200, db);
+}
+
 export async function signup(req: Express.Request, res: Express.Response) {
   let err, db: mysql.PoolConnection;
 

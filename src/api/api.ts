@@ -81,11 +81,10 @@ api.use((err: any, req: Express.Request, res: Express.Response, next: Express.Ne
 
 // Get all users
 api.get('/user', UserAPI.getAllUsers);
-
+// Create or update user
 api.post('/user/:id', UserAPI.updateUser);
-
+// Delete user
 api.delete('/user/:id', UserAPI.deleteUser);
-
 // Get current user
 api.get('/user/current', UserAPI.getCurrentUser);
 
@@ -139,9 +138,13 @@ api.get('/attendance', (req, res) => {
     });
 });
 
-// Mailing list
+// Get all mailing lists
 api.get('/mailing-list', MailingListAPI.getMailingList);
-
+// Create or update mailing list
+api.post('/mailing-list/:id', MailingListAPI.updateMailingList);
+// Delete mailing list
+api.delete('/mailing-list/:id', MailingListAPI.deleteMailingList);
+// Signup to mailing list id
 api.post('/public/mailing-list/:id', MailingListAPI.signup);
 
 // FAQ's
