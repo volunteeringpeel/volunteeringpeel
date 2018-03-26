@@ -326,20 +326,34 @@ api.get('/attendance', (req, res) => {
 });
 
 // Mailing list
-api.get('/mailing-list/:id', (req, res) => {
+api.get('/mailing-list', (req, res) => {
   if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
   let db: mysql.PoolConnection;
   pool
     .getConnection()
     .then(conn => {
       db = conn;
-      return db.query(
-        'SELECT first_name, last_name, email from vw_user_mail_list WHERE mail_list = ?',
-        req.params.id,
-      );
+      return db.query(`SELECT display_name, first_name, last_name, email FROM vw_user_mail_list`);
     })
-    .then((users: User[]) => {
-      res.success(_.map(users, u => `${u.first_name} ${u.last_name} <${u.email}>`));
+    .then((results: any[]) => {
+      // group results by display_name
+      const grouped = _.groupBy(results, 'display_name');
+      // for each mailing list
+      const lists = _.mapValues(grouped, list =>
+        // join together each user
+        _.join(
+          // for each user:
+          _.map(list, item =>
+            // join by spaces ([John, Doe, johndoe@example.com] => John Doe <johndoe@example.com>)
+            _.join(
+              // remove null values (i.e. if name isn't set)
+              _.remove([item.first_name, item.last_name, `<${item.email}>`]),
+              ' ',
+            ),
+          ),
+        ),
+      );
+      res.success(lists);
       db.release();
     })
     .catch(error => {

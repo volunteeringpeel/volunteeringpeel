@@ -13,6 +13,8 @@ create or replace view vw_user_mail_list
 as
 select
   uml.mail_list_id,
+  m.display_name,
+  m.description,
   u.first_name,
   u.last_name,
   u.email

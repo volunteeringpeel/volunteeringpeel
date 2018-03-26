@@ -3,10 +3,11 @@ import axios, { AxiosError } from 'axios';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Form, TextArea } from 'semantic-ui-react';
+import { Dropdown, Form, TextArea } from 'semantic-ui-react';
 
 interface MailingListState {
-  emails: string[];
+  lists: { [listName: string]: string };
+  active: string;
   loading: boolean;
 }
 
@@ -15,7 +16,8 @@ export default class MailingList extends React.Component<{}, MailingListState> {
     super(props);
 
     this.state = {
-      emails: [],
+      lists: {},
+      active: '',
       loading: false,
     };
   }
@@ -28,10 +30,10 @@ export default class MailingList extends React.Component<{}, MailingListState> {
         }),
       )
       .then(res => {
-        this.setState({ emails: res.data.data });
+        this.setState({ lists: res.data.data });
       })
       .catch((error: AxiosError) => {
-        this.setState({ emails: ['Error loading data'] });
+        this.setState({ active: 'Error loading data' });
       })
       .finally(() => {
         this.setState({ loading: false });
@@ -46,10 +48,18 @@ export default class MailingList extends React.Component<{}, MailingListState> {
           client. Sending emails from this page is a WIP.
         </p>
         <Form>
-          <TextArea
-            disabled
-            value={this.state.loading ? 'Loading...' : _.join(this.state.emails, '; ')}
+          <Dropdown
+            placeholder="Select a mailing list"
+            fluid
+            search
+            selection
+            options={_.map(_.keys(this.state.lists), name => ({ value: name, text: name }))}
+            value={
+              this.state.active ? _.findKey(this.state.lists, x => x === this.state.active) : null
+            }
+            onChange={(e, { value }) => this.setState({ active: this.state.lists[String(value)] })}
           />
+          <TextArea disabled value={this.state.loading ? 'Loading...' : this.state.active} />
         </Form>
       </>
     );
