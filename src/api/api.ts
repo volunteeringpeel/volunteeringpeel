@@ -326,17 +326,20 @@ api.get('/attendance', (req, res) => {
 });
 
 // Mailing list
-api.get('/mailing-list', (req, res) => {
+api.get('/mailing-list/:id', (req, res) => {
   if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
   let db: mysql.PoolConnection;
   pool
     .getConnection()
     .then(conn => {
       db = conn;
-      return db.query('SELECT email from user WHERE mail_list = 1');
+      return db.query(
+        'SELECT first_name, last_name, email from vw_user_mail_list WHERE mail_list = ?',
+        req.params.id,
+      );
     })
-    .then(users => {
-      res.success(_.map(users, 'email'));
+    .then((users: User[]) => {
+      res.success(_.map(users, u => `${u.first_name} ${u.last_name} <${u.email}>`));
       db.release();
     })
     .catch(error => {
@@ -345,19 +348,29 @@ api.get('/mailing-list', (req, res) => {
     });
 });
 
-api.post('/public/mailing-list', (req, res) => {
+api.post('/public/mailing-list/:id', (req, res) => {
   let db: mysql.PoolConnection;
   pool
     .getConnection()
     .then(conn => {
       db = conn;
       return db.query(
-        'INSERT INTO user (email, mail_list) VALUES (?, 1) ON DUPLICATE KEY UPDATE mail_list = 1',
+        'INSERT INTO user (email) VALUES (?) ON DUPLICATE KEY UPDATE user_id = LAST_INSERT_ID(user_id)',
         req.body.email,
       );
     })
-    .then(users => {
-      res.success(`${req.body.email} added to mailing list!`);
+    .then(result =>
+      db.query('INSERT INTO user_mail_list SET ?', {
+        user_id: result.insertId,
+        mail_list_id: req.params.id,
+      }),
+    )
+    .then(result => {
+      if (result.affectedRows === 1) {
+        res.success(`${req.body.email} added to mailing list!`);
+      } else {
+        res.error(500, 'This should not happen.');
+      }
       db.release();
     })
     .catch(error => {
