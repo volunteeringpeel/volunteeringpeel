@@ -164,6 +164,7 @@ api.get('/mailing-list', (req, res) => {
               ' ',
             ),
           ),
+          ', ',
         ),
       );
       // check null against lists (i.e. list is empty)
