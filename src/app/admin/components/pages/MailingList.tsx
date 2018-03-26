@@ -103,7 +103,18 @@ export default class MailingList extends React.Component<{}, MailingListState> {
         }),
       )
       .then(res => {
-        this.setState({ lists: res.data.data });
+        this.setState({
+          lists: [
+            ...res.data.data,
+            // template for new mailing lists
+            {
+              mail_list_id: -1,
+              display_name: 'New Mailing List',
+              description: 'Add a new mailing list',
+              members: [],
+            },
+          ],
+        });
       })
       .catch((error: AxiosError) => {
         this.setState({ message: { message: 'Error loading data', severity: 'negative' } });
