@@ -18,33 +18,29 @@ export async function getMailingList(req: Express.Request, res: Express.Response
 
   let results;
   [err, results] = await to(
-    db.query(`SELECT display_name, first_name, last_name, email FROM vw_user_mail_list`),
+    db.query(
+      `SELECT
+        mail_list_id, display_name, description,
+        first_name, last_name, email
+      FROM vw_user_mail_list`,
+    ),
   );
 
   // group results by display_name
-  const grouped = _.groupBy(results, 'display_name');
+  const grouped = _.groupBy(results, 'mail_list_id');
 
-  // for each mailing list
-  const lists = _.mapValues(grouped, list => {
-    // for each user:
-    const formatted = _.map(list, item =>
-      // join by spaces ([John, Doe, johndoe@example.com] => John Doe <johndoe@example.com>)
-      _.join(
-        // remove null values (i.e. if name isn't set)
-        _.remove([item.first_name, item.last_name, `<${item.email}>`]),
-        ' ',
-      ),
-    );
+  // restructure data
+  const lists = _.map(grouped, (list: any) => ({
+    mail_list_id: list[0].mail_list_id,
+    display_name: list[0].display_name,
+    description: list[0].description,
+    members: _.map(list, (item: any) => ({
+      first_name: item.first_name,
+      last_name: item.last_name,
+      email: item.email,
+    })),
+  }));
 
-    // join together each user
-    const joined = _.join(formatted, ', ');
-
-    // check null against lists (i.e. list is empty)
-    if (joined === '<null>') {
-      return 'Empty mailing list.';
-    }
-    return joined;
-  });
   res.success(lists, 200, db);
 }
 
