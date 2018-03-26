@@ -146,6 +146,13 @@ export async function updateUser(req: Express.Request, res: Express.Response) {
       );
     }
 
+    // get user id
+    let id;
+    [err, [{ user_id: id }]] = await to(
+      db.query('SELECT user_id FROM user WHERE email = ?', req.user.email),
+    );
+    if (err) return res.error(500, 'Error finding user records', err, db);
+
     // update the profile in the database
     let result;
     [err, result] = await to(
@@ -153,7 +160,7 @@ export async function updateUser(req: Express.Request, res: Express.Response) {
         // fields to update
         { first_name, last_name, phone_1, phone_2, bio, title },
         // find the user with this email
-        { email: req.user.email },
+        { user_id: id },
       ]),
     );
     if (err) return res.error(500, 'Error updating user', err, db);
@@ -168,7 +175,7 @@ export async function updateUser(req: Express.Request, res: Express.Response) {
     }
 
     // update mail lists
-    [err] = await to(Bluebird.resolve(updateUserMailLists(req.params.id, mail_lists, db)));
+    [err] = await to(Bluebird.resolve(updateUserMailLists(id, mail_lists, db)));
     if (err) return res.error(500, 'Error updating mail lists', err, db);
 
     res.success('Profile updated successfully', 200, db);
