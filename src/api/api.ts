@@ -166,7 +166,8 @@ api.get('/mailing-list', (req, res) => {
           ),
         ),
       );
-      res.success(lists);
+      // check null against lists (i.e. list is empty)
+      res.success(_.mapValues(lists, list => (list === '<null>' ? 'Empty mailing list.' : list)));
       db.release();
     })
     .catch(error => {
