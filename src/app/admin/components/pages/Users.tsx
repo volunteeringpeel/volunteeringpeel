@@ -167,7 +167,7 @@ export default class Events extends React.Component<
                         phone_1: '',
                         phone_2: '',
                         role_id: 1,
-                        mail_list: false,
+                        mail_lists: [],
                       }
                     : _.find(this.state.users, ['user_id', +match.params.id])
                 }

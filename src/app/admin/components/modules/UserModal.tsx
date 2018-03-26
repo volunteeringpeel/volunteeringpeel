@@ -14,6 +14,7 @@ interface UserModalProps {
   loading: (status: boolean) => any;
   cancel: () => void;
   refresh: () => void;
+  mailListTemplate: MailList[];
   user: User | Exec;
 }
 
@@ -28,7 +29,7 @@ export default class UserModal extends React.Component<UserModalProps, User | Ex
       phone_1: props.user.phone_1 || '',
       phone_2: props.user.phone_2 || '',
       role_id: props.user.role_id || 1,
-      mail_lists: props.user.mail_lists || [],
+      mail_lists: props.user.mail_lists || props.mailListTemplate,
       title: (props.user as Exec).title || null,
       bio: (props.user as Exec).bio || null,
     };
@@ -45,7 +46,7 @@ export default class UserModal extends React.Component<UserModalProps, User | Ex
         phone_1: nextProps.user.phone_1 || '',
         phone_2: nextProps.user.phone_2 || '',
         role_id: nextProps.user.role_id || 1,
-        mail_lists: nextProps.user.mail_lists || [],
+        mail_lists: nextProps.user.mail_lists || this.props.mailListTemplate,
         title: nextProps.user.role_id === 3 ? (nextProps.user as Exec).title : null,
         bio: nextProps.user.role_id === 3 ? (nextProps.user as Exec).bio : null,
       });

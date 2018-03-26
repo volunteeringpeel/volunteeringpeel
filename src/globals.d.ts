@@ -45,7 +45,6 @@ interface User {
   phone_1: string;
   phone_2: string;
   role_id: number;
-  mail_list?: boolean; // temporary, just so things don't break just yet
   mail_lists?: MailList[];
 }
 
