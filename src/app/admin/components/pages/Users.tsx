@@ -117,7 +117,12 @@ export default class Events extends React.Component<
           content: user.phone_1 || 'Missing',
           warning: !user.phone_1,
         },
-        user.phone_2,
+        {
+          key: 'phone_2',
+          icon: user.phone_2 ? null : 'attention',
+          content: user.phone_2 || 'Missing',
+          warning: !user.phone_2,
+        },
         <td key="actions">
           <Dropdown>
             <Dropdown.Menu>
