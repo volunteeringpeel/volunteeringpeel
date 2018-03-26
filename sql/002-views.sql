@@ -1,3 +1,25 @@
+create or replace view vw_mail_list
+as
+select
+  m.mail_list_id,
+  m.display_name,
+  m.description,
+  count(uml.user_mail_list_id) signed_up
+  from mail_list m
+  left join user_mail_list uml on uml.mail_list_id = m.mail_list_id
+  group by 1, 2, 3;
+
+create or replace view vw_user_mail_list
+as
+select
+  uml.mail_list_id,
+  u.first_name,
+  u.last_name,
+  u.email
+  from user_mail_list uml
+  join mail_list m on m.mail_list_id = uml.mail_list_id
+  join user u on u.user_id = uml.user_id;
+
 create or replace view vw_shift
 as
 select

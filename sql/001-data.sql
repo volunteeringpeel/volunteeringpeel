@@ -7,6 +7,8 @@ truncate table request;
 truncate table faq;
 truncate table user_shift;
 truncate table confirm_level;
+truncate table user_mail_list;
+truncate table mail_list;
 truncate table user;
 truncate table role;
 truncate table shift;
@@ -30,6 +32,10 @@ insert into confirm_level (confirm_level_id, name, description) values
 	(-1, "Cancelled", "Volunteer cancelled"),
 	(-2, "Ghosted", "Volunteer did not respond to confirmation"),
 	(-3, "Missed", "Volunteer was absent from shift");
+
+insert into mail_list (display_name, description, system) values
+	("Newsletter", "Our weekly newsletter", 1),
+	("Event Notifications", "Get notified when an event is posted!", 1);
 
 insert into user (email, role_id, first_name, last_name) values
 	("volunteer@mailinator.com", 1, "Volunteer", "Test"),
