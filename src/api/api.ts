@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import * as mysql from 'promise-mysql';
 
 // Import sub-APIs
+import * as MailingListAPI from '@api/mailing-list';
 import * as UserAPI from '@api/user';
 
 const passwordsJson = require('./passwords');
@@ -139,74 +140,9 @@ api.get('/attendance', (req, res) => {
 });
 
 // Mailing list
-api.get('/mailing-list', (req, res) => {
-  if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
-  let db: mysql.PoolConnection;
-  pool
-    .getConnection()
-    .then(conn => {
-      db = conn;
-      return db.query(`SELECT display_name, first_name, last_name, email FROM vw_user_mail_list`);
-    })
-    .then((results: any[]) => {
-      // group results by display_name
-      const grouped = _.groupBy(results, 'display_name');
-      // for each mailing list
-      const lists = _.mapValues(grouped, list =>
-        // join together each user
-        _.join(
-          // for each user:
-          _.map(list, item =>
-            // join by spaces ([John, Doe, johndoe@example.com] => John Doe <johndoe@example.com>)
-            _.join(
-              // remove null values (i.e. if name isn't set)
-              _.remove([item.first_name, item.last_name, `<${item.email}>`]),
-              ' ',
-            ),
-          ),
-          ', ',
-        ),
-      );
-      // check null against lists (i.e. list is empty)
-      res.success(_.mapValues(lists, list => (list === '<null>' ? 'Empty mailing list.' : list)));
-      db.release();
-    })
-    .catch(error => {
-      res.error(500, 'Database error', error);
-      if (db && db.end) db.release();
-    });
-});
+api.get('/mailing-list', MailingListAPI.getMailingList);
 
-api.post('/public/mailing-list/:id', (req, res) => {
-  let db: mysql.PoolConnection;
-  pool
-    .getConnection()
-    .then(conn => {
-      db = conn;
-      return db.query(
-        'INSERT INTO user (email) VALUES (?) ON DUPLICATE KEY UPDATE user_id = LAST_INSERT_ID(user_id)',
-        req.body.email,
-      );
-    })
-    .then(result =>
-      db.query('INSERT INTO user_mail_list SET ?', {
-        user_id: result.insertId,
-        mail_list_id: req.params.id,
-      }),
-    )
-    .then(result => {
-      if (result.affectedRows === 1) {
-        res.success(`${req.body.email} added to mailing list!`);
-      } else {
-        res.error(500, 'This should not happen.');
-      }
-      db.release();
-    })
-    .catch(error => {
-      res.error(500, 'Database error', error);
-      if (db && db.end) db.release();
-    });
-});
+api.post('/public/mailing-list/:id', MailingListAPI.signup);
 
 // FAQ's
 api.get('/public/faq', (req, res) => {
