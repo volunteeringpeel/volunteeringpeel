@@ -81,7 +81,7 @@ api.use((err: any, req: Express.Request, res: Express.Response, next: Express.Ne
 // Get all users
 api.get('/user', UserAPI.getAllUsers);
 
-api.post('/user/:id');
+api.post('/user/:id', UserAPI.updateUser);
 
 api.delete('/user/:id', UserAPI.deleteUser);
 

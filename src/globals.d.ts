@@ -59,6 +59,7 @@ interface MailList {
   mail_list_id: number;
   display_name: string;
   description: string;
+  subscribed: boolean;
 }
 
 interface Sponsor {
