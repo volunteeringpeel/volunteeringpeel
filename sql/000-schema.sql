@@ -44,6 +44,7 @@ create table if not exists role (
 create table if not exists user (
   user_id     int           not null auto_increment primary key comment 'Unique user ID',
   email       varchar(128)  not null unique                     comment 'Email',
+  signup_time timestamp     not null default current_timestamp  comment 'Date user signed up (required by law)',
   role_id     int           not null default 1                  comment 'Volunteer/organizer/executive',
   first_name  varchar(32)                                       comment 'First name',
   last_name   varchar(32)                                       comment 'Last name',
