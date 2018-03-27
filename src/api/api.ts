@@ -53,21 +53,25 @@ const checkJwt = jwt({
 }).unless({ path: [/\/public*/] });
 
 // Success/error functions
-api.use((req, res, next) => {
-  res.error = (status, error, details, db?) => {
+api.use(async (req, res, next) => {
+  // Store db connection inside of req for access by other API files
+  let err;
+  [err, req.db] = await to(pool.getConnection());
+  if (err) return res.error(500, 'Error connecting to database', err, req.db);
+
+  // Return functions
+  res.error = (status, error, details) => {
     res
       .status(status)
       .json({ error, details: details || 'No further information', status: 'error' });
-    if (db) db.release();
+    if (req.db) req.db.release();
   };
-  res.success = (data, status = 200, db?) => {
+  res.success = (data, status = 200) => {
     if (data) res.status(status).json({ data, status: 'success' });
     else res.status(status).json({ status: 'success' });
-    if (db) db.release();
+    if (req.db) req.db.release();
   };
 
-  // Store pool connection inside of req for access by other API files
-  req.pool = pool;
   next();
 });
 
@@ -92,20 +96,16 @@ api.get('/user/current', UserAPI.getCurrentUser);
 api.get('/attendance', async (req, res) => {
   if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
-  let err, db: mysql.PoolConnection;
-  [err, db] = await to(req.pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, db);
-
   // grab user's first and last name as well as vw_user_shift
-  let userShifts: any[]; // update typings at a later date
+  let err, userShifts: any[]; // update typings at a later date
   [err, userShifts] = await to(
-    db.query(`
+    req.db.query(`
         SELECT us.*, u.first_name, u.last_name
         FROM vw_user_shift us
         JOIN user u ON u.user_id = us.user_id
       `),
   );
-  if (err) return res.error(500, 'Error retreiving attendance', err, db);
+  if (err) return res.error(500, 'Error retreiving attendance', err);
 
   res.success(
     _.map(userShifts, userShift => ({
@@ -146,56 +146,40 @@ api.post('/public/mailing-list/:id', MailingListAPI.signup);
 
 // FAQ's
 api.get('/public/faq', async (req, res) => {
-  let err, db: mysql.PoolConnection;
-  [err, db] = await to(req.pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, db);
-
-  let faqs;
-  [err, faqs] = await to(db.query('SELECT question, answer FROM faq ORDER BY priority'));
-  if (err) return res.error(500, 'Error retrieving FAQs', err, db);
-  res.success(faqs, 200, db);
+  let err, faqs;
+  [err, faqs] = await to(req.db.query('SELECT question, answer FROM faq ORDER BY priority'));
+  if (err) return res.error(500, 'Error retrieving FAQs', err);
+  res.success(faqs, 200);
 });
 
 // Execs
 api.get('/public/execs', async (req, res) => {
-  let err, db: mysql.PoolConnection;
-  [err, db] = await to(req.pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, db);
-
-  let execs;
+  let err, execs;
   [err, execs] = await to(
-    db.query('SELECT user_id, first_name, last_name, title, bio FROM user WHERE role_id = 3'),
+    req.db.query('SELECT user_id, first_name, last_name, title, bio FROM user WHERE role_id = 3'),
   );
-  if (err) return res.error(500, 'Error retrieving executive data', err, db);
-  res.success(execs, 200, db);
+  if (err) return res.error(500, 'Error retrieving executive data', err);
+  res.success(execs, 200);
 });
 
 // Sponsors
 api.get('/public/sponsors', async (req, res) => {
-  let err, db: mysql.PoolConnection;
-  [err, db] = await to(req.pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, db);
-
-  let sponsors;
+  let err, sponsors;
   [err, sponsors] = await to(
-    db.query('SELECT name, image, website FROM sponsor ORDER BY priority'),
+    req.db.query('SELECT name, image, website FROM sponsor ORDER BY priority'),
   );
-  if (err) return res.error(500, 'Error retrieving sponsor data', err, db);
-  res.success(sponsors, 200, db);
+  if (err) return res.error(500, 'Error retrieving sponsor data', err);
+  res.success(sponsors, 200);
 });
 
 // Events
 const eventQuery = async (req: Express.Request, res: Express.Response, authorized: boolean) => {
-  let err, db: mysql.PoolConnection;
-  [err, db] = await to(req.pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, db);
-
   // Grab all events
-  let events;
+  let err, events;
   [err, events] = await to(
-    db.query('SELECT event_id, name, address, transport, description, active FROM event'),
+    req.db.query('SELECT event_id, name, address, transport, description, active FROM event'),
   );
-  if (err) return res.error(500, 'Error retrieving event data', err, db);
+  if (err) return res.error(500, 'Error retrieving event data', err);
 
   // Get shifts for each event
   const withShifts = _.map(events, async (event: VPEvent) => {
@@ -222,8 +206,8 @@ const eventQuery = async (req: Express.Request, res: Express.Response, authorize
     const userID = authorized ? req.user.email : -1; // Use -1 if logged out, as -1 will not match any users
 
     let shifts;
-    [err, shifts] = await to(db.query(query, [event.event_id, userID]));
-    if (err) return res.error(500, 'Error retrieving shift data', err, db);
+    [err, shifts] = await to(req.db.query(query, [event.event_id, userID]));
+    if (err) return res.error(500, 'Error retrieving shift data', err);
 
     return {
       ...event,
@@ -236,7 +220,7 @@ const eventQuery = async (req: Express.Request, res: Express.Response, authorize
     };
   });
 
-  res.success(withShifts, 200, db);
+  res.success(withShifts, 200);
 };
 
 // Endpoint requires JWT (i.e. logged in)
@@ -248,18 +232,15 @@ api.get('/public/events', (req, res) => eventQuery(req, res, false));
 api.post('/events/:id', async (req, res) => {
   if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
-  let err, db: mysql.PoolConnection;
-  [err, db] = await to(req.pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, db);
-
   const { name, description, transport, address, active, shifts, deleteShifts } = req.body;
-  let eventID = +req.params.id;
+  let err,
+    eventID = +req.params.id;
 
   // Cast parameter to number, because numbers are a good
   if (eventID === -1) {
     // Add new event
     [err, { insertId: eventID }] = await to(
-      db.query('INSERT INTO event SET ?', {
+      req.db.query('INSERT INTO event SET ?', {
         name,
         description,
         transport,
@@ -267,21 +248,21 @@ api.post('/events/:id', async (req, res) => {
         active,
       }),
     );
-    if (err) return res.error(500, 'Error creating new event', err, db);
+    if (err) return res.error(500, 'Error creating new event', err);
   } else {
     // Update event
     [err] = await to(
-      db.query('UPDATE event SET ? WHERE event_id = ?', [
+      req.db.query('UPDATE event SET ? WHERE event_id = ?', [
         { name, description, transport, address, active },
         req.params.id,
       ]),
     );
-    if (err) return res.error(500, 'Error updating event data', err, db);
+    if (err) return res.error(500, 'Error updating event data', err);
 
     // Delete each shift marked for deletion
     _.forEach(deleteShifts as number[], async id => {
-      [err] = await to(db.query('DELETE FROM shift WHERE shift_id = ?', id));
-      if (err) return res.error(500, 'Error deleting shift', err, db);
+      [err] = await to(req.db.query('DELETE FROM shift WHERE shift_id = ?', id));
+      if (err) return res.error(500, 'Error deleting shift', err);
     });
   }
 
@@ -298,22 +279,21 @@ api.post('/events/:id', async (req, res) => {
     };
     if (shift.shift_id === -1) {
       // Create new shift
-      [err] = await to(db.query('INSERT INTO shift SET ?', values));
-      if (err) return res.error(500, 'Error creating shift', err, db);
+      [err] = await to(req.db.query('INSERT INTO shift SET ?', values));
+      if (err) return res.error(500, 'Error creating shift', err);
     } else {
       // Update shift
       let changedRows;
       [err, { changedRows }] = await to(
-        db.query('UPDATE shift SET ? WHERE shift_id = ?', [values, shift.shift_id]),
+        req.db.query('UPDATE shift SET ? WHERE shift_id = ?', [values, shift.shift_id]),
       );
-      if (err || changedRows !== 1) return res.error(500, 'Error updating shift', err, db);
+      if (err || changedRows !== 1) return res.error(500, 'Error updating shift', err);
     }
   });
 
   res.success(
     `Event ${eventID === -1 ? 'added' : 'updated'} successfully`,
     eventID === -1 ? 201 : 200,
-    db,
   );
 });
 
@@ -321,39 +301,35 @@ api.post('/events/:id', async (req, res) => {
 api.delete('/events/:id', async (req, res) => {
   if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
-  let err, db: mysql.PoolConnection;
-  [err, db] = await to(req.pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, db);
-
-  let affectedRows;
+  let err, affectedRows;
   [err, { affectedRows }] = await to(
-    db.query('DELETE FROM event WHERE event_id = ?', [req.params.id]),
+    req.db.query('DELETE FROM event WHERE event_id = ?', [req.params.id]),
   );
-  if (err || affectedRows !== 1) return res.error(500, 'Error deleting to database', err, db);
-  res.success('Event deleted successfully', 202, db);
+  if (err || affectedRows !== 1) return res.error(500, 'Error deleting to database', err);
+  res.success('Event deleted successfully', 202);
 });
 
 // Signup
 api.post('/signup', async (req, res) => {
-  let err, db: mysql.PoolConnection, affectedRows;
-  [err, db] = await to(req.pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, db);
-
   // Get user id from email
-  let users: { user_id: number }[];
-  [err, users] = await to(db.query('SELECT user_id FROM user WHERE email = ?', [req.user.email]));
+  let err, users: { user_id: number }[];
+  [err, users] = await to(
+    req.db.query('SELECT user_id FROM user WHERE email = ?', [req.user.email]),
+  );
   if (err || !users[0] || !users[0].user_id) {
     // lack of existence of users[0].user_id means user couldn't be found
-    return res.error(500, 'Error retrieving user information', err, db);
+    return res.error(500, 'Error retrieving user information', err);
   }
 
   const values = (req.body.shifts as number[]).map(shift => [users[0].user_id, shift]);
-  [err, { affectedRows }] = await to(
-    db.query('INSERT INTO user_shift (user_id, shift_id) VALUES ?', [values]),
-  );
-  if (err || affectedRows !== 1) return res.error(500, 'Error signing up', err, db);
 
-  res.success('Signed up successfully', 201, db);
+  let affectedRows;
+  [err, { affectedRows }] = await to(
+    req.db.query('INSERT INTO user_shift (user_id, shift_id) VALUES ?', [values]),
+  );
+  if (err || affectedRows !== 1) return res.error(500, 'Error signing up', err);
+
+  res.success('Signed up successfully', 201);
 });
 
 // 404
