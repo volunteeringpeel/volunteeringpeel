@@ -182,11 +182,12 @@ const eventQuery = async (req: Express.Request, res: Express.Response, authorize
   if (err) return res.error(500, 'Error retrieving event data', err);
 
   // Get shifts for each event
-  const withShifts = _.map(events, async (event: VPEvent) => {
-    // If logged in, also check if user is already signed up
-    const query = authorized
-      ? // Query if logged in
-        `SELECT
+  const withShifts = await Promise.all(
+    _.map(events, async (event: VPEvent) => {
+      // If logged in, also check if user is already signed up
+      const query = authorized
+        ? // Query if logged in
+          `SELECT
           s.shift_id, s.shift_num,
           s.start_time, s.end_time, s.hours,
           s.meals, s.max_spots, s.spots_taken, s.notes,
@@ -195,30 +196,31 @@ const eventQuery = async (req: Express.Request, res: Express.Response, authorize
         JOIN user u
         LEFT JOIN user_shift us ON us.shift_id = s.shift_id AND us.user_id = u.user_id
         WHERE s.event_id = ? AND u.email = ?`
-      : // Query if not logged in
-        `SELECT
+        : // Query if not logged in
+          `SELECT
           s.shift_id, s.shift_num,
           s.start_time, s.end_time, s.hours,
           s.meals, s.max_spots, s.spots_taken, s.notes,
           0 signed_up
         FROM vw_shift s
         WHERE s.event_id = ? AND ?`;
-    const userID = authorized ? req.user.email : -1; // Use -1 if logged out, as -1 will not match any users
+      const userID = authorized ? req.user.email : -1; // Use -1 if logged out, as -1 will not match any users
 
-    let shifts;
-    [err, shifts] = await to(req.db.query(query, [event.event_id, userID]));
-    if (err) return res.error(500, 'Error retrieving shift data', err);
+      let shifts;
+      [err, shifts] = await to(req.db.query(query, [event.event_id, userID]));
+      if (err) return res.error(500, 'Error retrieving shift data', err);
 
-    return {
-      ...event,
-      active: !!event.active, // Convert to boolean
-      shifts: shifts.map((shift: any) => ({
-        ...shift,
-        meals: shift.meals.split(','),
-        signed_up: !!shift.signed_up, // Convert to boolean
-      })),
-    };
-  });
+      return {
+        ...event,
+        active: !!event.active, // Convert to boolean
+        shifts: shifts.map((shift: any) => ({
+          ...shift,
+          meals: shift.meals.split(','),
+          signed_up: !!shift.signed_up, // Convert to boolean
+        })),
+      };
+    }),
+  );
 
   res.success(withShifts, 200);
 };

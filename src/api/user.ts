@@ -221,13 +221,15 @@ export async function updateUserMailLists(
 ): Promise<any> {
   // update mail list data
   return db.query('DELETE FROM user_mail_list WHERE user_id = ?', id).then(() =>
-    mailLists.map(async list => {
-      if (list.subscribed) {
-        return db.query('INSERT INTO user_mail_list SET ?', {
-          user_id: id,
-          mail_list_id: list.mail_list_id,
-        });
-      }
-    }),
+    Promise.all(
+      mailLists.map(async list => {
+        if (list.subscribed) {
+          return db.query('INSERT INTO user_mail_list SET ?', {
+            user_id: id,
+            mail_list_id: list.mail_list_id,
+          });
+        }
+      }),
+    ),
   );
 }
