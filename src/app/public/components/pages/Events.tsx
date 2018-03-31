@@ -40,11 +40,11 @@ export default class Events extends React.Component<EventsProps, EventsState> {
     return Promise.resolve(this.props.loading(true))
       .then(() => {
         if (localStorage.getItem('id_token')) {
-          return axios.get('/api/events', {
+          return axios.get('/api/event', {
             headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
           });
         }
-        return axios.get('/api/public/events');
+        return axios.get('/api/public/event');
       })
       .then(res => {
         // Only show events that are marked as active in admin console

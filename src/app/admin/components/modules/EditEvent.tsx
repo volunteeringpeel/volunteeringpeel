@@ -142,7 +142,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
     Promise.resolve(this.props.loading(true))
       .then(() =>
         axios.post(
-          `/api/events/${this.props.originalEvent.event_id}`,
+          `/api/event/${this.props.originalEvent.event_id}`,
           {
             name,
             description,
@@ -179,7 +179,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   public handleDelete = () => {
     Promise.resolve(this.props.loading(true))
       .then(() =>
-        axios.delete(`/api/events/${this.props.originalEvent.event_id}`, {
+        axios.delete(`/api/event/${this.props.originalEvent.event_id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
         }),
       )

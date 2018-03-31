@@ -226,12 +226,12 @@ const eventQuery = async (req: Express.Request, res: Express.Response, authorize
 };
 
 // Endpoint requires JWT (i.e. logged in)
-api.get('/events', (req, res) => eventQuery(req, res, true));
+api.get('/event', (req, res) => eventQuery(req, res, true));
 // Endpoint doesn't require JWT (i.e. not logged in)
-api.get('/public/events', (req, res) => eventQuery(req, res, false));
+api.get('/public/event', (req, res) => eventQuery(req, res, false));
 
 // Edit event
-api.post('/events/:id', async (req, res) => {
+api.post('/event/:id', async (req, res) => {
   if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   const { name, description, transport, address, active, shifts, deleteShifts } = req.body;
@@ -300,7 +300,7 @@ api.post('/events/:id', async (req, res) => {
 });
 
 // Delete event
-api.delete('/events/:id', async (req, res) => {
+api.delete('/event/:id', async (req, res) => {
   if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err, affectedRows;
