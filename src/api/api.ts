@@ -55,23 +55,33 @@ const checkJwt = jwt({
 
 // Success/error functions
 api.use(async (req, res, next) => {
-  // Store db connection inside of req for access by other API files
-  let err;
-  [err, req.db] = await to(pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, req.db);
-
   // Return functions
-  res.error = (status, error, details) => {
+  res.error = async (status, error, details) => {
+    if (req.db) {
+      await req.db.rollback();
+      req.db.release();
+    }
     res
       .status(status)
       .json({ error, details: details || 'No further information', status: 'error' });
-    if (req.db) req.db.release();
   };
-  res.success = (data, status = 200) => {
+
+  res.success = async (data, status = 200) => {
+    if (req.db) {
+      [err] = await to(req.db.commit());
+      if (err) return res.error(500, 'Error saving changes', err);
+      req.db.release();
+    }
     if (data) res.status(status).json({ data, status: 'success' });
     else res.status(status).json({ status: 'success' });
-    if (req.db) req.db.release();
   };
+
+  // Store db connection inside of req for access by other API files
+  let err;
+  [err, req.db] = await to(pool.getConnection());
+  if (err) return res.error(500, 'Error connecting to database', err);
+  [err] = await to(req.db.beginTransaction());
+  if (err) return res.error(500, 'Error opening transaction', err);
 
   next();
 });
