@@ -8,7 +8,7 @@ import { Form, Header, Message, TextArea } from 'semantic-ui-react';
 
 interface MailingListState {
   // tslint:disable-next-line:prefer-array-literal
-  lists: Array<MailList & { members: MailListMember[] }>;
+  lists: (MailList & { members: MailListMember[] })[];
   active: number;
   loading: boolean;
   message: Message;
