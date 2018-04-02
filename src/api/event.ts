@@ -13,17 +13,19 @@ export const eventQuery = (authorized: boolean) => async (
   res: Express.Response,
 ) => {
   // Grab all events
-  let err, events;
-  [err, events] = await to(
-    req.db.query('SELECT event_id, name, address, transport, description, active FROM event'),
-  );
+  let err, events, query;
+  // If logged in, grab admin data (active)
+  query = authorized
+    ? 'SELECT event_id, name, address, transport, description, active FROM event'
+    : 'SELECT event_id, name, address, transport, description FROM event';
+  [err, events] = await to(req.db.query(query));
   if (err) return res.error(500, 'Error retrieving event data', err);
 
   // Get shifts for each event
   const withShifts = await Promise.all(
     _.map(events, async (event: VPEvent) => {
       // If logged in, also check if user is already signed up
-      const query = authorized
+      query = authorized
         ? // Query if logged in
           `SELECT
           s.shift_id, s.shift_num,
