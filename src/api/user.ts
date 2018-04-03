@@ -12,7 +12,14 @@ export async function getAllUsers(req: Express.Request, res: Express.Response) {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err, users: User[];
-  [err, users] = await to(req.db.query('SELECT * from user'));
+  [err, users] = await to(
+    req.db.query(`SELECT
+      user_id, role_id,
+      first_name, last_name,
+      email, phone_1, phone_2,
+      title, bio
+    FROM user`),
+  );
   if (err) return res.error(500, 'Error getting user data', err);
 
   // get mailing list data
@@ -41,7 +48,16 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
   // Try selecting a user
   let user: User;
   [err, user] = await to(
-    req.db.query('SELECT * from user WHERE email = ?', [req.user.email]).then(__ => __[0]),
+    req.db
+      .query(
+        `SELECT
+          first_name, last_name, email,
+          phone_1, phone_2, role_id,
+          bio, title
+        FROM user WHERE email = ?`,
+        [req.user.email],
+      )
+      .then(__ => __[0]),
   );
   if (err) return res.error(500, 'Error searching for user', err);
 
@@ -76,7 +92,16 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
   // Get shifts
   let userShifts: any[];
   [err, userShifts] = await to(
-    req.db.query(`SELECT * from vw_user_shift WHERE user_id = ?`, [user.user_id]),
+    req.db.query(
+      `SELECT
+        user_shift_id, user_id,
+        confirm_level_id, confirm_level, confirm_description,
+        shift_id, shift_num,
+        start_time, end_time, hours, meals, notes
+        event_id, name, address, transport, description
+      FROM vw_user_shift WHERE user_id = ?`,
+      [user.user_id],
+    ),
   );
   if (err) return res.error(500, 'Error finding user shifts', err);
   out.userShifts = _.map(userShifts, userShift => ({
