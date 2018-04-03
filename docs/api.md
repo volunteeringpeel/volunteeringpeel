@@ -20,6 +20,12 @@
     * [`GET /api/mailing-list`](#get-apimailing-list)
     * [`POST /api/mailing-list/:id`](#post-apimailing-listid)
     * [`DELETE /api/mailing-list/:id`](#delete-apimailing-listid)
+  * [`/api/user`: User management endpoints](#apiuser-user-management-endpoints)
+    * [`GET /api/user`](#get-apiuser)
+    * [`GET /api/user/current`](#get-apiusercurrent)
+    * [`POST /api/user/current`](#post-apiusercurrent)
+    * [`POST /api/user/:id`](#post-apiuserid)
+    * [`DELETE /api/user/:id`](#delete-apiuserid)
 
 <!-- tocstop -->
 
@@ -276,7 +282,7 @@ None
 
 #### `POST /api/mailing-list/:id`
 
-Update an event or its shift's details.
+Update a mailing list's details.
 
 ##### Parameters
 
@@ -298,6 +304,136 @@ Returns success message.
 #### `DELETE /api/mailing-list/:id`
 
 Delete a mailing list.
+
+##### Parameters
+
+URL parameter `id` indicates ID of mailing list to delete.
+
+##### Response
+
+Returns success message.
+
+### `/api/user`: User management endpoints
+
+#### `GET /api/user`
+
+Retrieve data on all users.
+
+##### Parameters
+
+None.
+
+##### Response
+
+#### `GET /api/user/current`
+
+Retrieve data on the current user
+
+##### Parameters
+
+None.
+
+##### Response
+
+```ts
+{
+  status: "success",
+  data: {
+    user: { // User details
+      first_name: string, // Real first name
+      last_name: string, // Real last name
+      email: string, // Email address
+      phone_1: string, // Primary contact number
+      phone_2: string, // Secondary contact number
+      role_id: number, // 1 = Volunteer, 2 = Organizer, 3 = Executive
+      title: string, // For execs, e.g. "Chair"
+      bio: string // For execs, blurb on exec page
+    },
+    userShifts: Array<{
+      user_shift_id: number, // Signup ID
+      hours: string, // Calculated or overwritten number of hours
+      confirmLevel: { // Status (signup, complete, ditched, etc.)
+        id: number, // Level ID (id > 0 = positive, id < 0 = negative)
+        name: string, // Human-readable ID (e.g. "Complete")
+        description: string // Human-readable description (e.g. "This shift has been recorded and completed")
+      },
+      shift: { // Shift details
+        shift_id: number, // Shift ID
+        shift_num: number, // Shift # (e.g. "Shift 2")
+        start_time: string, // Shift start time in ISO format
+        end_time: string, // Shift end time in ISO format
+        meals: string[], // Provided food (e.g. ['lunch', 'dinner'])
+        notes: string, // Shift notes
+      },
+      parentEvent: { // Event which shift belongs to
+        event_id: number, // Event ID
+        name: number // Event name
+      }
+    }>,
+    new: boolean // New user flag
+  }
+}
+```
+
+#### `POST /api/user/current`
+
+Update the current user's details
+
+##### Parameters
+
+Form data as `application/x-www-form-urlencoded`:
+
+```ts
+{
+  first_name: string, // Name
+  last_name: string, // Name
+  phone_1: string, // Primary phone number
+  phone_2: string, // Secondary phone number
+  mail_lists: Array<{ // List of subscribed mailing lists
+    mail_list_id: number // ID of mailing list
+  }>,
+  title: string, // For execs only, title
+  bio: string // For execs only, bio blurb
+}
+```
+
+##### Response
+
+Returns success message.
+
+#### `POST /api/user/:id`
+
+Update a user's details.
+
+##### Parameters
+
+URL parameter `id` indicates ID of event to update.
+
+Form data as `application/x-www-form-urlencoded`:
+
+```ts
+{
+  first_name: string, // New first name
+  last_name: string, // New last name
+  email: string, // New email address
+  phone_1: string, // New primary phone number
+  phone_2: string, // New secondary phone number
+  mail_lists: Array<{ // List of subscribed mailing lists
+    mail_list_id: number // ID of mailing list
+  }>,
+  role_id: number, // New role
+  title: string, // For execs only, new title
+  bio: string // For execs only, new bio blurb
+}
+```
+
+##### Response
+
+Returns success message.
+
+#### `DELETE /api/user/:id`
+
+Delete a user.
 
 ##### Parameters
 
