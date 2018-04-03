@@ -26,6 +26,8 @@
     * [`POST /api/user/current`](#post-apiusercurrent)
     * [`POST /api/user/:id`](#post-apiuserid)
     * [`DELETE /api/user/:id`](#delete-apiuserid)
+  * [Miscellaneous](#miscellaneous)
+    * [`POST /api/signup`](#post-apisignup)
 
 <!-- tocstop -->
 
@@ -438,6 +440,26 @@ Delete a user.
 ##### Parameters
 
 URL parameter `id` indicates ID of mailing list to delete.
+
+##### Response
+
+Returns success message.
+
+### Miscellaneous
+
+#### `POST /api/signup`
+
+Signup for an event (or rather a list of shifts)
+
+##### Parameters
+
+Form data as `application/x-www-form-urlencoded`:
+
+```ts
+{
+  shifts: number[]; // List of shift IDs to sign up for
+}
+```
 
 ##### Response
 
