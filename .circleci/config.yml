@@ -38,4 +38,9 @@ jobs:
             # Store build artefacts
             - store_artifacts:
                 path: dist
-                destination: build
+            - store_artifacts:
+                path: sql
+            - store_artifacts:
+                path: package.json
+            - store_artifacts:
+                path: yarn.lock
