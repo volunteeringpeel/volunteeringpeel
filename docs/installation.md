@@ -184,17 +184,15 @@ Don't worry about warnings or info messages.
 There'll always be a few kinks here or there, and they shouldn't cause any problems.
 
 There's one file of code that's actually missing from your generated folder.
-That's the database password.
+That's the database username and password.
 You picked it earlier when creating the `volunteeringpeel` user.
-Create a file called `passwords.js` inside of `src/api`.
-Put this inside, and put the password in (don't delete the quotes though).
+Create a file called `.env` inside of the root folder.
+Put this inside, and change the user and password.
 
-```javascript
-module.exports = {
-  mysql: {
-    password: 'password-goes-here',
-  },
-};
+```
+DB_HOST=localhost
+DB_USER=volunteeringpeel
+DB_PASS=password
 ```
 
 Now, to start up the development server.

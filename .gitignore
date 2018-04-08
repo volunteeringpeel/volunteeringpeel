@@ -5,5 +5,3 @@ dist
 !.gitignore
 !.travis.yml
 !.babelrc
-
-passwords.js
