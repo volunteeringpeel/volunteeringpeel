@@ -92,11 +92,23 @@ jobs:
                 path: package.json
             - store_artifacts:
                 path: yarn.lock
+            # Store build number
+            - run: echo $CIRCLE_BUILD_NUM > build_num.txt
+            - persist_to_workspace:
+                root: ./
+                paths:
+                    - build_num.txt
     
     deploy:
         <<: *defaults
         steps:
-            - ssh -t build@retrocraft.ca "bash /var/www/volunteeringpeel/scripts/deploy.sh $CIRCLE_BUILD_NUM $CIRCLE_API_KEY"
+            - attach_workspace:
+                at: ./
+            - run:
+                name: Fetch artifacts
+                command: |
+                    export BUILD_NUM=$(cat build_num.txt)
+                    ssh -t build@retrocraft.ca "bash /var/www/volunteeringpeel/scripts/deploy.sh $BUILD_NUM $CIRCLE_API_KEY"
 
 workflows:
     version: 2
