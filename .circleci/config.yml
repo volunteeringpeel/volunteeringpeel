@@ -5,38 +5,37 @@
 #
 version: 2
 jobs:
-  build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/node:8.9
-
-    working_directory: ~/volunteeringpeel
-
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-        name: yarn-install
-        command: yarn install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
+    build:
+        docker:
+            # specify the version you desire here
+            - image: circleci/node:8.9
+            
+        working_directory: ~/volunteeringpeel
         
-      # Build artefacts
-      - run:
-        name: build
-        command: yarn run build
+        steps:
+            - checkout
+            # Download and cache dependencies
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+            - run:
+                name: yarn-install
+                command: yarn install
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - ./node_modules
+                            
+            # Build artefacts
+            - run:
+                name: build
+                command: yarn run build
 
-      # Run tests
-      - run:
-        name: test
-        command: yarn run test
-      
-      # Store build artefacts
-      - store_artifacts:
-        path: dist
-        destination: build
+            # Run tests
+            - run:
+                name: test
+                command: yarn run test
+                                    
+            # Store build artefacts
+            - store_artifacts:
+                path: dist
+                destination: build
