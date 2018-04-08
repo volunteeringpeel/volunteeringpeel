@@ -3,5 +3,5 @@ dist
 .*
 
 !.gitignore
-!.travis.yml
+!.circleci
 !.babelrc
