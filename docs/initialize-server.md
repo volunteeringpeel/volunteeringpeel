@@ -118,7 +118,7 @@ ls -la
 
 If there's a bunch of files showing, then you're good!
 
-> TODO: Setup MySQL and `passwords.js`
+> TODO: Setup MySQL and environment variables
 
 Start the server.
 
