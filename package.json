@@ -12,8 +12,7 @@
   "scripts": {
     "test": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
     "build": "yarn run build:server && yarn run build:client",
-    "build:server":
-      "webpack --config webpack.server.js; cp ./src/api/passwords.js ./dist/passwords.js || :",
+    "build:server": "webpack --config webpack.server.js; cp ./src/api/passwords.js ./dist/passwords.js || :",
     "build:client": "webpack --progress --config webpack.prod.js",
     "dev": "nodemon",
     "postinstall": "node scripts/fix-semantic.js"
@@ -22,6 +21,7 @@
     "@types/auth0-js": "^8.11.2",
     "@types/bluebird": "^3.5.20",
     "@types/body-parser": "^1.16.7",
+    "@types/dotenv": "^4.0.3",
     "@types/express": "^4.11.1",
     "@types/express-jwt": "^0.0.38",
     "@types/immutability-helper": "^2.6.3",
@@ -80,6 +80,7 @@
     "babel-polyfill": "^6.26.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
+    "dotenv": "^5.0.1",
     "express": "^4.16.2",
     "express-jwt": "^5.3.0",
     "immutability-helper": "^2.6.5",
