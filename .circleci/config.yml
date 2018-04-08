@@ -3,39 +3,87 @@
 #
 # Runs automatic build and deploy, while saving artefacts
 #
+defaults: &defaults
+    docker:
+        # specify the version you desire here
+        - image: circleci/node:8.9
+        
+    working_directory: ~/volunteeringpeel
+
 version: 2
 jobs:
-    build:
-        docker:
-            # specify the version you desire here
-            - image: circleci/node:8.9
-            
-        working_directory: ~/volunteeringpeel
-        
+    dependencies:
+        <<: *defualts
         steps:
             - checkout
             # Download and cache dependencies
             - restore_cache:
                 key: dependency-cache-{{ checksum "package.json" }}
             - run:
-                name: yarn-install
+                name: Install yarn packages
                 command: yarn install
             - save_cache:
                 key: dependency-cache-{{ checksum "package.json" }}
                 paths:
                     - ./node_modules
-                            
-            # Build artefacts
+            # Persist dependencies to workspace. 
+            - persist_to_workspace:
+                root: ./
+                paths:
+                    - node_modules
+    
+    build_server:
+        <<: *defaults
+        steps:
+            - checkout
+            # Get workspace (with dependencies)
+            - attach_workspace:
+                # Must be absolute path or relative path from working_directory
+                at: ./
+            # Build artifacts
             - run:
-                name: build
-                command: yarn run build
+                name: Build server
+                command: yarn run build:server
+            # Persist built server to workspace. 
+            - persist_to_workspace:
+                root: ./
+                paths:
+                    - dist/index.js
+    
+    build_client:
+        <<: *defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ./
+            # Build artifacts
+            - run:
+                name: Build client
+                command: yarn run build:client
+            # Persist built client to workspace. 
+            - persist_to_workspace:
+                root: ./
+                paths:
+                    - dist/app
 
+    test:
+        <<: *defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ./
             # Run tests
             - run:
                 name: test
                 command: yarn run test
-                                    
-            # Store build artefacts
+    
+    store_artifacts:
+        <<: *defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ./
+            # Store build artifacts
             - store_artifacts:
                 path: dist
             - store_artifacts:
@@ -44,3 +92,23 @@ jobs:
                 path: package.json
             - store_artifacts:
                 path: yarn.lock
+workflows:
+    version: 2
+
+    btd:
+        jobs:
+            - dependencies
+            - build_server:
+                requires:
+                    - dependencies
+            - build_client:
+                requires:
+                    - dependencies
+            - test:
+                requires:
+                    - dependencies
+            - store_artifacts:
+                requires:
+                    - build_server
+                    - build_client
+                    - test
