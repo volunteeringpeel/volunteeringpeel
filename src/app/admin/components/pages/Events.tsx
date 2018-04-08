@@ -41,7 +41,7 @@ export default class Events extends React.Component<
   public refresh() {
     return Promise.resolve(this.props.loading(true))
       .then(() => {
-        return axios.get('/api/events', {
+        return axios.get('/api/event', {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
         });
       })

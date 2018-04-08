@@ -11,14 +11,9 @@ import * as API from '@api/api';
 export async function getMailingList(req: Express.Request, res: Express.Response) {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
-  let err, db: mysql.PoolConnection;
-
-  [err, db] = await to(req.pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, db);
-
-  let results;
+  let err, results;
   [err, results] = await to(
-    db.query(
+    req.db.query(
       `SELECT
         mail_list_id, display_name, description,
         first_name, last_name, email
@@ -41,77 +36,66 @@ export async function getMailingList(req: Express.Request, res: Express.Response
     })),
   }));
 
-  res.success(lists, 200, db);
+  res.success(lists, 200);
 }
 
 export async function deleteMailingList(req: Express.Request, res: Express.Response) {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
-  let err, db: mysql.PoolConnection;
-
-  [err, db] = await to(req.pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, db);
-
-  [err] = await to(db.query('DELETE FROM mail_list WHERE mail_list_id = ?', +req.params.id));
-  if (err) return res.error(500, 'Error deleting mail list', err, db);
-  res.success('Mail list deleted successfully', 200, db);
+  let err;
+  [err] = await to(req.db.query('DELETE FROM mail_list WHERE mail_list_id = ?', +req.params.id));
+  if (err) return res.error(500, 'Error deleting mail list', err);
+  res.success('Mail list deleted successfully', 200);
 }
 
 export async function updateMailingList(req: Express.Request, res: Express.Response) {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
-  let err, db: mysql.PoolConnection;
-
-  [err, db] = await to(req.pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, db);
-
+  let err;
   const { display_name, description } = req.body;
 
   // insert new mail list
   if (+req.params.id === -1) {
-    [err] = await to(db.query('INSERT INTO mail_list SET ?', { display_name, description }));
-    if (err) return res.error(500, 'Error creating mail list', err, db);
-    return res.success('Mail list created successfully', 201, db);
+    [err] = await to(req.db.query('INSERT INTO mail_list SET ?', { display_name, description }));
+    if (err) return res.error(500, 'Error creating mail list', err);
+    return res.success('Mail list created successfully', 201);
   }
 
   // update existing mail list
   [err] = await to(
-    db.query('UPDATE mail_list SET ? WHERE ?', [
+    req.db.query('UPDATE mail_list SET ? WHERE ?', [
       { display_name, description },
       { mail_list_id: +req.params.id },
     ]),
   );
-  if (err) return res.error(500, 'Error creating mail list', err, db);
-  res.success('Mail list updated successfully', 200, db);
+  if (err) return res.error(500, 'Error creating mail list', err);
+  res.success('Mail list updated successfully', 200);
 }
 
 export async function signup(req: Express.Request, res: Express.Response) {
-  let err, db: mysql.PoolConnection;
-
-  [err, db] = await to(req.pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err, db);
+  let err;
 
   let userID: number;
   [err, { insertId: userID }] = await to(
-    db.query(
+    req.db.query(
       'INSERT INTO user (email) VALUES (?) ON DUPLICATE KEY UPDATE user_id = LAST_INSERT_ID(user_id)',
       req.body.email,
     ),
   );
-  if (err) return res.error(500, 'Error creating email record', err, db);
+  if (err) return res.error(500, 'Error creating email record', err);
 
   let result;
   [err, result] = await to(
-    db.query('INSERT INTO user_mail_list SET ?', {
+    req.db.query('INSERT INTO user_mail_list SET ?', {
       user_id: userID,
       mail_list_id: req.params.id,
     }),
   );
-  if (err) return res.error(500, 'Error subscribing email', err, db);
+  if (err) return res.error(500, 'Error subscribing email', err);
 
   if (result.affectedRows === 1) {
-    res.success(`${req.body.email} added to mailing list!`, 201, db);
+    res.success(`${req.body.email} added to mailing list!`, 201);
   } else {
-    res.error(500, 'This should not happen.', null, db);
+    res.error(500, 'This should not happen.', null);
   }
 }
