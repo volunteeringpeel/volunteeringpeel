@@ -92,6 +92,12 @@ jobs:
                 path: package.json
             - store_artifacts:
                 path: yarn.lock
+    
+    deploy:
+        <<: *defaults
+        steps:
+            - ssh -t build@retrocraft.ca "bash /var/www/volunteeringpeel/scripts/deploy.sh $CIRCLE_BUILD_NUM $CIRCLE_API_KEY"
+
 workflows:
     version: 2
 
@@ -112,3 +118,6 @@ workflows:
                     - build_server
                     - build_client
                     - test
+            - deploy:
+                requires:
+                    - store_artifacts
