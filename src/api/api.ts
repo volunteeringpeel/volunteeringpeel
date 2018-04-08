@@ -12,8 +12,6 @@ import * as EventAPI from '@api/event';
 import * as MailingListAPI from '@api/mailing-list';
 import * as UserAPI from '@api/user';
 
-const passwordsJson = require('./passwords');
-
 // Roles
 export const ROLE_VOLUNTEER = 1;
 export const ROLE_ORGANIZER = 2;
@@ -24,10 +22,10 @@ const api = Express.Router();
 
 // Setup MySQL
 const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
   database: 'volunteeringpeel',
-  host: 'localhost',
-  user: 'volunteeringpeel',
-  password: passwordsJson.mysql.password,
   charset: 'utf8mb4',
 });
 

@@ -12,10 +12,11 @@
   "scripts": {
     "test": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
     "build": "yarn run build:server && yarn run build:client",
-    "build:server": "webpack --config webpack.server.js; cp ./src/api/passwords.js ./dist/passwords.js || :",
+    "build:server": "webpack --config webpack.server.js",
     "build:client": "webpack --progress --config webpack.prod.js",
     "dev": "nodemon",
-    "postinstall": "node scripts/fix-semantic.js"
+    "postinstall": "node scripts/fix-semantic.js",
+    "start": "node -r dotenv/config dist/index.js"
   },
   "devDependencies": {
     "@types/auth0-js": "^8.11.2",
