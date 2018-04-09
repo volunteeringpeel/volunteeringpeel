@@ -22,9 +22,9 @@ yarn install
 
 # Stop site, copy new files, start site
 echo "Stopping site..."
-pm2 stop volunteeringpeel
+HOME=/var/www pm2 stop volunteeringpeel
 echo "Installing new site..."
 rm -rf dist
 cp -rf .artifacts/dist ./
 echo "Starting site..."
-pm2 start volunteeringpeel
+HOME=/var/www pm2 start volunteeringpeel
