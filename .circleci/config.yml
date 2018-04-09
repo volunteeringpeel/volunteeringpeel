@@ -3,40 +3,144 @@
 #
 # Runs automatic build and deploy, while saving artefacts
 #
-version: 2
-jobs:
-  build:
+defaults: &defaults
     docker:
-      # specify the version you desire here
-      - image: circleci/node:8.9
-
+        # specify the version you desire here
+        - image: circleci/node:8.9
+        
     working_directory: ~/volunteeringpeel
 
-    steps:
-      - checkout
+version: 2
+jobs:
+    dependencies:
+        <<: *defaults
+        steps:
+            - checkout
+            # Download and cache dependencies
+            - restore_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+            - run:
+                name: Install yarn packages
+                command: yarn install
+            - save_cache:
+                key: dependency-cache-{{ checksum "package.json" }}
+                paths:
+                    - ./node_modules
+            # Persist dependencies to workspace. 
+            - persist_to_workspace:
+                root: ./
+                paths:
+                    - node_modules
+    
+    build_server:
+        <<: *defaults
+        steps:
+            - checkout
+            # Get workspace (with dependencies)
+            - attach_workspace:
+                # Must be absolute path or relative path from working_directory
+                at: ./
+            # Build artifacts
+            - restore_cache:
+                key: build-cache
+            - run:
+                name: Build server
+                command: yarn run build:server
+            - save_cache:
+                key: build-cache
+                paths:
+                    - .awcache
+                    - .cache-loader
+            # Persist built server to workspace. 
+            - persist_to_workspace:
+                root: ./
+                paths:
+                    - dist/index.js
+    
+    build_client:
+        <<: *defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ./
+            # Build artifacts
+            - run:
+                name: Build client
+                command: yarn run build:client
+            # Persist built client to workspace. 
+            - persist_to_workspace:
+                root: ./
+                paths:
+                    - dist/app
 
-      # Download and cache dependencies
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-      - run:
-        name: yarn-install
-        command: yarn install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
-        
-      # Build artefacts
-      - run:
-        name: build
-        command: yarn run build
+    test:
+        <<: *defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ./
+            # Run tests
+            - run:
+                name: test
+                command: yarn run test
+    
+    store_artifacts:
+        <<: *defaults
+        steps:
+            - checkout
+            - attach_workspace:
+                at: ./
+            # Store build artifacts
+            - store_artifacts:
+                path: dist
+            - store_artifacts:
+                path: sql
+            - store_artifacts:
+                path: package.json
+            - store_artifacts:
+                path: yarn.lock
+            # Store build number
+            - run: echo $CIRCLE_BUILD_NUM > build_num.txt
+            - persist_to_workspace:
+                root: ./
+                paths:
+                    - build_num.txt
+    
+    deploy:
+        <<: *defaults
+        steps:
+            - attach_workspace:
+                at: ./
+            - add_ssh_keys
+            - deploy:
+                name: Fetch artifacts
+                command: |
+                    export BUILD_NUM=$(cat build_num.txt)
+                    ssh -p 42069 -t build@retrocraft.ca -o StrictHostKeyChecking=no "bash /var/www/volunteeringpeel/scripts/deploy.sh $BUILD_NUM $CIRCLE_API_KEY"
 
-      # Run tests
-      - run:
-        name: test
-        command: yarn run test
-      
-      # Store build artefacts
-      - store_artifacts:
-        path: dist
-        destination: build
+workflows:
+    version: 2
+
+    btd:
+        jobs:
+            - dependencies
+            - build_server:
+                requires:
+                    - dependencies
+            - build_client:
+                requires:
+                    - dependencies
+            - test:
+                requires:
+                    - dependencies
+            - store_artifacts:
+                requires:
+                    - build_server
+                    - build_client
+                    - test
+            - deploy:
+                filters:
+                    branches:
+                        only: master
+                requires:
+                    - store_artifacts
