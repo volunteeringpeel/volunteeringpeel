@@ -1,15 +1,30 @@
-# THIS SCRIPT IS FOR TRAVIS CI USE ONLY
+#!/bin/bash
 
-# Upload generated files
-rsync -rv -delete-after --exclude=node_modules/ --exclude=passwords.json $2/dist/ build@$1:/var/volunteeringpeel/
-# Upload dependency definitions
-scp $2/package.json build@$1:/var/volunteeringpeel/package.json
-scp $2/yarn.lock build@$1:/var/volunteeringpeel/yarn.lock
+# DEPLOYMENT SCRIPT
+# Pass in $1 = CircleCI build number and $2 = CircleCI API Token
 
-# Install dependencies on server and restart
-ssh -T build@$1 <<-'END'
-  cd /var/volunteeringpeel
-  yarn install --ignore-scripts --production
-  sudo chmod -R 774 /var/volunteeringpeel
-  pm2 restart index
-END
+cd /var/www/volunteeringpeel
+
+# Get artifact list and save to .artifacts
+echo "Clearing artifacts directory..."
+rm -rf .artifacts
+echo "Downloading new artifacts..."
+curl -s https://circleci.com/api/v1.1/project/github/volunteeringpeel/volunteeringpeel/$1/artifacts?circle-token=$2 \
+  | grep -o 'https://[^"]*' \
+  | sed -En 's/^(.*volunteeringpeel\/)(.*)/"\.artifacts\/\2" "\1\2?circle-token=$CIRCLE_TOKEN"/p' \
+  | awk '{system("curl --create-dirs -o "$1" "$2)}';
+
+# Install new packages, if needed
+echo "Installing new packages..."
+cp .artifacts/package.json package.json
+cp .artifacts/yarn.lock yarn.lock
+yarn install
+
+# Stop site, copy new files, start site
+echo "Stopping site..."
+pm2 stop volunteeringpeel
+echo "Installing new site..."
+rm -rf dist
+cp -rf .artifacts/dist ./
+echo "Starting site..."
+pm2 start volunteeringpeel
