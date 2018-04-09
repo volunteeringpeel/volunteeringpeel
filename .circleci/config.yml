@@ -111,7 +111,10 @@ jobs:
         steps:
             - attach_workspace:
                 at: ./
-            - run:
+            - add_ssh_keys:
+                fingerprints:
+                    - "bd:20:9a:ea:43:71:7a:08:eb:e4:c0:11:7b:28:37:19"
+            - deploy:
                 name: Fetch artifacts
                 command: |
                     export BUILD_NUM=$(cat build_num.txt)
