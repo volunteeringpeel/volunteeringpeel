@@ -111,9 +111,7 @@ jobs:
         steps:
             - attach_workspace:
                 at: ./
-            - add_ssh_keys:
-                fingerprints:
-                    - "bd:20:9a:ea:43:71:7a:08:eb:e4:c0:11:7b:28:37:19"
+            - add_ssh_keys
             - deploy:
                 name: Fetch artifacts
                 command: |
