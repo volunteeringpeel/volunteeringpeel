@@ -105,6 +105,9 @@ jobs:
             - attach_workspace:
                 at: ./
             - run:
+                name: Fix host authenticity for retrocraft.ca
+                command: ssh-keyscan retrocraft.ca >> ~/.ssh/known_hosts
+            - run:
                 name: Fetch artifacts
                 command: |
                     export BUILD_NUM=$(cat build_num.txt)
