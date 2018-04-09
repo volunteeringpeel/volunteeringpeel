@@ -41,9 +41,16 @@ jobs:
                 # Must be absolute path or relative path from working_directory
                 at: ./
             # Build artifacts
+            - restore_cache:
+                key: build-cache
             - run:
                 name: Build server
                 command: yarn run build:server
+            - save_cache:
+                key: build-cache
+                paths:
+                    - .awcache
+                    - .cache-loader
             # Persist built server to workspace. 
             - persist_to_workspace:
                 root: ./
@@ -105,13 +112,10 @@ jobs:
             - attach_workspace:
                 at: ./
             - run:
-                name: Fix host authenticity for retrocraft.ca
-                command: ssh-keyscan retrocraft.ca >> ~/.ssh/known_hosts
-            - run:
                 name: Fetch artifacts
                 command: |
                     export BUILD_NUM=$(cat build_num.txt)
-                    ssh -p 42069 -t build@retrocraft.ca "bash /var/www/volunteeringpeel/scripts/deploy.sh $BUILD_NUM $CIRCLE_API_KEY"
+                    ssh -p 42069 -t build@retrocraft.ca -o StrictHostKeyChecking=no "bash /var/www/volunteeringpeel/scripts/deploy.sh $BUILD_NUM $CIRCLE_API_KEY"
 
 workflows:
     version: 2
