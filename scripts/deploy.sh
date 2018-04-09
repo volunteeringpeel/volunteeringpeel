@@ -11,8 +11,8 @@ rm -rf .artifacts
 echo "Downloading new artifacts..."
 curl -s https://circleci.com/api/v1.1/project/github/volunteeringpeel/volunteeringpeel/$1/artifacts?circle-token=$2 \
   | grep -o 'https://[^"]*' \
-  | sed -En 's/^(.*volunteeringpeel\/)(.*)/"\.artifacts\/\2" "\1\2?circle-token=$CIRCLE_TOKEN"/p' \
-  | awk '{system("curl --create-dirs -o "$1" "$2)}';
+  | sed -En 's/^(.*volunteeringpeel\/)(.*)/"\.artifacts\/\2" "\1\2"/p' \
+  | awk '{system("echo \"" $2 " -> " $1 "\"; curl --create-dirs -sSo " $1 " " $2)}';
 
 # Install new packages, if needed
 echo "Installing new packages..."
