@@ -139,5 +139,8 @@ workflows:
                     - build_client
                     - test
             - deploy:
+                filters:
+                    branches:
+                        only: master
                 requires:
                     - store_artifacts
