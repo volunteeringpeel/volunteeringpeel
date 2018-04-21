@@ -116,14 +116,16 @@ api.get('/attendance', async (req, res) => {
   );
   if (err) return res.error(500, 'Error retreiving attendance', err);
 
-  res.success(
-    _.map(userShifts, userShift => ({
+  let confirmLevels: ConfirmLevel[];
+  [err, confirmLevels] = await to(
+    req.db.query('SELECT confirm_level_id as id, name, description FROM confirm_level'),
+  );
+  if (err) return res.error(500, 'Error retrieving attendance statuses', err);
+
+  res.success({
+    attendance: _.map(userShifts, userShift => ({
       user_shift_id: +userShift.user_shift_id,
-      confirmLevel: {
-        id: +userShift.confirm_level_id,
-        name: userShift.confirm_level,
-        description: userShift.confirm_description,
-      },
+      confirmLevel: +userShift.confirm_level_id,
       hours: userShift.hours,
       shift: {
         shift_id: +userShift.shift_id,
@@ -141,7 +143,8 @@ api.get('/attendance', async (req, res) => {
         last_name: userShift.last_name,
       },
     })),
-  );
+    levels: confirmLevels,
+  });
 });
 
 // Get all mailing lists
