@@ -51,6 +51,7 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
     req.db
       .query(
         `SELECT
+          user_id,
           first_name, last_name, email,
           phone_1, phone_2, role_id,
           bio, title
@@ -233,7 +234,7 @@ export async function getUserMailLists(id: number, db: mysql.PoolConnection): Pr
       JOIN mail_list m
       LEFT JOIN user_mail_list uml on uml.user_id = u.user_id AND uml.mail_list_id = m.mail_list_id
       WHERE u.user_id = ?`,
-      id,
+      [id],
     ),
     (list: MailList) => ({ ...list, subscribed: !!list.subscribed }),
   );
