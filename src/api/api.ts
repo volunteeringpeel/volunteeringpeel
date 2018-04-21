@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import * as mysql from 'promise-mysql';
 
 // Import sub-APIs
+import * as AttendanceAPI from '@api/attendance';
 import * as EventAPI from '@api/event';
 import * as MailingListAPI from '@api/mailing-list';
 import * as UserAPI from '@api/user';
@@ -102,50 +103,9 @@ api.delete('/user/:id', UserAPI.deleteUser);
 api.get('/user/current', UserAPI.getCurrentUser);
 
 // Get user shifts (but formatted)
-api.get('/attendance', async (req, res) => {
-  if (req.user.role_id < ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
-
-  // grab user's first and last name as well as vw_user_shift
-  let err, userShifts: any[]; // update typings at a later date
-  [err, userShifts] = await to(
-    req.db.query(`
-        SELECT us.*, u.first_name, u.last_name
-        FROM vw_user_shift us
-        JOIN user u ON u.user_id = us.user_id
-      `),
-  );
-  if (err) return res.error(500, 'Error retreiving attendance', err);
-
-  let confirmLevels: ConfirmLevel[];
-  [err, confirmLevels] = await to(
-    req.db.query('SELECT confirm_level_id as id, name, description FROM confirm_level'),
-  );
-  if (err) return res.error(500, 'Error retrieving attendance statuses', err);
-
-  res.success({
-    attendance: _.map(userShifts, userShift => ({
-      user_shift_id: +userShift.user_shift_id,
-      confirmLevel: +userShift.confirm_level_id,
-      hours: userShift.hours,
-      shift: {
-        shift_id: +userShift.shift_id,
-        shift_num: +userShift.shift_num,
-        start_time: userShift.start_time,
-        end_time: userShift.end_time,
-      },
-      parentEvent: {
-        event_id: +userShift.event_id,
-        name: userShift.name,
-      },
-      user: {
-        user_id: +userShift.user_id,
-        first_name: userShift.first_name,
-        last_name: userShift.last_name,
-      },
-    })),
-    levels: confirmLevels,
-  });
-});
+api.get('/attendance', AttendanceAPI.getAttendance);
+// Update user shift
+api.post('/attendance', AttendanceAPI.updateAttendance);
 
 // Get all mailing lists
 api.get('/mailing-list', MailingListAPI.getMailingList);

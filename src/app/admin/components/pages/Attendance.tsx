@@ -1,5 +1,6 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
+import * as Bluebird from 'bluebird';
 import { LocationDescriptor } from 'history';
 import update from 'immutability-helper'; // tslint:disable-line:import-name
 import * as _ from 'lodash';
@@ -21,7 +22,7 @@ interface AttendanceState {
 
 interface AttendanceEntry {
   user_shift_id: number;
-  confirmLevel: number;
+  confirm_level_id: number;
   hours: string;
   shift: {
     shift_id: number;
@@ -51,6 +52,8 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       activeData: [],
       activeEntry: null,
     };
+
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   public componentDidMount() {
@@ -58,7 +61,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
   }
 
   public refresh() {
-    return Promise.resolve(this.props.loading(true))
+    return Bluebird.resolve(this.props.loading(true))
       .then(() => {
         return axios.get('/api/attendance', {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
@@ -66,10 +69,13 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       })
       .then(res => {
         this.setState({
-          attendance: res.data.data.attendance,
+          attendance: _.map(
+            res.data.data.attendance as AttendanceEntry[],
+            // set changed to false by default
+            __ => ({ ...__, changed: false }),
+          ),
           confirmLevels: res.data.data.levels,
         });
-        this.props.loading(false);
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
@@ -77,6 +83,17 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
           more: error.response.data.details,
           severity: 'negative',
         });
+      })
+      .finally(() => {
+        this.props.loading(false);
+        if (this.state.activeEntry) {
+          this.setState({
+            activeData: _.filter(this.state.attendance, [
+              'shift.shift_id',
+              +this.state.activeEntry,
+            ]),
+          });
+        }
       });
   }
 
@@ -95,6 +112,37 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         },
       }),
     );
+  }
+
+  public handleSubmit() {
+    return Bluebird.resolve(this.props.loading(true))
+      .then(() =>
+        axios.post(
+          '/api/attendance',
+          _.map(_.filter(this.state.activeData, 'changed'), __ => ({
+            user_shift_id: __.user_shift_id,
+            confirm_level_id: __.confirm_level_id,
+          })),
+          { headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` } },
+        ),
+      )
+      .then(res => {
+        this.props.addMessage({
+          message: res.data.data,
+          severity: 'positive',
+        });
+      })
+      .catch((error: AxiosError) => {
+        this.props.addMessage({
+          message: error.response.data.error,
+          more: error.response.data.details,
+          severity: 'negative',
+        });
+      })
+      .finally(() => {
+        this.props.loading(false);
+        this.refresh();
+      });
   }
 
   public render() {
@@ -126,11 +174,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
           onChange={(e, { value }) =>
             this.setState({
               activeEntry: +value,
-              activeData: _.map(
-                _.filter(this.state.attendance, ['shift.shift_id', +value]),
-                // set changed to false by default
-                __ => ({ ...__, changed: false }),
-              ),
+              activeData: _.filter(this.state.attendance, ['shift.shift_id', +value]),
             })
           }
         />
@@ -143,18 +187,21 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
               renderBodyRow={(entry: AttendanceEntry) => ({
                 key: entry.user_shift_id,
                 cells: [
-                  <td>
-                    <Dropdown
-                      inline
-                      fluid
-                      search
-                      options={statuses}
-                      value={entry.confirmLevel}
-                      onChange={(e, { value }) =>
-                        this.handleUpdate(entry.user_shift_id, 'confirmLevel', value)
-                      }
-                    />
-                  </td>,
+                  {
+                    key: 'confirm_level_id',
+                    content: (
+                      <Dropdown
+                        inline
+                        fluid
+                        search
+                        options={statuses}
+                        value={entry.confirm_level_id}
+                        onChange={(e, { value }) =>
+                          this.handleUpdate(entry.user_shift_id, 'confirm_level_id', value)
+                        }
+                      />
+                    ),
+                  },
                   entry.user.first_name,
                   entry.user.last_name,
                   entry.shift.start_time,
@@ -164,7 +211,9 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
               })}
               tableData={this.state.activeData}
             />
-            <Form.Button type="submit">Save</Form.Button>
+            <Form.Button type="submit" onClick={this.handleSubmit}>
+              Save
+            </Form.Button>
           </>
         )}
       </Form>
