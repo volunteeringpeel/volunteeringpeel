@@ -32,12 +32,11 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
     attendance: _.map(userShifts, userShift => ({
       user_shift_id: +userShift.user_shift_id,
       confirm_level_id: +userShift.confirm_level_id,
-      hours: userShift.hours,
+      start_time: userShift.start_time,
+      end_time: userShift.end_time,
       shift: {
         shift_id: +userShift.shift_id,
         shift_num: +userShift.shift_num,
-        start_time: userShift.start_time,
-        end_time: userShift.end_time,
       },
       parentEvent: {
         event_id: +userShift.event_id,

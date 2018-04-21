@@ -5,6 +5,8 @@ import { LocationDescriptor } from 'history';
 import update from 'immutability-helper'; // tslint:disable-line:import-name
 import * as _ from 'lodash';
 import * as React from 'react';
+import 'react-widgets/dist/css/react-widgets.css';
+import * as DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import { Dropdown, Form, Table } from 'semantic-ui-react';
 
 interface AttendanceProps {
@@ -23,12 +25,11 @@ interface AttendanceState {
 interface AttendanceEntry {
   user_shift_id: number;
   confirm_level_id: number;
-  hours: string;
+  start_time: string;
+  end_time: string;
   shift: {
     shift_id: number;
     shift_num: number;
-    start_time: string;
-    end_time: string;
   };
   parentEvent: {
     event_id: number;
@@ -101,7 +102,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     this.setState(
       update(this.state, {
         activeData: {
-          [_.findIndex(this.state.activeData, __ => __.user_shift_id === entry)]: {
+          [_.findIndex(this.state.activeData, ['user_shift_id', entry])]: {
             [field]: {
               $set: value,
             },
@@ -122,6 +123,8 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
           _.map(_.filter(this.state.activeData, 'changed'), __ => ({
             user_shift_id: __.user_shift_id,
             confirm_level_id: __.confirm_level_id,
+            start_override: __.start_time,
+            end_override: __.end_time,
           })),
           { headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` } },
         ),
@@ -204,8 +207,28 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   },
                   entry.user.first_name,
                   entry.user.last_name,
-                  entry.shift.start_time,
-                  entry.shift.end_time,
+                  {
+                    key: 'start_time',
+                    content: (
+                      <DateTimePicker
+                        value={new Date(entry.start_time)}
+                        onChange={value =>
+                          this.handleUpdate(entry.user_shift_id, 'start_time', value.toISOString())
+                        }
+                      />
+                    ),
+                  },
+                  {
+                    key: 'end_time',
+                    content: (
+                      <DateTimePicker
+                        value={new Date(entry.end_time)}
+                        onChange={value =>
+                          this.handleUpdate(entry.user_shift_id, 'end_time', value.toISOString())
+                        }
+                      />
+                    ),
+                  },
                 ],
                 warning: entry.changed,
               })}
