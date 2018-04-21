@@ -171,7 +171,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     }));
 
     return (
-      <Form>
+      <Form onSubmit={this.handleSubmit}>
         <Dropdown
           placeholder="Select Shift"
           fluid
@@ -234,19 +234,41 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                       />
                     ),
                   },
-                  timeFormat(
-                    moment
-                      .duration(moment(entry.end_time).diff(entry.start_time))
-                      .add(entry.hours_override),
-                  ),
+                  {
+                    key: 'hours',
+                    content: (
+                      <>
+                        {timeFormat(moment.duration(moment(entry.end_time).diff(entry.start_time)))}{' '}
+                        +
+                        <Form.Input
+                          inline
+                          fluid
+                          type="text"
+                          size="mini"
+                          pattern="[0-9]+(:[0-9]{2})?"
+                          value={entry.hours_override}
+                          placeholder="00:00"
+                          onChange={(e, { value }) => {
+                            if (/^[0-9]+:?[0-9]{0,2}$/.test(value)) {
+                              e.currentTarget.setCustomValidity('');
+                              this.handleUpdate(entry.user_shift_id, 'hours_override', value);
+                            } else if (!value) {
+                              // set to '' if empty (because empty doesn't match regex)
+                              this.handleUpdate(entry.user_shift_id, 'hours_override', '');
+                            } else {
+                              e.currentTarget.setCustomValidity('Please type a duration hh:mm');
+                            }
+                          }}
+                        />
+                      </>
+                    ),
+                  },
                 ],
                 warning: entry.changed,
               })}
               tableData={this.state.activeData}
             />
-            <Form.Button type="submit" onClick={this.handleSubmit}>
-              Save
-            </Form.Button>
+            <Form.Button type="submit">Save</Form.Button>
           </>
         )}
       </Form>
