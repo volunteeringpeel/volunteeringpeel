@@ -51,6 +51,7 @@ select
   s.shift_num,
   ifnull(us.start_override, s.start_time) as start_time,
   ifnull(us.end_override, s.end_time) as end_time,
+  us.hours_override,
   addtime(
     timediff(
       ifnull(us.end_override, s.end_time),
