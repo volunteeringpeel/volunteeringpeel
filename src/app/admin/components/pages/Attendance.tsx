@@ -18,6 +18,7 @@ interface AttendanceProps {
 
 interface AttendanceState {
   attendance: AttendanceEntry[];
+  activeData: AttendanceEntry[];
   activeEntry: number;
 }
 
@@ -48,6 +49,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
 
     this.state = {
       attendance: [],
+      activeData: [],
       activeEntry: null,
     };
   }
@@ -98,7 +100,12 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
           selection
           options={dropdownOptions}
           value={this.state.activeEntry ? this.state.activeEntry : null}
-          onChange={(e, { value }) => this.setState({ activeEntry: +value })}
+          onChange={(e, { value }) =>
+            this.setState({
+              activeEntry: +value,
+              activeData: _.filter(this.state.attendance, ['shift.shift_id', +value]),
+            })
+          }
         />
         {this.state.activeEntry && (
           <Table
@@ -115,7 +122,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                 entry.shift.end_time,
               ],
             })}
-            tableData={_.filter(this.state.attendance, ['shift.shift_id', this.state.activeEntry])}
+            tableData={this.state.activeData}
           />
         )}
       </>
