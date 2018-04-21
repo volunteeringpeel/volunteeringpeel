@@ -14,15 +14,13 @@ import {
   Table,
 } from 'semantic-ui-react';
 
+// App Imports
+import { timeFormat } from '@app/common/utilities';
+
 interface UserDashboardProps {
   user: UserState;
   loading: boolean;
 }
-
-// take a number and pad it with one zero if it needs to be (i.e. 1 => 01, 11 => 11, 123 => 123)
-const pad = (number: number) => (number < 10 ? ('00' + number).slice(-2) : number.toString());
-const timeFormat = (time: moment.Duration) =>
-  `${pad(Math.floor(time.asHours()))}:${pad(time.minutes())}`;
 
 export default class UserDashboard extends React.Component<UserDashboardProps> {
   public render() {
