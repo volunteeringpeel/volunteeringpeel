@@ -234,7 +234,11 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                       />
                     ),
                   },
-                  timeFormat(moment.duration(moment(entry.end_time).diff(entry.start_time))),
+                  timeFormat(
+                    moment
+                      .duration(moment(entry.end_time).diff(entry.start_time))
+                      .add(entry.hours_override),
+                  ),
                 ],
                 warning: entry.changed,
               })}

@@ -51,9 +51,12 @@ select
   s.shift_num,
   ifnull(us.start_override, s.start_time) as start_time,
   ifnull(us.end_override, s.end_time) as end_time,
-  timediff(
-    ifnull(us.end_override, s.end_time),
-	ifnull(us.start_override, s.start_time)
+  addtime(
+    timediff(
+      ifnull(us.end_override, s.end_time),
+      ifnull(us.start_override, s.start_time)
+    ),
+    ifnull(us.hours_override, "00:00:00")
   ) as hours,
   s.meals,
   s.notes,

@@ -34,6 +34,7 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
       confirm_level_id: +userShift.confirm_level_id,
       start_time: userShift.start_time,
       end_time: userShift.end_time,
+      hours_override: userShift.hours_override,
       shift: {
         shift_id: +userShift.shift_id,
         shift_num: +userShift.shift_num,
@@ -66,6 +67,7 @@ export async function updateAttendance(req: Express.Request, res: Express.Respon
           confirm_level_id: userShift.confirm_level_id,
           start_override: userShift.start_override,
           end_override: userShift.end_override,
+          hours_override: userShift.hours_override,
         },
         userShift.user_shift_id,
       ]),
