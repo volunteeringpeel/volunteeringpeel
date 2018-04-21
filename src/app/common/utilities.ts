@@ -25,7 +25,7 @@ export function formatDateForMySQL(date: Date): string {
     pad(date.getMonth() + 1) + // month is off by 1 (i.e. Jan = 0)
     '-' +
     pad(date.getDate()) +
-    'T' +
+    ' ' +
     pad(date.getHours()) +
     ':' +
     pad(date.getMinutes()) +
