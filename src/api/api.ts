@@ -208,7 +208,9 @@ api.post('/signup', async (req, res) => {
   [err, { affectedRows }] = await to(
     req.db.query('INSERT INTO user_shift (user_id, shift_id) VALUES ?', [values]),
   );
-  if (err || affectedRows !== 1) return res.error(500, 'Error signing up', err);
+  if (err || affectedRows !== req.body.shifts.length) {
+    return res.error(500, 'Error signing up', err);
+  }
 
   res.success('Signed up successfully', 201);
 });
