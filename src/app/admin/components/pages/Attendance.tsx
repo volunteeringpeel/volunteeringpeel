@@ -9,6 +9,9 @@ import 'react-widgets/dist/css/react-widgets.css';
 import * as DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import { Dropdown, Form, Table } from 'semantic-ui-react';
 
+// App Imports
+import { formatDateForMySQL } from '@app/common/utilities';
+
 interface AttendanceProps {
   addMessage: (message: Message) => any;
   loading: (status: boolean) => any;
@@ -123,8 +126,8 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
           _.map(_.filter(this.state.activeData, 'changed'), __ => ({
             user_shift_id: __.user_shift_id,
             confirm_level_id: __.confirm_level_id,
-            start_override: __.start_time,
-            end_override: __.end_time,
+            start_override: formatDateForMySQL(new Date(__.start_time)),
+            end_override: formatDateForMySQL(new Date(__.end_time)),
           })),
           { headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` } },
         ),

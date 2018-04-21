@@ -61,8 +61,12 @@ export async function updateAttendance(req: Express.Request, res: Express.Respon
   _.forEach(req.body, async userShift => {
     let affectedRows;
     [err, { affectedRows }] = await to(
-      req.db.query('UPDATE user_shift SET confirm_level_id = ? WHERE user_shift_id = ?', [
-        userShift.confirm_level_id,
+      req.db.query('UPDATE user_shift SET ? WHERE user_shift_id = ?', [
+        {
+          confirm_level_id: userShift.confirm_level_id,
+          start_override: userShift.start_override,
+          end_override: userShift.end_override,
+        },
         userShift.user_shift_id,
       ]),
     );
