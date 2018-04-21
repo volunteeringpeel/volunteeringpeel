@@ -4,13 +4,14 @@ import * as Bluebird from 'bluebird';
 import { LocationDescriptor } from 'history';
 import update from 'immutability-helper'; // tslint:disable-line:import-name
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import * as React from 'react';
 import 'react-widgets/dist/css/react-widgets.css';
 import * as DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import { Dropdown, Form, Table } from 'semantic-ui-react';
 
 // App Imports
-import { formatDateForMySQL } from '@app/common/utilities';
+import { formatDateForMySQL, timeFormat } from '@app/common/utilities';
 
 interface AttendanceProps {
   addMessage: (message: Message) => any;
@@ -30,6 +31,7 @@ interface AttendanceEntry {
   confirm_level_id: number;
   start_time: string;
   end_time: string;
+  hours_override: string;
   shift: {
     shift_id: number;
     shift_num: number;
@@ -189,7 +191,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
             <Table
               compact
               celled
-              headerRow={['Status', 'First Name', 'Last Name', 'Start', 'End']}
+              headerRow={['Status', 'First Name', 'Last Name', 'Start', 'End', 'Hours']}
               renderBodyRow={(entry: AttendanceEntry) => ({
                 key: entry.user_shift_id,
                 cells: [
@@ -232,6 +234,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                       />
                     ),
                   },
+                  timeFormat(moment.duration(moment(entry.end_time).diff(entry.start_time))),
                 ],
                 warning: entry.changed,
               })}

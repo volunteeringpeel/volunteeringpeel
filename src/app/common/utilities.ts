@@ -2,6 +2,7 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import * as Promise from 'bluebird';
 import { createBrowserHistory } from 'history';
+import * as moment from 'moment';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore, Dispatch, Store } from 'redux';
 import reduxThunk from 'redux-thunk';
@@ -17,8 +18,15 @@ import {
 } from '@app/common/actions';
 import * as reducers from '@app/common/reducers';
 
+// take a number and pad it with one zero if it needs to be (i.e. 1 => 01, 11 => 11, 123 => 123)
+const pad = (number: number) => (number < 10 ? ('00' + number).slice(-2) : number.toString());
+
+// moment duration toString basically (hh:mm)
+export function timeFormat(time: moment.Duration) {
+  return `${pad(Math.floor(time.asHours()))}:${pad(time.minutes())}`;
+}
+
 export function formatDateForMySQL(date: Date): string {
-  const pad = (num: number) => `0${num}`.substr(-2); // add leading 0
   return (
     date.getFullYear() +
     '-' +
