@@ -53,6 +53,7 @@ select
   ifnull(us.end_override, s.end_time) as end_time,
   us.hours_override,
   us.assigned_exec,
+  concat(ae.first_name, " ", ae.last_name) assigned_name,
   addtime(
     timediff(
       ifnull(us.end_override, s.end_time),
@@ -72,6 +73,7 @@ select
   join confirm_level c on c.confirm_level_id = us.confirm_level_id
   join vw_shift s on s.shift_id = us.shift_id
   join event e on e.event_id = s.event_id
+  join user ae on ae.user_id = us.assigned_exec
   join (
     select
       group_concat(s2.shift_num separator ', ') other_shifts, us2.user_id, s2.event_id
