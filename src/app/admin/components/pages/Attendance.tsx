@@ -17,6 +17,7 @@ interface AttendanceProps {
   addMessage: (message: Message) => any;
   loading: (status: boolean) => any;
   push: (location: LocationDescriptor) => any;
+  user: Exec;
 }
 
 interface AttendanceState {
@@ -33,6 +34,8 @@ interface AttendanceEntry {
   end_time: string;
   hours_override: string;
   other_shifts: string;
+  assigned_exec: number;
+  assigned_name: string;
   shift: {
     shift_id: number;
     shift_num: number;
@@ -200,6 +203,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                 'Start and End',
                 'Hours',
                 'Other Shifts',
+                'Assigned Exec',
               ]}
               renderBodyRow={(entry: AttendanceEntry) => ({
                 key: entry.user_shift_id,
@@ -280,6 +284,11 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                     ),
                   },
                   entry.other_shifts,
+                  {
+                    key: 'assigned_exec',
+                    content: entry.assigned_name,
+                    positive: entry.assigned_exec === this.props.user.user_id,
+                  },
                 ],
                 warning: entry.changed,
               })}

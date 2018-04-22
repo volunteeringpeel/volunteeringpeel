@@ -11,10 +11,14 @@ import { loading } from '@app/common/actions';
 import Attendance from '@app/admin/components/pages/Attendance';
 import { loadUser } from '@app/common/utilities';
 
+const mapStateToProps = (state: State) => ({
+  user: state.user.user.user,
+});
+
 const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   loading: (status: boolean) => dispatch(loading(status)),
 });
 
-const connectedAttendance = connect(null, mapDispatchToProps)(Attendance);
+const connectedAttendance = connect(mapStateToProps, mapDispatchToProps)(Attendance);
 
 export default connectedAttendance;
