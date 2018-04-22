@@ -4,6 +4,8 @@
 # Pass in $1 = CircleCI build number and $2 = CircleCI API Token
 
 cd /var/www/volunteeringpeel
+# Get environment variables (database password)
+export $(cat .env | grep -v ^\# | xargs)
 
 # Get artifact list and save to .artifacts
 echo "Clearing artifacts directory..."
@@ -28,3 +30,6 @@ rm -rf dist
 cp -rf .artifacts/dist ./
 echo "Starting site..."
 HOME=/var/www pm2 start volunteeringpeel
+
+# Reset SQL database
+cat .artifacts/sql/*.sql | mysql -u "$DB_USER" -p"$DB_PASS" volunteeringpeel
