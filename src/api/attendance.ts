@@ -78,6 +78,7 @@ export async function updateAttendance(req: Express.Request, res: Express.Respon
           start_override: userShift.start_override,
           end_override: userShift.end_override,
           hours_override: userShift.hours_override,
+          assigned_exec: userShift.assigned_exec,
         },
         userShift.user_shift_id,
       ]),

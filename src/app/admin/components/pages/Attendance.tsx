@@ -137,6 +137,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
             start_override: formatDateForMySQL(new Date(__.start_time)),
             end_override: formatDateForMySQL(new Date(__.end_time)),
             hours_override: __.hours_override,
+            assigned_exec: __.assigned_exec,
           })),
           { headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` } },
         ),
