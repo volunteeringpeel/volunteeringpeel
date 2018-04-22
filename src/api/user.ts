@@ -64,7 +64,6 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
 
   // User does not exist, create a new user account
   if (!user) {
-    console.log(req.user);
     // tslint:disable-next-line:variable-name
     const [first_name, last_name] = req.user.name ? req.user.name.split(/ (.+)/) : ['', ''];
     const newUser = {
@@ -80,8 +79,6 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
     let result: any;
     [err, result] = await to(req.db.query('INSERT INTO user SET ?', [newUser]));
     if (err) return res.error(500, 'Error creating user', err);
-
-    console.log(result);
 
     out.user = { ...newUser, phone_1: null, phone_2: null };
     out.user.user_id = result.insertId;
