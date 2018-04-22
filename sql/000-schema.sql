@@ -86,9 +86,11 @@ create table if not exists user_shift (
   end_override      datetime                                      comment 'End of shift (otherwise uses shift value)',
   hours_override    time                                          comment 'Add/subtract hours (for penalties, etc.)',
   confirm_level_id  int           not null default 0              comment 'Status',
+  assigned_exec     int                                           comment 'Assigned executive',
   foreign key fk_user_shift_shift (shift_id) references shift(shift_id) on update cascade on delete cascade,
   foreign key fk_user_shift_user (user_id) references user(user_id) on update cascade on delete cascade,
   foreign key fk_user_shift_confirm_level (confirm_level_id) references confirm_level(confirm_level_id) on update cascade,
+  foreign key fk_user_shift_assigned_exec (assigned_exec) references user(user_id) on update cascade on delete set null,
   unique key uk_user_shift (user_id, shift_id)
 );
 

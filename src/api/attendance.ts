@@ -15,7 +15,8 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
   let err, userShifts: any[]; // update typings at a later date
   [err, userShifts] = await to(
     req.db.query(`
-        SELECT us.*, u.first_name, u.last_name
+        SELECT us.*, u.first_name, u.last_name,
+        u.phone_1, u.phone_2, u.email
         FROM vw_user_shift us
         JOIN user u ON u.user_id = us.user_id
       `),
@@ -28,6 +29,9 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
   );
   if (err) return res.error(500, 'Error retrieving attendance statuses', err);
 
+  let execs: Exec[];
+  [err, execs] = await to(req.db.query('SELECT * FROM user WHERE role_id = 3'));
+
   res.success({
     attendance: _.map(userShifts, userShift => ({
       user_shift_id: +userShift.user_shift_id,
@@ -35,6 +39,8 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
       start_time: userShift.start_time,
       end_time: userShift.end_time,
       hours_override: userShift.hours_override,
+      other_shifts: userShift.other_shifts,
+      assigned_exec: +userShift.assigned_exec,
       shift: {
         shift_id: +userShift.shift_id,
         shift_num: +userShift.shift_num,
@@ -47,9 +53,17 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
         user_id: +userShift.user_id,
         first_name: userShift.first_name,
         last_name: userShift.last_name,
+        phone_1: userShift.phone_1,
+        phone_2: userShift.phone_2,
+        email: userShift.email,
       },
     })),
     levels: confirmLevels,
+    execList: _.map(execs, exec => ({
+      key: exec.user_id,
+      value: exec.user_id,
+      text: `${exec.first_name} ${exec.last_name}`,
+    })),
   });
 }
 
@@ -68,6 +82,7 @@ export async function updateAttendance(req: Express.Request, res: Express.Respon
           start_override: userShift.start_override,
           end_override: userShift.end_override,
           hours_override: userShift.hours_override,
+          assigned_exec: userShift.assigned_exec,
         },
         userShift.user_shift_id,
       ]),
