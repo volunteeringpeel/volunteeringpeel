@@ -48,6 +48,9 @@ interface AttendanceEntry {
     user_id: number;
     first_name: string;
     last_name: string;
+    phone_1: string;
+    phone_2: string;
+    email: string;
   };
   changed: boolean;
 }
@@ -203,6 +206,8 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                 'Status',
                 'First Name',
                 'Last Name',
+                'Phone Numbers',
+                'Email',
                 'Start and End',
                 'Hours',
                 'Other Shifts',
@@ -230,6 +235,20 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                     },
                     entry.user.first_name,
                     entry.user.last_name,
+                    {
+                      key: 'phone_numbers',
+                      content: (
+                        <span>
+                          <a href={`tel:${entry.user.phone_1}`}>{entry.user.phone_1}</a>
+                          <br />
+                          <a href={`tel:${entry.user.phone_2}`}>{entry.user.phone_2}</a>
+                        </span>
+                      ),
+                    },
+                    {
+                      key: 'email',
+                      content: <a href={`mailto:${entry.user.email}`}>{entry.user.email}</a>,
+                    },
                     {
                       key: 'time',
                       content: (

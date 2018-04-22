@@ -15,7 +15,8 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
   let err, userShifts: any[]; // update typings at a later date
   [err, userShifts] = await to(
     req.db.query(`
-        SELECT us.*, u.first_name, u.last_name
+        SELECT us.*, u.first_name, u.last_name,
+        u.phone_1, u.phone_2, u.email
         FROM vw_user_shift us
         JOIN user u ON u.user_id = us.user_id
       `),
@@ -52,6 +53,9 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
         user_id: +userShift.user_id,
         first_name: userShift.first_name,
         last_name: userShift.last_name,
+        phone_1: userShift.phone_1,
+        phone_2: userShift.phone_2,
+        email: userShift.email,
       },
     })),
     levels: confirmLevels,
