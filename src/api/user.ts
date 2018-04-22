@@ -67,23 +67,23 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
     console.log(req.user);
     // tslint:disable-next-line:variable-name
     const [first_name, last_name] = req.user.name ? req.user.name.split(/ (.+)/) : ['', ''];
-    const newUser: User = {
+    const newUser = {
       // might be the same as email cause auth0 is weird af
-      first_name,
+      first_name: first_name || '',
       // the name can be email if none is provided by auth0,
       // so if last name isn't a thing, make it a blank string
       last_name: last_name || '',
       email: req.user.email,
-      phone_1: null as string,
-      phone_2: null as string,
       role_id: 1,
     };
 
     let result: any;
-    [err, result] = await to(req.db.query('INSERT INTO user SET ?', newUser));
+    [err, result] = await to(req.db.query('INSERT INTO user SET ?', [newUser]));
     if (err) return res.error(500, 'Error creating user', err);
 
-    out.user = newUser;
+    console.log(result);
+
+    out.user = { ...newUser, phone_1: null, phone_2: null };
     out.user.user_id = result.insertId;
     out.new = true;
   } else {
@@ -101,7 +101,7 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
         start_time, end_time, hours, meals, notes
         event_id, name, address, transport, description
       FROM vw_user_shift WHERE user_id = ?`,
-      [user.user_id],
+      [out.user.user_id],
     ),
   );
   if (err) return res.error(500, 'Error finding user shifts', err);
