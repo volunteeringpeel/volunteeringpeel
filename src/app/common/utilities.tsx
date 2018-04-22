@@ -3,7 +3,9 @@ import { AxiosError, AxiosResponse } from 'axios';
 import * as Promise from 'bluebird';
 import { createBrowserHistory } from 'history';
 import * as moment from 'moment';
-import { routerMiddleware, routerReducer } from 'react-router-redux';
+import * as React from 'react';
+import { Link } from 'react-router-dom';
+import { push, routerMiddleware, routerReducer } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore, Dispatch, Store } from 'redux';
 import reduxThunk from 'redux-thunk';
 
@@ -70,8 +72,10 @@ export function pluralize(noun: string, number: number): string {
  */
 export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
   dispatch(loading(true));
+  // Check whether there's local storage
+  if (!localStorage.getItem('access_token')) return Promise.resolve(false);
   // Check whether the current time is past the token's expiry time
-  const expiresAt = JSON.parse(localStorage.getItem('expires_at'));
+  const expiresAt = +localStorage.getItem('expires_at');
   const isValid = new Date().getTime() < expiresAt;
   if (!isValid) {
     dispatch(logout());
@@ -92,10 +96,25 @@ export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
       // success
       if (response.data.status === 'success') {
         dispatch(getUserSuccess(response as AxiosResponse<APIDataSuccess<User>>));
+        if (response.data.data.new) {
+          store.dispatch(
+            addMessage({
+              message: 'Welcome!',
+              more: (
+                <>
+                  <strong>Before signing up for events</strong>, please provide a contact phone
+                  number (or two)
+                </>
+              ),
+              severity: 'positive',
+            }),
+          );
+          store.dispatch(push('/user/profile'));
+        }
         return true;
       }
       // failure
-      localStorage.removeItem('id_token');
+      dispatch(logout());
       dispatch(getUserFailure(response as AxiosResponse<APIDataError>));
       dispatch(
         addMessage({
@@ -108,7 +127,7 @@ export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
     })
     .catch((error: AxiosError) => {
       // big failure
-      localStorage.removeItem('id_token');
+      dispatch(logout());
       dispatch(getUserFailure(error.response));
       dispatch(
         addMessage({

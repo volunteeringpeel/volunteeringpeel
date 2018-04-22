@@ -22,7 +22,7 @@ type APIData<T> = APIDataSuccess<T> | APIDataError;
 interface Message {
   id?: number;
   message: string;
-  more?: string;
+  more?: string | React.ReactElement<any>;
   severity: 'info' | 'warning' | 'positive' | 'negative';
 }
 
@@ -46,6 +46,7 @@ interface User {
   phone_2: string;
   role_id: number;
   mail_lists?: MailList[];
+  new?: boolean;
 }
 
 interface Exec extends User {
