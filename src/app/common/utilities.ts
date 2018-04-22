@@ -70,6 +70,8 @@ export function pluralize(noun: string, number: number): string {
  */
 export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
   dispatch(loading(true));
+  // Check whether there's local storage
+
   // Check whether the current time is past the token's expiry time
   const expiresAt = JSON.parse(localStorage.getItem('expires_at'));
   const isValid = new Date().getTime() < expiresAt;
@@ -95,7 +97,7 @@ export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
         return true;
       }
       // failure
-      localStorage.removeItem('id_token');
+      dispatch(logout());
       dispatch(getUserFailure(response as AxiosResponse<APIDataError>));
       dispatch(
         addMessage({
@@ -108,7 +110,7 @@ export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
     })
     .catch((error: AxiosError) => {
       // big failure
-      localStorage.removeItem('id_token');
+      dispatch(logout());
       dispatch(getUserFailure(error.response));
       dispatch(
         addMessage({
