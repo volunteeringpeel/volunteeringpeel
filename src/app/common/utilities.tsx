@@ -5,7 +5,7 @@ import { createBrowserHistory } from 'history';
 import * as moment from 'moment';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { routerMiddleware, routerReducer, push } from 'react-router-redux';
+import { push, routerMiddleware, routerReducer } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore, Dispatch, Store } from 'redux';
 import reduxThunk from 'redux-thunk';
 
