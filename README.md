@@ -1,6 +1,6 @@
 # volunteeringpeel
 
-[![Build Status](https://travis-ci.org/volunteeringpeel/volunteeringpeel.svg?branch=master)](https://travis-ci.org/volunteeringpeel/volunteeringpeel)
+[![CircleCI](https://circleci.com/gh/volunteeringpeel/volunteeringpeel/tree/master.svg?style=svg)](https://circleci.com/gh/volunteeringpeel/volunteeringpeel/tree/master)
 [![dependencies Status](https://david-dm.org/volunteeringpeel/volunteeringpeel/status.svg)](https://david-dm.org/volunteeringpeel/volunteeringpeel)
 [![devDependencies Status](https://david-dm.org/volunteeringpeel/volunteeringpeel/dev-status.svg)](https://david-dm.org/volunteeringpeel/volunteeringpeel?type=dev)
 [![Waffle.io - Columns and their card count](https://badge.waffle.io/volunteeringpeel/volunteeringpeel.svg?columns=all)](https://waffle.io/volunteeringpeel/volunteeringpeel)
