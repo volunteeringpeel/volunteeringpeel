@@ -28,6 +28,9 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
   );
   if (err) return res.error(500, 'Error retrieving attendance statuses', err);
 
+  let execs: Exec[];
+  [err, execs] = await to(req.db.query('SELECT * FROM user WHERE role_id = 3'));
+
   res.success({
     attendance: _.map(userShifts, userShift => ({
       user_shift_id: +userShift.user_shift_id,
@@ -37,7 +40,6 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
       hours_override: userShift.hours_override,
       other_shifts: userShift.other_shifts,
       assigned_exec: +userShift.assigned_exec,
-      assigned_name: userShift.assigned_name,
       shift: {
         shift_id: +userShift.shift_id,
         shift_num: +userShift.shift_num,
@@ -53,6 +55,11 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
       },
     })),
     levels: confirmLevels,
+    execList: _.map(execs, exec => ({
+      key: exec.user_id,
+      value: exec.user_id,
+      text: `${exec.first_name} ${exec.last_name}`,
+    })),
   });
 }
 

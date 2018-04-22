@@ -8,7 +8,7 @@ import * as moment from 'moment';
 import * as React from 'react';
 import 'react-widgets/dist/css/react-widgets.css';
 import * as DateTimePicker from 'react-widgets/lib/DateTimePicker';
-import { Dropdown, Form, Table } from 'semantic-ui-react';
+import { Dropdown, DropdownItemProps, Form, Table } from 'semantic-ui-react';
 
 // App Imports
 import { formatDateForMySQL, timeFormat } from '@app/common/utilities';
@@ -24,6 +24,7 @@ interface AttendanceState {
   attendance: AttendanceEntry[];
   activeData: AttendanceEntry[];
   activeEntry: number;
+  execList: DropdownItemProps[];
   confirmLevels: ConfirmLevel[];
 }
 
@@ -35,7 +36,6 @@ interface AttendanceEntry {
   hours_override: string;
   other_shifts: string;
   assigned_exec: number;
-  assigned_name: string;
   shift: {
     shift_id: number;
     shift_num: number;
@@ -59,6 +59,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     this.state = {
       attendance: [],
       confirmLevels: [],
+      execList: [],
       activeData: [],
       activeEntry: null,
     };
@@ -85,6 +86,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
             __ => ({ ...__, changed: false }),
           ),
           confirmLevels: res.data.data.levels,
+          execList: res.data.data.execList,
         });
       })
       .catch((error: AxiosError) => {
@@ -205,93 +207,113 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                 'Other Shifts',
                 'Assigned Exec',
               ]}
-              renderBodyRow={(entry: AttendanceEntry) => ({
-                key: entry.user_shift_id,
-                cells: [
-                  {
-                    key: 'confirm_level_id',
-                    content: (
-                      <Dropdown
-                        inline
-                        fluid
-                        search
-                        options={statuses}
-                        value={entry.confirm_level_id}
-                        onChange={(e, { value }) =>
-                          this.handleUpdate(entry.user_shift_id, 'confirm_level_id', value)
-                        }
-                      />
-                    ),
-                  },
-                  entry.user.first_name,
-                  entry.user.last_name,
-                  {
-                    key: 'time',
-                    content: (
-                      <>
-                        <DateTimePicker
-                          value={new Date(entry.start_time)}
-                          onChange={value =>
-                            this.handleUpdate(
-                              entry.user_shift_id,
-                              'start_time',
-                              value.toISOString(),
-                            )
-                          }
-                        />
-                        <DateTimePicker
-                          value={new Date(entry.end_time)}
-                          onChange={value =>
-                            this.handleUpdate(entry.user_shift_id, 'end_time', value.toISOString())
-                          }
-                        />
-                      </>
-                    ),
-                  },
-                  {
-                    key: 'hours',
-                    content: (
-                      <>
-                        {timeFormat(moment.duration(moment(entry.end_time).diff(entry.start_time)))}{' '}
-                        +
-                        <Form.Input
+              renderBodyRow={(entry: AttendanceEntry) => {
+                const assignedExec = _.find(this.state.execList, ['user_id', entry.assigned_exec]);
+                return {
+                  key: entry.user_shift_id,
+                  cells: [
+                    {
+                      key: 'confirm_level_id',
+                      content: (
+                        <Dropdown
                           inline
                           fluid
-                          type="text"
-                          size="mini"
-                          pattern="-?[0-9]+(:[0-9]{2})?(:[0-9]{2})?"
-                          value={entry.hours_override}
-                          placeholder="00:00"
-                          onChange={(e, { value }) => {
-                            if (/^-?[0-9]+:?[0-9]{0,2}:?[0-9]{0,2}?$/.test(value)) {
-                              e.currentTarget.setCustomValidity('');
-                              this.handleUpdate(entry.user_shift_id, 'hours_override', value);
-                            } else if (!value) {
-                              // set to '' if empty (because empty doesn't match regex)
-                              this.handleUpdate(entry.user_shift_id, 'hours_override', '');
-                            } else {
-                              e.currentTarget.setCustomValidity('Please type a duration hh:mm');
-                            }
-                          }}
+                          search
+                          options={statuses}
+                          value={entry.confirm_level_id}
+                          onChange={(e, { value }) =>
+                            this.handleUpdate(entry.user_shift_id, 'confirm_level_id', value)
+                          }
                         />
-                        ={' '}
-                        {timeFormat(
-                          moment
-                            .duration(moment(entry.end_time).diff(entry.start_time))
-                            .add(entry.hours_override),
-                        )}
-                      </>
-                    ),
-                  },
-                  entry.other_shifts,
-                  {
-                    key: 'assigned_exec',
-                    content: entry.assigned_name,
-                    positive: entry.assigned_exec === this.props.user.user_id,
-                  },
-                ],
-                warning: entry.changed,
-              })}
+                      ),
+                    },
+                    entry.user.first_name,
+                    entry.user.last_name,
+                    {
+                      key: 'time',
+                      content: (
+                        <>
+                          <DateTimePicker
+                            value={new Date(entry.start_time)}
+                            onChange={value =>
+                              this.handleUpdate(
+                                entry.user_shift_id,
+                                'start_time',
+                                value.toISOString(),
+                              )
+                            }
+                          />
+                          <DateTimePicker
+                            value={new Date(entry.end_time)}
+                            onChange={value =>
+                              this.handleUpdate(
+                                entry.user_shift_id,
+                                'end_time',
+                                value.toISOString(),
+                              )
+                            }
+                          />
+                        </>
+                      ),
+                    },
+                    {
+                      key: 'hours',
+                      content: (
+                        <>
+                          {timeFormat(
+                            moment.duration(moment(entry.end_time).diff(entry.start_time)),
+                          )}{' '}
+                          +
+                          <Form.Input
+                            inline
+                            fluid
+                            type="text"
+                            size="mini"
+                            pattern="-?[0-9]+(:[0-9]{2})?(:[0-9]{2})?"
+                            value={entry.hours_override}
+                            placeholder="00:00"
+                            onChange={(e, { value }) => {
+                              if (/^-?[0-9]+:?[0-9]{0,2}:?[0-9]{0,2}?$/.test(value)) {
+                                e.currentTarget.setCustomValidity('');
+                                this.handleUpdate(entry.user_shift_id, 'hours_override', value);
+                              } else if (!value) {
+                                // set to '' if empty (because empty doesn't match regex)
+                                this.handleUpdate(entry.user_shift_id, 'hours_override', '');
+                              } else {
+                                e.currentTarget.setCustomValidity('Please type a duration hh:mm');
+                              }
+                            }}
+                          />
+                          ={' '}
+                          {timeFormat(
+                            moment
+                              .duration(moment(entry.end_time).diff(entry.start_time))
+                              .add(entry.hours_override),
+                          )}
+                        </>
+                      ),
+                    },
+                    entry.other_shifts,
+                    {
+                      key: 'assigned_exec',
+                      content: (
+                        <Dropdown
+                          inline
+                          fluid
+                          search
+                          options={this.state.execList}
+                          value={entry.assigned_exec}
+                          onChange={(e, { value }) =>
+                            this.handleUpdate(entry.user_shift_id, 'assigned_exec', value)
+                          }
+                        />
+                      ),
+                      positive: entry.assigned_exec === this.props.user.user_id,
+                    },
+                  ],
+                  warning: entry.changed,
+                };
+              }}
               tableData={this.state.activeData}
             />
             <Form.Button type="submit">Save</Form.Button>

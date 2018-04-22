@@ -53,7 +53,6 @@ select
   ifnull(us.end_override, s.end_time) as end_time,
   us.hours_override,
   us.assigned_exec,
-  concat(ae.first_name, " ", ae.last_name) assigned_name,
   addtime(
     timediff(
       ifnull(us.end_override, s.end_time),
