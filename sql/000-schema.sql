@@ -50,7 +50,6 @@ create table if not exists user (
   last_name   varchar(32)                                       comment 'Last name',
   phone_1     varchar(15)                                       comment 'Phone contact #1 (for volunteers/organizers)',
   phone_2     varchar(15)                                       comment 'Phone contact #2 (for volunteers)',
-  mail_list   boolean       not null default 0                  comment 'Is user on mailing list?',
   title       varchar(32)                                       comment 'For execs, title',
   bio         text                                              comment 'For execs, bio for about page',
   foreign key fk_user_role (role_id) references role(role_id)
