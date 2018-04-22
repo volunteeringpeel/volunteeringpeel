@@ -59,6 +59,7 @@ select
     ),
     ifnull(us.hours_override, "00:00:00")
   ) as hours,
+  os.other_shifts,
   s.meals,
   s.notes,
   e.event_id,
@@ -69,4 +70,11 @@ select
   from user_shift us
   join confirm_level c on c.confirm_level_id = us.confirm_level_id
   join vw_shift s on s.shift_id = us.shift_id
-  join event e on e.event_id = s.event_id;
+  join event e on e.event_id = s.event_id
+  join (
+    select
+      group_concat(s2.shift_num separator ', ') other_shifts, us2.user_id, s2.event_id
+      from user_shift us2
+      join vw_shift s2 on s2.shift_id = us2.shift_id
+      group by user_id, event_id
+  ) os on os.user_id = us.user_id and os.event_id = e.event_id;

@@ -32,6 +32,7 @@ interface AttendanceEntry {
   start_time: string;
   end_time: string;
   hours_override: string;
+  other_shifts: string;
   shift: {
     shift_id: number;
     shift_num: number;
@@ -192,7 +193,14 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
             <Table
               compact
               celled
-              headerRow={['Status', 'First Name', 'Last Name', 'Start', 'End', 'Hours']}
+              headerRow={[
+                'Status',
+                'First Name',
+                'Last Name',
+                'Start and End',
+                'Hours',
+                'Other Shifts',
+              ]}
               renderBodyRow={(entry: AttendanceEntry) => ({
                 key: entry.user_shift_id,
                 cells: [
@@ -214,25 +222,26 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   entry.user.first_name,
                   entry.user.last_name,
                   {
-                    key: 'start_time',
+                    key: 'time',
                     content: (
-                      <DateTimePicker
-                        value={new Date(entry.start_time)}
-                        onChange={value =>
-                          this.handleUpdate(entry.user_shift_id, 'start_time', value.toISOString())
-                        }
-                      />
-                    ),
-                  },
-                  {
-                    key: 'end_time',
-                    content: (
-                      <DateTimePicker
-                        value={new Date(entry.end_time)}
-                        onChange={value =>
-                          this.handleUpdate(entry.user_shift_id, 'end_time', value.toISOString())
-                        }
-                      />
+                      <>
+                        <DateTimePicker
+                          value={new Date(entry.start_time)}
+                          onChange={value =>
+                            this.handleUpdate(
+                              entry.user_shift_id,
+                              'start_time',
+                              value.toISOString(),
+                            )
+                          }
+                        />
+                        <DateTimePicker
+                          value={new Date(entry.end_time)}
+                          onChange={value =>
+                            this.handleUpdate(entry.user_shift_id, 'end_time', value.toISOString())
+                          }
+                        />
+                      </>
                     ),
                   },
                   {
@@ -270,6 +279,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                       </>
                     ),
                   },
+                  entry.other_shifts,
                 ],
                 warning: entry.changed,
               })}

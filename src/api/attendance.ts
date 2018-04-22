@@ -35,6 +35,7 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
       start_time: userShift.start_time,
       end_time: userShift.end_time,
       hours_override: userShift.hours_override,
+      other_shifts: userShift.other_shifts,
       shift: {
         shift_id: +userShift.shift_id,
         shift_num: +userShift.shift_num,
