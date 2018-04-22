@@ -3,7 +3,9 @@ import { AxiosError, AxiosResponse } from 'axios';
 import * as Promise from 'bluebird';
 import { createBrowserHistory } from 'history';
 import * as moment from 'moment';
-import { routerMiddleware, routerReducer } from 'react-router-redux';
+import * as React from 'react';
+import { Link } from 'react-router-dom';
+import { routerMiddleware, routerReducer, push } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore, Dispatch, Store } from 'redux';
 import reduxThunk from 'redux-thunk';
 
@@ -94,6 +96,21 @@ export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
       // success
       if (response.data.status === 'success') {
         dispatch(getUserSuccess(response as AxiosResponse<APIDataSuccess<User>>));
+        if (response.data.data.new) {
+          store.dispatch(
+            addMessage({
+              message: 'Welcome!',
+              more: (
+                <>
+                  <strong>Before signing up for events</strong>, please provide a contact phone
+                  number (or two)
+                </>
+              ),
+              severity: 'positive',
+            }),
+          );
+          store.dispatch(push('/user/profile'));
+        }
         return true;
       }
       // failure

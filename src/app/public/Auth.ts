@@ -29,6 +29,7 @@ class Auth {
 
   public handleAuthentication(callback?: () => void) {
     this.auth0.parseHash((err, authResult) => {
+      store.dispatch(push('/user/profile'));
       if (authResult && authResult.accessToken && authResult.idToken) {
         // Set the time that the access token will expire at
         const expiresAt = JSON.stringify(authResult.expiresIn * 1000 + new Date().getTime());
@@ -48,7 +49,6 @@ class Auth {
           }),
         );
       }
-      store.dispatch(push('/'));
       if (callback) callback();
     });
   }
