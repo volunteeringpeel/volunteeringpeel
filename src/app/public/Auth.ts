@@ -30,7 +30,12 @@ class Auth {
   public handleAuthentication(callback?: () => void) {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
-        this.setSession(authResult);
+        // Set the time that the access token will expire at
+        const expiresAt = JSON.stringify(authResult.expiresIn * 1000 + new Date().getTime());
+        localStorage.setItem('access_token', authResult.accessToken);
+        localStorage.setItem('id_token', authResult.idToken);
+        localStorage.setItem('expires_at', expiresAt);
+
         store.dispatch(dismissAllMessages());
         store.dispatch(addMessage({ message: 'Logged in', severity: 'positive' }));
         loadUser(store.dispatch);
@@ -46,14 +51,6 @@ class Auth {
       store.dispatch(push('/'));
       if (callback) callback();
     });
-  }
-
-  public setSession(authResult: auth0.Auth0DecodedHash) {
-    // Set the time that the access token will expire at
-    const expiresAt = JSON.stringify(authResult.expiresIn * 1000 + new Date().getTime());
-    localStorage.setItem('access_token', authResult.accessToken);
-    localStorage.setItem('id_token', authResult.idToken);
-    localStorage.setItem('expires_at', expiresAt);
   }
 
   public logout() {
