@@ -27,6 +27,7 @@ interface AttendanceState {
   execList: DropdownItemProps[];
   confirmLevels: ConfirmLevel[];
   hidden: Set<number>;
+  filter: { [filter: string]: number }; // -1 for exclude, 0 for off, 1 for on
 }
 
 interface AttendanceEntry {
@@ -67,6 +68,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       activeData: [],
       activeEntry: null,
       hidden: new Set(),
+      filter: { mine: 0, unconfirmed: 0 },
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -195,6 +197,46 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       'Assigned Exec',
     ];
 
+    const filters: {
+      name: string;
+      description: string;
+      filter: (entry: AttendanceEntry) => boolean;
+    }[] = [
+      {
+        name: 'mine',
+        description: 'Assigned to me',
+        filter: __ => __.assigned_exec === this.props.user.user_id,
+      },
+      {
+        name: 'unconfirmed',
+        description: 'Unconfirmed',
+        filter: __ => __.confirm_level_id <= 0,
+      },
+    ];
+
+    const activeFilters = _.filter(filters, filter => this.state.filter[filter.name] === 1);
+    const excludeFilters = _.filter(filters, filter => this.state.filter[filter.name] === -1);
+
+    const filteredData = _.reduce(
+      excludeFilters,
+      (acc, filter) => _.filter(acc, __ => !filter.filter(__)),
+      _.reduce(activeFilters, (acc, filter) => _.filter(acc, filter.filter), this.state.activeData),
+    );
+
+    const updateFilter = (filter: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.setState(
+        update(this.state, {
+          filter: {
+            [filter]: {
+              $set: this.state.filter[filter] === 1 ? -1 : this.state.filter[filter] === 0 ? 1 : 0,
+            },
+          },
+        }),
+      );
+    };
+
     return (
       <Form onSubmit={this.handleSubmit}>
         <Form.Field>
@@ -223,7 +265,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   return {
                     key: i,
                     content: column,
-                    basic: hidden,
+                    positive: !hidden,
                     onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -237,6 +279,18 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                     },
                   };
                 })}
+              />
+            </Form.Field>
+            <Form.Field inline>
+              <label>Filters:</label>
+              <Button.Group
+                buttons={_.map(filters, filter => ({
+                  key: filter.name,
+                  content: filter.description,
+                  positive: this.state.filter[filter.name] === 1,
+                  negative: this.state.filter[filter.name] === -1,
+                  onClick: updateFilter(filter.name),
+                }))}
               />
             </Form.Field>
             <Table
@@ -367,7 +421,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   warning: entry.changed,
                 };
               }}
-              tableData={this.state.activeData}
+              tableData={filteredData}
             />
             <Form.Button type="submit">Save</Form.Button>
           </>
