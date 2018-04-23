@@ -144,12 +144,15 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
                 name="phone_1"
                 value={this.state.phone_1}
                 onChange={this.handleChange}
+                pattern="[0-9]{10}"
+                placeholder="4165555555"
                 required
               />
               <Form.Input
                 label="Phone #2"
                 data-tooltip="Preferably a home phone we can contact your mom at."
                 name="phone_2"
+                placeholder="4165555555"
                 value={this.state.phone_2}
                 onChange={this.handleChange}
               />
