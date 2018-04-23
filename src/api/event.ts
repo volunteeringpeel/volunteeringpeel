@@ -16,8 +16,8 @@ export const eventQuery = (authorized: boolean) => async (
   let err, events, query;
   // If logged in, grab admin data (active)
   query = authorized
-    ? 'SELECT event_id, name, address, transport, description, active FROM event'
-    : 'SELECT event_id, name, address, transport, description FROM event';
+    ? 'SELECT event_id, name, address, transport, description, active, notes FROM event'
+    : 'SELECT event_id, name, address, transport, description, active, notes FROM event WHERE active = 1';
   [err, events] = await to(req.db.query(query));
   if (err) return res.error(500, 'Error retrieving event data', err);
 
@@ -68,7 +68,7 @@ export const eventQuery = (authorized: boolean) => async (
 export async function editEvent(req: Express.Request, res: Express.Response) {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
-  const { name, description, transport, address, active, shifts, deleteShifts } = req.body;
+  const { name, description, transport, address, active, notes, shifts, deleteShifts } = req.body;
   let err,
     eventID = +req.params.id;
 
@@ -82,6 +82,7 @@ export async function editEvent(req: Express.Request, res: Express.Response) {
         transport,
         address,
         active,
+        notes,
       }),
     );
     if (err) return res.error(500, 'Error creating new event', err);
@@ -89,7 +90,7 @@ export async function editEvent(req: Express.Request, res: Express.Response) {
     // Update event
     [err] = await to(
       req.db.query('UPDATE event SET ? WHERE event_id = ?', [
-        { name, description, transport, address, active },
+        { name, description, transport, address, active, notes },
         req.params.id,
       ]),
     );

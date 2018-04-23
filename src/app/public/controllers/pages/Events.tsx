@@ -9,7 +9,6 @@ import { loadUser } from '@app/common/utilities';
 import Events from '@app/public/components/pages/Events';
 
 const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
-  loading: (status: boolean) => dispatch(loading(status)),
   loadUser: loadUser.bind(null, dispatch),
 });
 

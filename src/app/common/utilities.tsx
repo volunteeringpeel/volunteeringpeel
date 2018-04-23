@@ -71,9 +71,9 @@ export function pluralize(noun: string, number: number): string {
  * @returns Promise awaiting success (true) or failure (false)
  */
 export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
-  dispatch(loading(true));
   // Check whether there's local storage
   if (!localStorage.getItem('access_token')) return Promise.resolve(false);
+  dispatch(loading(true));
   // Check whether the current time is past the token's expiry time
   const expiresAt = +localStorage.getItem('expires_at');
   const isValid = new Date().getTime() < expiresAt;

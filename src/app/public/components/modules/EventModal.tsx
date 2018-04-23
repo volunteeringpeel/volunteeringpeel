@@ -5,7 +5,9 @@ import immutabilityHelper from 'immutability-helper';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
-import { Button, Dimmer, Header, Icon, Item, Label } from 'semantic-ui-react';
+import * as ReactMarkdown from 'react-markdown';
+import { Link } from 'react-router-dom';
+import { Button, Dimmer, Form, Header, Icon, Item, Label, Segment } from 'semantic-ui-react';
 
 // App Imports
 import { listify, pluralize } from '@app/common/utilities';
@@ -16,7 +18,7 @@ import ProgressColor from '@app/public/components/blocks/ProgressColor';
 import ConfirmModal from '@app/public/components/modules/ConfirmModal';
 
 interface EventModalProps {
-  ableToRegister: string | true;
+  ableToRegister: React.ReactElement<any> | true;
   event: VPEvent;
   refresh: () => PromiseLike<any>;
 }
@@ -24,6 +26,7 @@ interface EventModalProps {
 interface EventModalState {
   modalOpen: boolean;
   selectedShifts: number[];
+  notes: string | number;
   submitting: boolean;
 }
 
@@ -34,6 +37,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
     this.state = {
       modalOpen: false,
       selectedShifts: [],
+      notes: '',
       submitting: false,
     };
 
@@ -69,7 +73,20 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
     // Pluralization
     const shiftPlural = pluralize('shift', this.state.selectedShifts.length);
     // All together now
-    const confirmText = `Are you sure you want to sign up for ${shiftPlural} ${shiftsList}?`;
+    const confirmText = (
+      <>
+        Are you sure you want to sign up for {shiftPlural} {shiftsList}?<br />
+        By signing up for this event, you agree to the{' '}
+        <Link to="/about/legal#terms">terms and conditions</Link> and{' '}
+        <Link to="/about/legal#waiver">waiver of liability</Link>
+      </>
+    );
+
+    const ableToRegister =
+      this.props.event.notes && this.state.notes === ''
+        ? 'Please fill in the additional information box with whatever is specified in the event description'
+        : this.props.ableToRegister;
+
     return (
       <Modal
         trigger={
@@ -91,79 +108,93 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
         closeIcon
       >
         <Modal.Header>Signup - {this.props.event.name}</Modal.Header>
-        <Modal.Content scrolling>
-          <Item.Group>
-            {_.map(this.props.event.shifts, (shift: Shift) => {
-              // Calculate if event is full based on spots (sum up shift spots)
-              const spotsLeft = shift.max_spots - shift.spots_taken;
-              const shiftFull = spotsLeft === 0;
-              // Parse dates
-              const startDate = moment(`${shift.start_time}`);
-              const endDate = moment(`${shift.end_time}`);
-              // Has shift already been signed up for
-              const selected = _.includes(this.state.selectedShifts, shift.shift_num);
+        <Modal.Content>
+          <Segment vertical>
+            <ReactMarkdown source={this.props.event.description} />
+          </Segment>
+          <Segment vertical>
+            <Item.Group>
+              {_.map(this.props.event.shifts, (shift: Shift) => {
+                // Calculate if event is full based on spots (sum up shift spots)
+                const spotsLeft = shift.max_spots - shift.spots_taken;
+                const shiftFull = spotsLeft === 0;
+                // Parse dates
+                const startDate = moment(`${shift.start_time}`);
+                const endDate = moment(`${shift.end_time}`);
+                // Has shift already been signed up for
+                const selected = _.includes(this.state.selectedShifts, shift.shift_num);
 
-              // Button text for the signup
-              let buttonText: Renderable = 'Select this shift';
-              if (selected) {
-                buttonText = (
-                  <>
-                    Selected <Icon name="check" />
-                  </>
+                // Button text for the signup
+                let buttonText: Renderable = 'Select this shift';
+                if (selected) {
+                  buttonText = (
+                    <>
+                      Selected <Icon name="check" />
+                    </>
+                  );
+                }
+                if (shiftFull) buttonText = 'FULL :(';
+                if (shift.signed_up) buttonText = 'Already signed up!';
+                return (
+                  <Item key={shift.shift_id}>
+                    <Item.Content>
+                      <Item.Header>
+                        Shift #{shift.shift_num}{' '}
+                        <small>
+                          {startDate.format('hh:mm A')} - {endDate.format('hh:mm A')}
+                        </small>
+                      </Item.Header>
+                      <Item.Meta>
+                        {startDate.isSame(endDate, 'day')
+                          ? startDate.format('MMM D, YYYY')
+                          : `${startDate.format('MMM D, YYYY')} - ${endDate.format('MMM D, YYYY')}`}
+                      </Item.Meta>
+                      <Item.Description>
+                        <p>{shift.notes}</p>
+                        {_.map(shift.meals, meal => <Label key={meal}>{meal} provided</Label>)}
+                      </Item.Description>
+                      <Item.Extra>
+                        <ProgressColor
+                          value={shift.max_spots - shift.spots_taken}
+                          total={shift.max_spots}
+                          label="Spots"
+                          size="small"
+                        />
+                        <br />
+                        <Button
+                          animated
+                          disabled={shiftFull || shift.signed_up}
+                          floated="right"
+                          primary
+                          basic={!selected}
+                          onClick={() => this.selectShift(shift.shift_num)}
+                        >
+                          <Button.Content visible>{buttonText}</Button.Content>
+                          <Button.Content hidden>
+                            {selected ? 'Deselect' : <Icon name="arrow right" />}
+                          </Button.Content>
+                        </Button>
+                      </Item.Extra>
+                    </Item.Content>
+                  </Item>
                 );
-              }
-              if (shiftFull) buttonText = 'FULL :(';
-              if (shift.signed_up) buttonText = 'Already signed up!';
-              return (
-                <Item key={shift.shift_id}>
-                  <Item.Content>
-                    <Item.Header>
-                      Shift #{shift.shift_num}{' '}
-                      <small>
-                        {startDate.format('hh:mm A')} - {endDate.format('hh:mm A')}
-                      </small>
-                    </Item.Header>
-                    <Item.Meta>
-                      {startDate.isSame(endDate, 'day')
-                        ? startDate.format('MMM D, YYYY')
-                        : `${startDate.format('MMM D, YYYY')} - ${endDate.format('MMM D, YYYY')}`}
-                    </Item.Meta>
-                    <Item.Description>
-                      <p>{shift.notes}</p>
-                      {_.map(shift.meals, meal => <Label key={meal}>{meal} provided</Label>)}
-                    </Item.Description>
-                    <Item.Extra>
-                      <ProgressColor
-                        value={shift.spots_taken}
-                        total={shift.max_spots}
-                        label="Spots"
-                        size="small"
-                      />
-                      <br />
-                      <Button
-                        animated
-                        disabled={shiftFull || shift.signed_up}
-                        floated="right"
-                        primary
-                        basic={!selected}
-                        onClick={() => this.selectShift(shift.shift_num)}
-                      >
-                        <Button.Content visible>{buttonText}</Button.Content>
-                        <Button.Content hidden>
-                          {selected ? 'Deselect' : <Icon name="arrow right" />}
-                        </Button.Content>
-                      </Button>
-                    </Item.Extra>
-                  </Item.Content>
-                </Item>
-              );
-            })}
-          </Item.Group>
+              })}
+            </Item.Group>
+          </Segment>
+          <Segment vertical>
+            <Form>
+              <Form.TextArea
+                label="Additional information (check event and shift descriptions to see if you need to specify anything)"
+                value={this.state.notes}
+                onChange={(e, { value }) => this.setState({ notes: value })}
+              />
+            </Form>
+          </Segment>
         </Modal.Content>
         <Dimmer.Dimmable as={Modal.Actions}>
-          <Dimmer active={this.props.ableToRegister !== true}>
+          <Dimmer active={ableToRegister !== true}>
             <Header as="h4" inverted>
-              {this.props.ableToRegister}
+              {ableToRegister}
             </Header>
           </Dimmer>
           <Button onClick={this.handleClose}>Cancel</Button>

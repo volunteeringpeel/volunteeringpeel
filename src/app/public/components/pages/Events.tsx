@@ -15,11 +15,11 @@ import SubscribeBox from '@app/public/components/modules/SubscribeBox';
 import EventModal from '@app/public/controllers/modules/EventModal';
 
 interface EventsProps {
-  loading: (status: boolean) => any;
   loadUser: () => void;
 }
 
 interface EventsState {
+  loading: boolean;
   events: VPEvent[];
 }
 
@@ -27,7 +27,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
   constructor(props: EventsProps) {
     super(props);
 
-    this.state = { events: [] };
+    this.state = { events: [], loading: true };
 
     this.refresh = this.refresh.bind(this);
   }
@@ -37,7 +37,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
   }
 
   public refresh() {
-    return Promise.resolve(this.props.loading(true))
+    return Promise.resolve(this.setState({ loading: true }))
       .then(() => {
         if (localStorage.getItem('id_token')) {
           return axios.get('/api/event', {
@@ -48,8 +48,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
       })
       .then(res => {
         // Only show events that are marked as active in admin console
-        this.setState({ events: _.filter(res.data.data, ['active', true]) });
-        this.props.loading(false);
+        this.setState({ events: _.filter(res.data.data, ['active', true]), loading: false });
         this.props.loadUser();
       });
   }
@@ -67,7 +66,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
         <Segment vertical>
           <Container>
             <div style={{ textAlign: 'center' }}>
-              <Button onClick={this.refresh} basic color="grey">
+              <Button onClick={this.refresh} basic color="grey" loading={this.state.loading}>
                 Refresh
               </Button>
             </div>
@@ -105,7 +104,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                       <Item.Extra>
                         {`${event.shifts.length} ${event.shifts.length > 1 ? 'shifts' : 'shift'}`}
                         <ProgressColor
-                          value={spotsTaken}
+                          value={maxSpots - spotsTaken}
                           total={maxSpots}
                           label={`${spotsLeft} of ${maxSpots} spots left`}
                           size="small"

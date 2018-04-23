@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import * as Promise from 'bluebird';
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Form, Message } from 'semantic-ui-react';
 
 interface SubscribeBoxProps {
@@ -73,7 +74,12 @@ export default class SubscribeBox extends React.Component<SubscribeBoxProps, Sub
           required
         />
         <Form.Checkbox
-          label="I agree to recieve communication from Volunteering Peel"
+          label={
+            <label>
+              I agree to recieve communication from Volunteering Peel and to the{' '}
+              <Link to="/about/legal#privacy">privacy policy</Link>
+            </label>
+          }
           name="tocAgree"
           checked={this.state.tocAgree}
           onChange={(e, { checked }) => this.setState({ tocAgree: checked })}
