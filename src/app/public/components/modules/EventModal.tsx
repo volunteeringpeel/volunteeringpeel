@@ -5,6 +5,7 @@ import immutabilityHelper from 'immutability-helper';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Dimmer, Header, Icon, Item, Label } from 'semantic-ui-react';
 
 // App Imports
@@ -69,7 +70,14 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
     // Pluralization
     const shiftPlural = pluralize('shift', this.state.selectedShifts.length);
     // All together now
-    const confirmText = `Are you sure you want to sign up for ${shiftPlural} ${shiftsList}?`;
+    const confirmText = (
+      <>
+        Are you sure you want to sign up for {shiftPlural} {shiftsList}?<br />
+        By signing up for this event, you agree to the{' '}
+        <Link to="/about/legal#terms">terms and conditions</Link> and{' '}
+        <Link to="/about/legal#waiver">waiver of liability</Link>
+      </>
+    );
     return (
       <Modal
         trigger={
