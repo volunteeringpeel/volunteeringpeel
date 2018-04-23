@@ -20,7 +20,8 @@ create table if not exists event (
   address     varchar(256)  not null                            comment 'Event address (full address)',
   transport   varchar(32)   default null                        comment 'Transport origin location (null if none)',
   description text          not null                            comment 'Event description',
-  active      boolean       not null default 0                  comment 'Event visible on events page?'
+  active      boolean       not null default 0                  comment 'Event visible on events page?',
+  notes       boolean       not null default 0                  comment 'Is the additional information field required?'
 );
 
 create table if not exists shift (
@@ -86,6 +87,7 @@ create table if not exists user_shift (
   hours_override    time                                          comment 'Add/subtract hours (for penalties, etc.)',
   confirm_level_id  int           not null default 0              comment 'Status',
   assigned_exec     int                                           comment 'Assigned executive',
+  notes             text                                          comment 'Notes (alt. transport., t-shirt size, etc.)',
   foreign key fk_user_shift_shift (shift_id) references shift(shift_id) on update cascade on delete cascade,
   foreign key fk_user_shift_user (user_id) references user(user_id) on update cascade on delete cascade,
   foreign key fk_user_shift_confirm_level (confirm_level_id) references confirm_level(confirm_level_id) on update cascade,

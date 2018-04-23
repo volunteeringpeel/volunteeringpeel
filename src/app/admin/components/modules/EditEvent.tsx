@@ -26,6 +26,7 @@ interface EditEventState {
   address: string;
   transport: string;
   active: boolean;
+  notes: boolean;
   shifts: Shift[];
   selectedShiftNum: number;
   deleteShifts: number[];
@@ -42,6 +43,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       transport: props.originalEvent.transport,
       active: props.originalEvent.active,
       shifts: props.originalEvent.shifts,
+      notes: props.originalEvent.notes,
       selectedShiftNum: null,
       deleteShifts: [],
     };
@@ -56,6 +58,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
         transport: nextProps.originalEvent.transport,
         active: nextProps.originalEvent.active,
         shifts: nextProps.originalEvent.shifts,
+        notes: nextProps.originalEvent.notes,
         selectedShiftNum: null,
         deleteShifts: [],
       });
@@ -138,19 +141,19 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   };
 
   public handleSubmit = () => {
-    const { name, description, address, transport, active, shifts, deleteShifts } = this.state;
     Promise.resolve(this.props.loading(true))
       .then(() =>
         axios.post(
           `/api/event/${this.props.originalEvent.event_id}`,
           {
-            name,
-            description,
-            address,
-            transport,
-            active,
-            deleteShifts,
-            shifts: _.map(shifts, shift => ({
+            name: this.state.name,
+            description: this.state.description,
+            address: this.state.address,
+            transport: this.state.transport,
+            active: this.state.active,
+            notes: this.state.notes,
+            deleteShifts: this.state.deleteShifts,
+            shifts: _.map(this.state.shifts, shift => ({
               ...shift,
               // format start and end times for MySQL insertion (should probably be done on backend but oh well)
               start_time: formatDateForMySQL(new Date(shift.start_time)),
@@ -200,7 +203,16 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   };
 
   public render() {
-    const { name, description, address, transport, active, shifts, selectedShiftNum } = this.state;
+    const {
+      name,
+      description,
+      address,
+      transport,
+      active,
+      notes,
+      shifts,
+      selectedShiftNum,
+    } = this.state;
     const selectedShift = _.find(shifts, ['shift_num', selectedShiftNum]);
 
     return (
@@ -218,6 +230,12 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
           label="Show event on Events page?"
           name="active"
           checked={active}
+          onChange={this.handleChange}
+        />
+        <Form.Checkbox
+          label="Is the additional information box required? If checked, ensure that you mention what you want in the description"
+          name="notes"
+          checked={notes}
           onChange={this.handleChange}
         />
         <Form.TextArea
