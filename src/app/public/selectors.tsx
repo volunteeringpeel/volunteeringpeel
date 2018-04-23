@@ -1,5 +1,6 @@
 // Library Imports
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { createSelector } from 'reselect';
 
 // App Imports
@@ -12,16 +13,20 @@ export const userAbleToRegister = createSelector([getUser], user => {
   if (user.status !== 'in') {
     return (
       <>
-        Please <a onClick={Auth.login}>log in</a> to register
+        Please{' '}
+        <a href="#" onClick={Auth.login}>
+          log in
+        </a>{' '}
+        to register
       </>
     );
   }
-  if (
-    !user.user.user.first_name ||
-    !user.user.user.last_name ||
-    !user.user.user.phone_1
-  ) {
-    return 'Please complete profile (name and phone #) to register';
+  if (!user.user.user.first_name || !user.user.user.last_name || !user.user.user.phone_1) {
+    return (
+      <>
+        Please <Link to="/user/profile">fill out your profile</Link> (name and phone #) to register
+      </>
+    );
   }
   return true;
 });

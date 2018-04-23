@@ -17,7 +17,7 @@ import ProgressColor from '@app/public/components/blocks/ProgressColor';
 import ConfirmModal from '@app/public/components/modules/ConfirmModal';
 
 interface EventModalProps {
-  ableToRegister: string | true;
+  ableToRegister: React.ReactElement<any> | true;
   event: VPEvent;
   refresh: () => PromiseLike<any>;
 }
