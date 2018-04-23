@@ -43,30 +43,34 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
   public componentDidMount() {
     if (this.props.user.status === 'out') this.props.push('/');
 
-    const user = this.props.user.user.user;
+    if (this.props.user.status === 'in') {
+      const user = this.props.user.user.user;
 
-    this.setState({
-      first_name: user.first_name || '',
-      last_name: user.last_name || '',
-      phone_1: user.phone_1 || '',
-      phone_2: user.phone_2 || '',
-      mail_lists: user.mail_lists || [],
-      title: user.role_id === 3 ? (user as Exec).title : null,
-      bio: user.role_id === 3 ? (user as Exec).bio : null,
-    });
+      this.setState({
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        phone_1: user.phone_1 || '',
+        phone_2: user.phone_2 || '',
+        mail_lists: user.mail_lists || [],
+        title: user.role_id === 3 ? (user as Exec).title : null,
+        bio: user.role_id === 3 ? (user as Exec).bio : null,
+      });
+    }
   }
 
   public componentWillReceiveProps(nextProps: UserProfileProps) {
-    const user = nextProps.user.user.user;
-    this.setState({
-      first_name: user.first_name || '',
-      last_name: user.last_name || '',
-      phone_1: user.phone_1 || '',
-      phone_2: user.phone_2 || '',
-      mail_lists: user.mail_lists || [],
-      title: user.role_id === 3 ? (user as Exec).title : null,
-      bio: user.role_id === 3 ? (user as Exec).bio : null,
-    });
+    if (this.props.user.status === 'in') {
+      const user = nextProps.user.user.user;
+      this.setState({
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        phone_1: user.phone_1 || '',
+        phone_2: user.phone_2 || '',
+        mail_lists: user.mail_lists || [],
+        title: user.role_id === 3 ? (user as Exec).title : null,
+        bio: user.role_id === 3 ? (user as Exec).bio : null,
+      });
+    }
   }
 
   public handleChange = (event: React.FormEvent<any>, { name, value, checked }: any) => {
@@ -103,6 +107,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
 
   public render() {
     if (this.props.user.status === 'out') return <Redirect to="/" />;
+    if (this.props.user.status === 'loading') return null;
 
     return (
       <Container>
