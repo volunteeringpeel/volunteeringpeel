@@ -97,7 +97,7 @@ export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
       if (response.data.status === 'success') {
         dispatch(getUserSuccess(response as AxiosResponse<APIDataSuccess<User>>));
         if (response.data.data.new) {
-          store.dispatch(
+          dispatch(
             addMessage({
               message: 'Welcome!',
               more: (
@@ -109,7 +109,7 @@ export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
               severity: 'positive',
             }),
           );
-          store.dispatch(push('/user/profile'));
+          dispatch(push('/user/profile'));
         }
         return true;
       }
