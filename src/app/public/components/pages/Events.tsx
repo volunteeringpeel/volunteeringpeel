@@ -105,7 +105,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                       <Item.Extra>
                         {`${event.shifts.length} ${event.shifts.length > 1 ? 'shifts' : 'shift'}`}
                         <ProgressColor
-                          value={spotsTaken}
+                          value={maxSpots - spotsTaken}
                           total={maxSpots}
                           label={`${spotsLeft} of ${maxSpots} spots left`}
                           size="small"
