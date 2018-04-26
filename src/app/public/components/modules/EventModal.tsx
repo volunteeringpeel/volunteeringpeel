@@ -66,7 +66,12 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
       .then(() =>
         axios.post(
           `/api/signup`,
-          { shifts: this.state.selectedShifts },
+          {
+            shifts: _.map(
+              this.state.selectedShifts,
+              num => _.find(this.props.event.shifts, ['shift_num', num]).shift_id,
+            ),
+          },
           {
             headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
           },
