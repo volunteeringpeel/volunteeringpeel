@@ -196,7 +196,8 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                         <br />
                         <Button
                           animated
-                          disabled={shiftFull || shift.signed_up}
+                          disabled={shiftFull || shift.signed_up || this.state.submitting}
+                          loading={selected && this.state.submitting}
                           floated="right"
                           primary
                           basic={!selected}
@@ -231,13 +232,20 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               {ableToRegister}
             </Header>
           </Dimmer>
-          <Button onClick={this.handleClose}>Cancel</Button>
+          <Button onClick={this.handleClose} disabled={this.state.submitting}>
+            Cancel
+          </Button>
           <ConfirmModal
             content={confirmText}
             header={`Sign Up for ${this.props.event.name}`}
             yes={() => this.submit()}
             button={
-              <Button animated positive disabled={this.state.selectedShifts.length === 0}>
+              <Button
+                animated
+                positive
+                disabled={this.state.selectedShifts.length === 0 || this.state.submitting}
+                loading={this.state.submitting}
+              >
                 <Button.Content visible>Sign up!</Button.Content>
                 <Button.Content hidden>
                   <Icon name="arrow right" />

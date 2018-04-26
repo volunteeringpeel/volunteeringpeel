@@ -66,7 +66,8 @@ export default class ConfirmModal extends React.Component<ConfirmModalProps, Con
   }
 
   public yes() {
-    this.props.yes().then(this.handleClose);
+    this.handleClose();
+    this.props.yes();
   }
 
   private handleOpen() {
