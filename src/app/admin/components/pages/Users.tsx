@@ -45,7 +45,6 @@ export default class Events extends React.Component<
       )
       .then(res => {
         this.props.addMessage({ message: res.data.data, severity: 'positive' });
-        this.refresh();
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
@@ -54,7 +53,10 @@ export default class Events extends React.Component<
           severity: 'negative',
         });
       })
-      .finally(() => this.props.loading(false));
+      .finally(() => {
+        this.refresh();
+        // refresh will call loading(false)
+      });
   };
 
   public refresh() {
