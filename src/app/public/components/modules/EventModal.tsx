@@ -7,7 +7,18 @@ import * as moment from 'moment';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
-import { Button, Dimmer, Form, Header, Icon, Item, Label, Segment } from 'semantic-ui-react';
+import { Action } from 'redux-actions';
+import {
+  Button,
+  Dimmer,
+  Form,
+  Header,
+  Icon,
+  Item,
+  Label,
+  Message,
+  Segment,
+} from 'semantic-ui-react';
 
 // App Imports
 import { listify, pluralize } from '@app/common/utilities';
@@ -19,6 +30,7 @@ import ConfirmModal from '@app/public/components/modules/ConfirmModal';
 
 interface EventModalProps {
   ableToRegister: React.ReactElement<any> | true;
+  onSuccess: () => void;
   event: VPEvent;
   refresh: () => PromiseLike<any>;
 }
@@ -28,6 +40,7 @@ interface EventModalState {
   selectedShifts: number[];
   notes: string | number;
   submitting: boolean;
+  message: Message;
 }
 
 export default class EventModal extends React.Component<EventModalProps, EventModalState> {
@@ -39,6 +52,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
       selectedShifts: [],
       notes: '',
       submitting: false,
+      message: null,
     };
 
     this.handleOpen = this.handleOpen.bind(this);
@@ -58,10 +72,19 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
           },
         ),
       )
-      .then(() => {
-        this.props.refresh();
-        this.handleClose();
-        this.setState({ selectedShifts: [], submitting: false });
+      .then(res => {
+        if (res.data.status === 'success') {
+          this.props.onSuccess();
+          this.handleClose();
+        } else {
+          this.setState({
+            message: { message: res.data.error, more: res.data.details, severity: 'negative' },
+          });
+        }
+      })
+      .then(this.props.refresh)
+      .finally(() => {
+        this.setState({ submitting: false });
       });
   }
 
@@ -113,6 +136,13 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
         <Modal.Header>Signup - {this.props.event.name}</Modal.Header>
         <Modal.Content>
           <Segment vertical>
+            {this.state.message && (
+              <Message
+                header={this.state.message.message}
+                content={this.state.message.more}
+                {...{ [this.state.message.severity]: true }}
+              />
+            )}
             <ReactMarkdown source={this.props.event.description} />
           </Segment>
           <Segment vertical>
