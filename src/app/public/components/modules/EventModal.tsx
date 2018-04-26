@@ -186,6 +186,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               <Form.TextArea
                 label="Additional information (check event and shift descriptions to see if you need to specify anything)"
                 value={this.state.notes}
+                required={this.props.event.notes}
                 onChange={(e, { value }) => this.setState({ notes: value })}
               />
             </Form>
