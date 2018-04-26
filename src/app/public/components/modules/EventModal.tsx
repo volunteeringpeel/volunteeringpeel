@@ -58,8 +58,11 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
           },
         ),
       )
-      .then(this.props.refresh)
-      .then(() => this.setState({ selectedShifts: [], submitting: false }));
+      .then(() => {
+        this.props.refresh();
+        this.handleClose();
+        this.setState({ selectedShifts: [], submitting: false });
+      });
   }
 
   public render() {
