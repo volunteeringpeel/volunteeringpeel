@@ -53,6 +53,7 @@ export const eventQuery = (authorized: boolean) => async (
       return {
         ...event,
         active: !!event.active, // Convert to boolean
+        notes: !!event.notes,
         shifts: shifts.map((shift: any) => ({
           ...shift,
           meals: shift.meals.split(','),
