@@ -17,6 +17,9 @@ import {
 // App Imports
 import { timeFormat } from '@app/common/utilities';
 
+// Component Imports
+import FancyTable from '@app/common/components/FancyTable';
+
 interface UserDashboardProps {
   user: UserState;
   loading: boolean;
@@ -59,40 +62,30 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
         <Segment style={{ padding: '2em 0' }} vertical>
           <Header as="h2" content="Events" />
           {this.props.user.user.userShifts.length > 0 ? (
-            <Table compact celled definition>
-              <Table.Header>
-                <Table.Row>
-                  <Table.HeaderCell />
-                  <Table.HeaderCell>Status</Table.HeaderCell>
-                  <Table.HeaderCell>Event</Table.HeaderCell>
-                  <Table.HeaderCell>Shift</Table.HeaderCell>
-                  <Table.HeaderCell>Hours</Table.HeaderCell>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {_.map(this.props.user.user.userShifts, userShift => (
-                  <Table.Row key={userShift.user_shift_id}>
-                    <Table.Cell collapsing>
-                      <Button size="mini" primary>
-                        ...
-                      </Button>
-                    </Table.Cell>
-                    <Table.Cell>{userShift.confirmLevel.name}</Table.Cell>
-                    <Table.Cell>{userShift.parentEvent.name}</Table.Cell>
-                    <Table.Cell>{userShift.shift.shift_num}</Table.Cell>
-                    <Table.Cell>
-                      {userShift.letter ? (
-                        <a href={`/upload/${userShift.letter}`} target="_blank">
-                          {userShift.hours}
-                        </a>
-                      ) : (
-                        userShift.hours
-                      )}
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
+            <FancyTable
+              tableData={this.props.user.user.userShifts}
+              headerRow={['Status', 'Event', 'Shift', 'Hours', 'Hours Letter']}
+              filters={[]}
+              renderBodyRow={(userShift: UserShift) => ({
+                key: userShift.user_shift_id,
+                cells: [
+                  userShift.confirmLevel.name,
+                  userShift.parentEvent.name,
+                  userShift.shift.shift_num,
+                  timeFormat(moment.duration(userShift.hours)),
+                  userShift.letter
+                    ? {
+                        key: 'letter',
+                        content: (
+                          <a href={`/upload/${userShift.letter}`} target="_blank">
+                            Download
+                          </a>
+                        ),
+                      }
+                    : 'Not available',
+                ],
+              })}
+            />
           ) : (
             <>
               No events found 😢<br />Sign up for an event!
