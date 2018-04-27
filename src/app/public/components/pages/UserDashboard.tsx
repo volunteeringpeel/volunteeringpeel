@@ -6,6 +6,7 @@ import { Redirect } from 'react-router';
 import {
   Button,
   Container,
+  Form,
   Header,
   Icon,
   Menu,
@@ -32,7 +33,7 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
 
     const confirmedHours = timeFormat(
       _.reduce(
-        _.filter(this.props.user.user.userShifts, userShift => userShift.confirmLevel.id > 100),
+        _.filter(this.props.user.user.userShifts, userShift => userShift.confirmLevel.id >= 100),
         (acc: moment.Duration, event) => acc.add(event.hours),
         moment.duration(),
       ),
@@ -62,30 +63,45 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
         <Segment style={{ padding: '2em 0' }} vertical>
           <Header as="h2" content="Events" />
           {this.props.user.user.userShifts.length > 0 ? (
-            <FancyTable
-              tableData={this.props.user.user.userShifts}
-              headerRow={['Status', 'Event', 'Shift', 'Hours', 'Hours Letter']}
-              filters={[]}
-              renderBodyRow={(userShift: UserShift) => ({
-                key: userShift.user_shift_id,
-                cells: [
-                  userShift.confirmLevel.name,
-                  userShift.parentEvent.name,
-                  userShift.shift.shift_num,
-                  timeFormat(moment.duration(userShift.hours)),
-                  userShift.letter
-                    ? {
-                        key: 'letter',
-                        content: (
-                          <a href={`/upload/${userShift.letter}`} target="_blank">
-                            Download
-                          </a>
-                        ),
-                      }
-                    : 'Not available',
-                ],
-              })}
-            />
+            <Form>
+              <FancyTable
+                tableData={this.props.user.user.userShifts}
+                headerRow={['Status', 'Event', 'Shift', 'Hours', 'Hours Letter']}
+                filters={[
+                  {
+                    name: 'confirmed',
+                    description: 'Confirmed',
+                    filter: userShift => userShift.confirmLevel.id >= 100,
+                  },
+                  {
+                    name: 'letter',
+                    description: 'Has hours letter',
+                    filter: userShift => !!userShift.letter,
+                  },
+                ]}
+                renderBodyRow={(userShift: UserShift) => ({
+                  key: userShift.user_shift_id,
+                  positive: userShift.confirmLevel.id >= 100,
+                  negative: userShift.confirmLevel.id < 0,
+                  cells: [
+                    userShift.confirmLevel.name,
+                    userShift.parentEvent.name,
+                    userShift.shift.shift_num,
+                    timeFormat(moment.duration(userShift.hours)),
+                    userShift.letter
+                      ? {
+                          key: 'letter',
+                          content: (
+                            <a href={`/upload/${userShift.letter}`} target="_blank">
+                              Download
+                            </a>
+                          ),
+                        }
+                      : 'Not available',
+                  ],
+                })}
+              />
+            </Form>
           ) : (
             <>
               No events found 😢<br />Sign up for an event!
