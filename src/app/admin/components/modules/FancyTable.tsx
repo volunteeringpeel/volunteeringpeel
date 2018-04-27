@@ -14,7 +14,7 @@ interface FancyTableProps<T> {
   filters: { name: string; description: string; filter: ((input: T) => boolean) }[];
   tableData: T[];
   headerRow: Renderable[];
-  renderBodyRow: (data: T) => TableRowProps;
+  renderBodyRow: (data: T, i: number) => TableRowProps;
 }
 
 interface FancyTableState<T> {
@@ -105,13 +105,14 @@ export default class FancyTable<T> extends React.Component<
           />
         </Form.Field>
         <Table
+          {...this.props}
           tableData={filteredData}
           compact
           celled
           headerRow={_.filter(this.props.headerRow, (__, i) => !this.state.hidden.has(i))}
-          renderBodyRow={data => {
-            const row = this.props.renderBodyRow(data);
-            return { ...row, cells: _.filter(row.cells, (__, i) => !this.state.hidden.has(i)) };
+          renderBodyRow={(data, i) => {
+            const row = this.props.renderBodyRow(data, i);
+            return { ...row, cells: _.filter(row.cells, (__, ix) => !this.state.hidden.has(+ix)) };
           }}
         />
       </>
