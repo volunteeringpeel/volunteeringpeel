@@ -7,7 +7,7 @@ import { Route, RouteComponentProps } from 'react-router';
 import { Button, Dropdown, Form, Header, Label, Menu, Segment, Table } from 'semantic-ui-react';
 
 // Component Imports
-import FancyTable from '@app/admin/components/modules/FancyTable';
+import FancyTable from '@app/common/components/FancyTable';
 
 // Controller Imports
 import UserModal from '@app/admin/controllers/modules/UserModal';

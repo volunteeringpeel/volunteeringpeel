@@ -14,7 +14,7 @@ import { Button, Dropdown, DropdownItemProps, Form, Table } from 'semantic-ui-re
 import { formatDateForMySQL, timeFormat } from '@app/common/utilities';
 
 // Component Imports
-import FancyTable from '@app/admin/components/modules/FancyTable';
+import FancyTable from '@app/common/components/FancyTable';
 
 interface AttendanceProps {
   addMessage: (message: Message) => any;
