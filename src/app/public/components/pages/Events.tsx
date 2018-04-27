@@ -16,6 +16,7 @@ import EventModal from '@app/public/controllers/modules/EventModal';
 
 interface EventsProps {
   loadUser: () => void;
+  addMessage: (message: Message) => any;
 }
 
 interface EventsState {
@@ -110,7 +111,31 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                           size="small"
                         />
                         <br />
-                        <EventModal event={event} refresh={this.refresh} />
+                        <EventModal
+                          event={event}
+                          refresh={this.refresh}
+                          onSuccess={() => {
+                            this.props.addMessage({
+                              message: 'Signup successful',
+                              more: (
+                                <>
+                                  Thank you for signing up for an event! Here are some next steps
+                                  you can think about:
+                                  <ul>
+                                    <li>
+                                      We will be sending a confirmation email, please make sure you
+                                      get it
+                                    </li>
+                                    <li>You will receive a phone call prior to the event</li>
+                                    <li>Idk man do something</li>
+                                  </ul>
+                                </>
+                              ),
+                              severity: 'positive',
+                            });
+                            window.scrollTo(0, 0);
+                          }}
+                        />
                       </Item.Extra>
                     </Item.Content>
                   </Item>

@@ -7,7 +7,18 @@ import * as moment from 'moment';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
-import { Button, Dimmer, Form, Header, Icon, Item, Label, Segment } from 'semantic-ui-react';
+import { Action } from 'redux-actions';
+import {
+  Button,
+  Dimmer,
+  Form,
+  Header,
+  Icon,
+  Item,
+  Label,
+  Message,
+  Segment,
+} from 'semantic-ui-react';
 
 // App Imports
 import { listify, pluralize } from '@app/common/utilities';
@@ -19,6 +30,7 @@ import ConfirmModal from '@app/public/components/modules/ConfirmModal';
 
 interface EventModalProps {
   ableToRegister: React.ReactElement<any> | true;
+  onSuccess: () => void;
   event: VPEvent;
   refresh: () => PromiseLike<any>;
 }
@@ -28,6 +40,7 @@ interface EventModalState {
   selectedShifts: number[];
   notes: string | number;
   submitting: boolean;
+  message: Message;
 }
 
 export default class EventModal extends React.Component<EventModalProps, EventModalState> {
@@ -39,6 +52,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
       selectedShifts: [],
       notes: '',
       submitting: false,
+      message: null,
     };
 
     this.handleOpen = this.handleOpen.bind(this);
@@ -52,14 +66,31 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
       .then(() =>
         axios.post(
           `/api/signup`,
-          { shifts: this.state.selectedShifts },
+          {
+            shifts: _.map(
+              this.state.selectedShifts,
+              num => _.find(this.props.event.shifts, ['shift_num', num]).shift_id,
+            ),
+          },
           {
             headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
           },
         ),
       )
+      .then(res => {
+        if (res.data.status === 'success') {
+          this.props.onSuccess();
+          this.handleClose();
+        } else {
+          this.setState({
+            message: { message: res.data.error, more: res.data.details, severity: 'negative' },
+          });
+        }
+      })
       .then(this.props.refresh)
-      .then(() => this.setState({ selectedShifts: [], submitting: false }));
+      .finally(() => {
+        this.setState({ submitting: false });
+      });
   }
 
   public render() {
@@ -110,6 +141,13 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
         <Modal.Header>Signup - {this.props.event.name}</Modal.Header>
         <Modal.Content>
           <Segment vertical>
+            {this.state.message && (
+              <Message
+                header={this.state.message.message}
+                content={this.state.message.more}
+                {...{ [this.state.message.severity]: true }}
+              />
+            )}
             <ReactMarkdown source={this.props.event.description} />
           </Segment>
           <Segment vertical>
@@ -163,7 +201,8 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                         <br />
                         <Button
                           animated
-                          disabled={shiftFull || shift.signed_up}
+                          disabled={shiftFull || shift.signed_up || this.state.submitting}
+                          loading={selected && this.state.submitting}
                           floated="right"
                           primary
                           basic={!selected}
@@ -186,6 +225,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               <Form.TextArea
                 label="Additional information (check event and shift descriptions to see if you need to specify anything)"
                 value={this.state.notes}
+                required={this.props.event.notes}
                 onChange={(e, { value }) => this.setState({ notes: value })}
               />
             </Form>
@@ -197,13 +237,20 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               {ableToRegister}
             </Header>
           </Dimmer>
-          <Button onClick={this.handleClose}>Cancel</Button>
+          <Button onClick={this.handleClose} disabled={this.state.submitting}>
+            Cancel
+          </Button>
           <ConfirmModal
             content={confirmText}
             header={`Sign Up for ${this.props.event.name}`}
             yes={() => this.submit()}
             button={
-              <Button animated positive disabled={this.state.selectedShifts.length === 0}>
+              <Button
+                animated
+                positive
+                disabled={this.state.selectedShifts.length === 0 || this.state.submitting}
+                loading={this.state.submitting}
+              >
                 <Button.Content visible>Sign up!</Button.Content>
                 <Button.Content hidden>
                   <Icon name="arrow right" />
