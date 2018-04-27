@@ -122,13 +122,22 @@ export const editEvent = API.asyncMiddleware(async (req, res) => {
       if (err) return res.error(500, 'Error creating shift', err);
     } else {
       // Update shift
-      let changedRows;
-      [err, { changedRows }] = await to(
+      let affectedRows;
+      [err, { affectedRows }] = await to(
         req.db.query('UPDATE shift SET ? WHERE shift_id = ?', [values, shift.shift_id]),
       );
-      if (err || changedRows !== 1) return res.error(500, 'Error updating shift', err);
+      if (err || affectedRows !== 1) return res.error(500, 'Error updating shift', err);
     }
   });
+
+  // Handle uploaded hours letter
+  if (req.file) {
+    let affectedRows;
+    [err, { affectedRows }] = await to(
+      req.db.query('UPDATE event SET letter = ? WHERE event_id = ?', [req.file.filename, eventID]),
+    );
+    if (err || affectedRows !== 1) return res.error(500, 'Error handling hours letter upload');
+  }
 
   res.success(
     `Event ${eventID === -1 ? 'added' : 'updated'} successfully`,

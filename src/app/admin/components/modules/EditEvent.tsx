@@ -30,6 +30,7 @@ interface EditEventState {
   shifts: Shift[];
   selectedShiftNum: number;
   deleteShifts: number[];
+  letter: File;
 }
 
 export default class EditEvent extends React.Component<EditEventProps, EditEventState> {
@@ -46,6 +47,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       notes: props.originalEvent.notes,
       selectedShiftNum: null,
       deleteShifts: [],
+      letter: null,
     };
   }
 
@@ -66,7 +68,8 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   }
 
   public handleChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
-    this.setState({ [name]: value || checked });
+    if (name === 'letter') this.setState({ letter: (e.target as HTMLInputElement).files[0] });
+    else this.setState({ [name]: value || checked });
   };
 
   public handleAddShift = () => {
@@ -158,6 +161,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       })),
     };
     for (const value in values) data.append(value, JSON.stringify(values[value]));
+    if (this.state.letter) data.append('letter', this.state.letter);
     Promise.resolve(this.props.loading(true))
       .then(() =>
         axios.post(`/api/event/${this.props.originalEvent.event_id}`, data, {
@@ -264,6 +268,13 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
             onChange={this.handleChange}
           />
         </Form.Group>
+        <Form.Input
+          fluid
+          label="Upload hours letter"
+          name="letter"
+          type="file"
+          onChange={this.handleChange}
+        />
         <Menu attached="top" tabular>
           {_.map(shifts, shift => (
             <Menu.Item
