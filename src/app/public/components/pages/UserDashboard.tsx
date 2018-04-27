@@ -24,7 +24,8 @@ interface UserDashboardProps {
 
 export default class UserDashboard extends React.Component<UserDashboardProps> {
   public render() {
-    if (this.props.user.status !== 'in') return <Redirect to="/" />;
+    if (this.props.user.status === 'out') return <Redirect to="/" />;
+    if (this.props.user.status === 'loading') return null;
 
     const confirmedHours = timeFormat(
       _.reduce(
@@ -76,10 +77,18 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
                         ...
                       </Button>
                     </Table.Cell>
-                    <Table.Cell>{_.lowerCase(userShift.confirmLevel.name)}</Table.Cell>
+                    <Table.Cell>{userShift.confirmLevel.name}</Table.Cell>
                     <Table.Cell>{userShift.parentEvent.name}</Table.Cell>
                     <Table.Cell>{userShift.shift.shift_num}</Table.Cell>
-                    <Table.Cell>{userShift.hours}</Table.Cell>
+                    <Table.Cell>
+                      {userShift.letter ? (
+                        <a href={`/upload/${userShift.letter}`} target="_blank">
+                          {userShift.hours}
+                        </a>
+                      ) : (
+                        userShift.hours
+                      )}
+                    </Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>

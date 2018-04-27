@@ -96,7 +96,7 @@ export const getCurrentUser = API.asyncMiddleware(async (req, res) => {
         confirm_level_id, confirm_level, confirm_description,
         shift_id, shift_num,
         start_time, end_time, hours, meals, notes
-        event_id, name, address, transport, description
+        event_id, name, address, transport, description, letter
       FROM vw_user_shift WHERE user_id = ?`,
       [out.user.user_id],
     ),
@@ -110,6 +110,7 @@ export const getCurrentUser = API.asyncMiddleware(async (req, res) => {
       description: userShift.confirm_description,
     },
     hours: userShift.hours,
+    letter: userShift.letter,
     shift: {
       shift_id: +userShift.shift_id,
       shift_num: +userShift.shift_num,
