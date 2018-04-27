@@ -8,7 +8,7 @@ import * as mysql from 'promise-mysql';
 // Import API core
 import * as API from '@api/api';
 
-export async function getMailingList(req: Express.Request, res: Express.Response) {
+export const getMailingList = API.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err, results;
@@ -37,18 +37,18 @@ export async function getMailingList(req: Express.Request, res: Express.Response
   }));
 
   res.success(lists, 200);
-}
+});
 
-export async function deleteMailingList(req: Express.Request, res: Express.Response) {
+export const deleteMailingList = API.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err;
   [err] = await to(req.db.query('DELETE FROM mail_list WHERE mail_list_id = ?', +req.params.id));
   if (err) return res.error(500, 'Error deleting mail list', err);
   res.success('Mail list deleted successfully', 200);
-}
+});
 
-export async function updateMailingList(req: Express.Request, res: Express.Response) {
+export const updateMailingList = API.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err;
@@ -70,9 +70,9 @@ export async function updateMailingList(req: Express.Request, res: Express.Respo
   );
   if (err) return res.error(500, 'Error creating mail list', err);
   res.success('Mail list updated successfully', 200);
-}
+});
 
-export async function signup(req: Express.Request, res: Express.Response) {
+export const signup = API.asyncMiddleware(async (req, res) => {
   let err;
 
   let userID: number;
@@ -98,4 +98,4 @@ export async function signup(req: Express.Request, res: Express.Response) {
   } else {
     res.error(500, 'This should not happen.', null);
   }
-}
+});

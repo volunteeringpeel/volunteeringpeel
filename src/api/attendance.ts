@@ -8,7 +8,7 @@ import * as mysql from 'promise-mysql';
 // API Imports
 import * as API from '@api/api';
 
-export async function getAttendance(req: Express.Request, res: Express.Response) {
+export const getAttendance = API.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   // grab user's first and last name as well as vw_user_shift
@@ -65,9 +65,9 @@ export async function getAttendance(req: Express.Request, res: Express.Response)
       text: `${exec.first_name} ${exec.last_name}`,
     })),
   });
-}
+});
 
-export async function updateAttendance(req: Express.Request, res: Express.Response) {
+export const updateAttendance = API.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err;
@@ -91,4 +91,4 @@ export async function updateAttendance(req: Express.Request, res: Express.Respon
   });
 
   res.success(`Attendance updated successfully`, 200);
-}
+});
