@@ -37,11 +37,7 @@ export default class Team extends React.Component<TeamProps, TeamState> {
           <Card.Group>
             {_.map(this.state.execs, exec => (
               <Card key={exec.user_id}>
-                <Image
-                  src={`http://volunteeringpeel.org/images/execPortraits/2017/${exec.first_name}${
-                    exec.last_name
-                  }2017.JPG`}
-                />
+                {exec.pic && <Image src={`/upload/${exec.pic}`} />}
                 <Card.Content>
                   <Card.Header>
                     {exec.first_name} {exec.last_name}

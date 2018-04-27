@@ -42,7 +42,7 @@ if (process.env.NODE_ENV !== 'production') {
 // this is important because later we'll need to access file path
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, global.appDir + '/img');
+    cb(null, global.appDir + '/upload');
   },
   filename(req, file, cb) {
     cb(null, `${file.fieldname}-${Date.now()}-${file.originalname}`);
@@ -142,7 +142,9 @@ api.get('/public/faq', async (req, res) => {
 api.get('/public/execs', async (req, res) => {
   let err, execs;
   [err, execs] = await to(
-    req.db.query('SELECT user_id, first_name, last_name, title, bio FROM user WHERE role_id = 3'),
+    req.db.query(
+      'SELECT user_id, first_name, last_name, title, bio, pic FROM user WHERE role_id = 3',
+    ),
   );
   if (err) return res.error(500, 'Error retrieving executive data', err);
   res.success(execs, 200);

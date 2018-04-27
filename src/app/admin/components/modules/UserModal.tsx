@@ -4,7 +4,7 @@ import * as Promise from 'bluebird';
 import immutabilityHelper from 'immutability-helper';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Button, Form, Modal } from 'semantic-ui-react';
+import { Button, Form, Image, Modal } from 'semantic-ui-react';
 
 // Controller Imports
 import MessageBox from '@app/common/controllers/MessageBox';
@@ -171,6 +171,7 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
                   onChange={this.handleChange}
                   required
                 />
+                <Image src={`/upload/${(this.props.user as Exec).pic}`} size="tiny" />
                 <Form.Input
                   label="Picture"
                   data-tooltip="Maximum size 1 MB, type PNG or JPG"
