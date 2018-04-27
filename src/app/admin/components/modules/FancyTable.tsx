@@ -20,6 +20,8 @@ interface FancyTableProps<T> {
 interface FancyTableState<T> {
   filters: { [name: string]: number };
   hidden: Set<number>;
+  sortCol: number;
+  sortDir: 'ascending' | 'descending';
 }
 
 export default class FancyTable<T> extends React.Component<
@@ -32,8 +34,27 @@ export default class FancyTable<T> extends React.Component<
     this.state = {
       filters: {},
       hidden: new Set(),
+      sortCol: null,
+      sortDir: 'ascending',
     };
   }
+
+  public handleSort = (i: number) => () => {
+    const { sortCol, sortDir } = this.state;
+
+    if (i !== sortCol) {
+      this.setState({
+        sortCol: i,
+        sortDir: 'ascending',
+      });
+
+      return;
+    }
+
+    this.setState({
+      sortDir: sortDir === 'ascending' ? 'descending' : 'ascending',
+    });
+  };
 
   public render() {
     const updateFilter = (filter: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -109,7 +130,18 @@ export default class FancyTable<T> extends React.Component<
           tableData={filteredData}
           compact
           celled
-          headerRow={_.filter(this.props.headerRow, (__, i) => !this.state.hidden.has(i))}
+          sortable
+          headerRow={_.map(
+            _.filter(this.props.headerRow, (__, i) => !this.state.hidden.has(i)),
+            (header, i) => (
+              <Table.HeaderCell
+                key={i}
+                content={header}
+                sorted={this.state.sortCol === i ? this.state.sortDir : null}
+                onClick={this.handleSort(i)}
+              />
+            ),
+          )}
           renderBodyRow={(data, i) => {
             const row = this.props.renderBodyRow(data, i);
             return { ...row, cells: _.filter(row.cells, (__, ix) => !this.state.hidden.has(+ix)) };
