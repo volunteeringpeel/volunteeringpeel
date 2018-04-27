@@ -69,7 +69,10 @@ export const eventQuery = (authorized: boolean) => async (
 export async function editEvent(req: Express.Request, res: Express.Response) {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
-  const { name, description, transport, address, active, notes, shifts, deleteShifts } = req.body;
+  const params: any = {};
+  for (const param in req.body) params[param] = JSON.parse(req.body[param]);
+
+  const { name, description, transport, address, active, notes, shifts, deleteShifts } = params;
   let err,
     eventID = +req.params.id;
 

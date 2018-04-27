@@ -141,29 +141,28 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   };
 
   public handleSubmit = () => {
+    const data = new FormData();
+    const values: any = {
+      name: this.state.name,
+      description: this.state.description,
+      address: this.state.address,
+      transport: this.state.transport,
+      active: this.state.active,
+      notes: this.state.notes,
+      deleteShifts: this.state.deleteShifts,
+      shifts: _.map(this.state.shifts, shift => ({
+        ...shift,
+        // format start and end times for MySQL insertion (should probably be done on backend but oh well)
+        start_time: formatDateForMySQL(new Date(shift.start_time)),
+        end_time: formatDateForMySQL(new Date(shift.end_time)),
+      })),
+    };
+    for (const value in values) data.append(value, JSON.stringify(values[value]));
     Promise.resolve(this.props.loading(true))
       .then(() =>
-        axios.post(
-          `/api/event/${this.props.originalEvent.event_id}`,
-          {
-            name: this.state.name,
-            description: this.state.description,
-            address: this.state.address,
-            transport: this.state.transport,
-            active: this.state.active,
-            notes: this.state.notes,
-            deleteShifts: this.state.deleteShifts,
-            shifts: _.map(this.state.shifts, shift => ({
-              ...shift,
-              // format start and end times for MySQL insertion (should probably be done on backend but oh well)
-              start_time: formatDateForMySQL(new Date(shift.start_time)),
-              end_time: formatDateForMySQL(new Date(shift.end_time)),
-            })),
-          },
-          {
-            headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
-          },
-        ),
+        axios.post(`/api/event/${this.props.originalEvent.event_id}`, data, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+        }),
       )
       .then(res => {
         this.props.addMessage({ message: res.data.data, severity: 'positive' });

@@ -165,7 +165,7 @@ api.get('/event', EventAPI.eventQuery(true));
 // Endpoint doesn't require JWT (i.e. not logged in)
 api.get('/public/event', EventAPI.eventQuery(false));
 // Edit event
-api.post('/event/:id', EventAPI.editEvent);
+api.post('/event/:id', upload.single('letter'), EventAPI.editEvent);
 // Delete event
 api.delete('/event/:id', EventAPI.deleteEvent);
 
