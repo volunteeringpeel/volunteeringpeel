@@ -5,6 +5,7 @@ import * as Express from 'express';
 import * as jwt from 'express-jwt';
 import * as jwksRsa from 'jwks-rsa';
 import * as _ from 'lodash';
+import * as multer from 'multer';
 import * as mysql from 'promise-mysql';
 
 // Import sub-APIs
@@ -36,6 +37,19 @@ if (process.env.NODE_ENV !== 'production') {
     next();
   });
 }
+
+// configuring Multer to use files directory for storing files
+// this is important because later we'll need to access file path
+const storage = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, global.appDir + '/upload');
+  },
+  filename(req, file, cb) {
+    cb(null, `${file.fieldname}-${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage });
 
 const checkJwt = jwt({
   // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
@@ -96,7 +110,7 @@ api.use((err: any, req: Express.Request, res: Express.Response, next: Express.Ne
 // Get all users
 api.get('/user', UserAPI.getAllUsers);
 // Create or update user
-api.post('/user/:id', UserAPI.updateUser);
+api.post('/user/:id', upload.single('pic'), UserAPI.updateUser);
 // Delete user
 api.delete('/user/:id', UserAPI.deleteUser);
 // Get current user
@@ -128,7 +142,9 @@ api.get('/public/faq', async (req, res) => {
 api.get('/public/execs', async (req, res) => {
   let err, execs;
   [err, execs] = await to(
-    req.db.query('SELECT user_id, first_name, last_name, title, bio FROM user WHERE role_id = 3'),
+    req.db.query(
+      'SELECT user_id, first_name, last_name, title, bio, pic FROM user WHERE role_id = 3',
+    ),
   );
   if (err) return res.error(500, 'Error retrieving executive data', err);
   res.success(execs, 200);

@@ -4,7 +4,10 @@ import * as Promise from 'bluebird';
 import { LocationDescriptor } from 'history';
 import * as React from 'react';
 import { Route, RouteComponentProps } from 'react-router';
-import { Button, Dropdown, Header, Label, Menu, Segment, Table } from 'semantic-ui-react';
+import { Button, Dropdown, Form, Header, Label, Menu, Segment, Table } from 'semantic-ui-react';
+
+// Component Imports
+import FancyTable from '@app/admin/components/modules/FancyTable';
 
 // Controller Imports
 import UserModal from '@app/admin/controllers/modules/UserModal';
@@ -80,14 +83,9 @@ export default class Events extends React.Component<
   }
 
   public render() {
-    const headerRow = [
-      '',
-      'First Name',
-      'Last Name',
-      'Email',
-      'Phone 1',
-      'Phone 2',
-      <th key="add">
+    const headerRow = ['Role', 'First Name', 'Last Name', 'Email', 'Phone 1', 'Phone 2', 'Actions'];
+    const footerRow = [
+      <th colSpan={headerRow.length}>
         <Button
           size="mini"
           content="Add"
@@ -145,14 +143,13 @@ export default class Events extends React.Component<
       ],
     });
     return (
-      <>
-        <Table
-          compact
-          celled
-          definition
+      <Form>
+        <FancyTable
           headerRow={headerRow}
           renderBodyRow={renderBodyRow}
           tableData={this.state.users}
+          footerRow={footerRow}
+          filters={[{ name: 'exec', description: 'Execs', filter: user => user.role_id === 3 }]}
         />
         {this.state.users.length && (
           <Route
@@ -179,7 +176,7 @@ export default class Events extends React.Component<
             )}
           />
         )}
-      </>
+      </Form>
     );
   }
 }

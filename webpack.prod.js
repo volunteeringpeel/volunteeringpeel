@@ -86,7 +86,7 @@ module.exports = merge(common, {
   },
   plugins: [
     // delete old files
-    new CleanWebpackPlugin([path.resolve(__dirname, 'dist', 'app')]),
+    new CleanWebpackPlugin([path.resolve(__dirname, 'dist', 'app')], { exclude: ['upload'] }),
     // use special module ids for caching
     new webpack.HashedModuleIdsPlugin(),
     new ExtractTextPlugin('style.css'), // make sure css is separate from js

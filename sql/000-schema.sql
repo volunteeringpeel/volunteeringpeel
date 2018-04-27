@@ -53,6 +53,7 @@ create table if not exists user (
   phone_2     varchar(15)                                       comment 'Phone contact #2 (for volunteers)',
   title       varchar(32)                                       comment 'For execs, title',
   bio         text                                              comment 'For execs, bio for about page',
+  pic         varchar(256)                                      comment 'For execs, pic path',
   foreign key fk_user_role (role_id) references role(role_id)
 );
 

@@ -17,7 +17,7 @@ export async function getAllUsers(req: Express.Request, res: Express.Response) {
       user_id, role_id,
       first_name, last_name,
       email, phone_1, phone_2,
-      title, bio
+      title, bio, pic
     FROM user`),
   );
   if (err) return res.error(500, 'Error getting user data', err);
@@ -54,7 +54,7 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
           user_id,
           first_name, last_name, email,
           phone_1, phone_2, role_id,
-          bio, title
+          bio, title, pic
         FROM user WHERE email = ?`,
         [req.user.email],
       )
@@ -198,8 +198,9 @@ export async function updateUser(req: Express.Request, res: Express.Response) {
 
     // get parameters from request body
     const { email, role_id }: User = req.body;
+    const pic = req.file ? req.file.filename : null;
 
-    const data = { first_name, last_name, email, phone_1, phone_2, role_id, bio, title };
+    const data = { first_name, last_name, email, phone_1, phone_2, role_id, bio, title, pic };
 
     if (+req.params.id === -1) {
       [err] = await to(req.db.query('INSERT INTO user SET ?', data));
@@ -215,7 +216,11 @@ export async function updateUser(req: Express.Request, res: Express.Response) {
       );
       if (err) return res.error(500, 'Error updating user data', err);
 
-      [err] = await to(Bluebird.resolve(updateUserMailLists(req.params.id, mail_lists, req.db)));
+      [err] = await to(
+        Bluebird.resolve(
+          updateUserMailLists(req.params.id, JSON.parse(req.body.mail_lists), req.db),
+        ),
+      );
       if (err) return res.error(500, 'Error updating mail lists', err);
     }
 

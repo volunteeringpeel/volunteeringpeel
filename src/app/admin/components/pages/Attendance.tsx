@@ -13,6 +13,9 @@ import { Button, Dropdown, DropdownItemProps, Form, Table } from 'semantic-ui-re
 // App Imports
 import { formatDateForMySQL, timeFormat } from '@app/common/utilities';
 
+// Component Imports
+import FancyTable from '@app/admin/components/modules/FancyTable';
+
 interface AttendanceProps {
   addMessage: (message: Message) => any;
   loading: (status: boolean) => any;
@@ -26,8 +29,6 @@ interface AttendanceState {
   activeEntry: number;
   execList: DropdownItemProps[];
   confirmLevels: ConfirmLevel[];
-  hidden: Set<number>;
-  filter: { [filter: string]: number }; // -1 for exclude, 0 for off, 1 for on
 }
 
 interface AttendanceEntry {
@@ -67,8 +68,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       execList: [],
       activeData: [],
       activeEntry: null,
-      hidden: new Set(),
-      filter: { mine: 0, unconfirmed: 0 },
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -197,46 +196,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       'Assigned Exec',
     ];
 
-    const filters: {
-      name: string;
-      description: string;
-      filter: (entry: AttendanceEntry) => boolean;
-    }[] = [
-      {
-        name: 'mine',
-        description: 'Assigned to me',
-        filter: __ => __.assigned_exec === this.props.user.user_id,
-      },
-      {
-        name: 'unconfirmed',
-        description: 'Unconfirmed',
-        filter: __ => __.confirm_level_id <= 0,
-      },
-    ];
-
-    const activeFilters = _.filter(filters, filter => this.state.filter[filter.name] === 1);
-    const excludeFilters = _.filter(filters, filter => this.state.filter[filter.name] === -1);
-
-    const filteredData = _.reduce(
-      excludeFilters,
-      (acc, filter) => _.filter(acc, __ => !filter.filter(__)),
-      _.reduce(activeFilters, (acc, filter) => _.filter(acc, filter.filter), this.state.activeData),
-    );
-
-    const updateFilter = (filter: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this.setState(
-        update(this.state, {
-          filter: {
-            [filter]: {
-              $set: this.state.filter[filter] === 1 ? -1 : this.state.filter[filter] === 0 ? 1 : 0,
-            },
-          },
-        }),
-      );
-    };
-
     return (
       <Form onSubmit={this.handleSubmit}>
         <Form.Field>
@@ -256,175 +215,137 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
           />
         </Form.Field>
         {this.state.activeEntry && (
-          <>
-            <Form.Field inline>
-              <label>Columns:</label>
-              <Button.Group
-                buttons={_.map(columns, (column, i) => {
-                  const hidden = this.state.hidden.has(i);
-                  return {
-                    key: i,
-                    content: column,
-                    positive: !hidden,
-                    onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      this.setState(
-                        update(this.state, {
-                          hidden: {
-                            [hidden ? '$remove' : '$add']: [i],
-                          },
-                        }),
-                      );
-                    },
-                  };
-                })}
-              />
-            </Form.Field>
-            <Form.Field inline>
-              <label>Filters:</label>
-              <Button.Group
-                buttons={_.map(filters, filter => ({
-                  key: filter.name,
-                  content: filter.description,
-                  positive: this.state.filter[filter.name] === 1,
-                  negative: this.state.filter[filter.name] === -1,
-                  onClick: updateFilter(filter.name),
-                }))}
-              />
-            </Form.Field>
-            <Table
-              compact
-              celled
-              headerRow={_.filter(columns, (__, i) => !this.state.hidden.has(i))}
-              renderBodyRow={(entry: AttendanceEntry) => {
-                const assignedExec = _.find(this.state.execList, ['user_id', entry.assigned_exec]);
-                return {
-                  key: entry.user_shift_id,
-                  cells: _.filter(
-                    [
-                      {
-                        key: 'confirm_level_id',
-                        content: (
-                          <Dropdown
-                            inline
-                            fluid
-                            search
-                            options={statuses}
-                            value={entry.confirm_level_id}
-                            onChange={(e, { value }) =>
-                              this.handleUpdate(entry.user_shift_id, 'confirm_level_id', value)
+          <FancyTable
+            filters={[
+              {
+                name: 'mine',
+                description: 'Assigned to me',
+                filter: __ => __.assigned_exec === this.props.user.user_id,
+              },
+              {
+                name: 'unconfirmed',
+                description: 'Unconfirmed',
+                filter: __ => __.confirm_level_id <= 0,
+              },
+            ]}
+            headerRow={columns}
+            tableData={this.state.activeData}
+            renderBodyRow={(entry: AttendanceEntry) => {
+              const assignedExec = _.find(this.state.execList, ['user_id', entry.assigned_exec]);
+              return {
+                key: entry.user_shift_id,
+                cells: [
+                  {
+                    key: 'confirm_level_id',
+                    content: (
+                      <Dropdown
+                        inline
+                        fluid
+                        search
+                        options={statuses}
+                        value={entry.confirm_level_id}
+                        onChange={(e, { value }) =>
+                          this.handleUpdate(entry.user_shift_id, 'confirm_level_id', value)
+                        }
+                      />
+                    ),
+                  },
+                  entry.user.first_name,
+                  entry.user.last_name,
+                  {
+                    key: 'phone_numbers',
+                    content: (
+                      <span>
+                        <a href={`tel:${entry.user.phone_1}`}>{entry.user.phone_1}</a>
+                        <br />
+                        <a href={`tel:${entry.user.phone_2}`}>{entry.user.phone_2}</a>
+                      </span>
+                    ),
+                  },
+                  {
+                    key: 'email',
+                    content: <a href={`mailto:${entry.user.email}`}>{entry.user.email}</a>,
+                  },
+                  {
+                    key: 'time',
+                    content: (
+                      <>
+                        <DateTimePicker
+                          value={new Date(entry.start_time)}
+                          onChange={value =>
+                            this.handleUpdate(
+                              entry.user_shift_id,
+                              'start_time',
+                              value.toISOString(),
+                            )
+                          }
+                        />
+                        <DateTimePicker
+                          value={new Date(entry.end_time)}
+                          onChange={value =>
+                            this.handleUpdate(entry.user_shift_id, 'end_time', value.toISOString())
+                          }
+                        />
+                      </>
+                    ),
+                  },
+                  {
+                    key: 'hours',
+                    content: (
+                      <>
+                        {timeFormat(moment.duration(moment(entry.end_time).diff(entry.start_time)))}{' '}
+                        +
+                        <Form.Input
+                          inline
+                          fluid
+                          type="text"
+                          size="mini"
+                          pattern="-?[0-9]+(:[0-9]{2})?(:[0-9]{2})?"
+                          value={entry.hours_override || ''}
+                          placeholder="00:00"
+                          onChange={(e, { value }) => {
+                            if (/^-?[0-9]+:?[0-9]{0,2}:?[0-9]{0,2}?$/.test(value)) {
+                              e.currentTarget.setCustomValidity('');
+                              this.handleUpdate(entry.user_shift_id, 'hours_override', value);
+                            } else if (!value) {
+                              // set to '' if empty (because empty doesn't match regex)
+                              this.handleUpdate(entry.user_shift_id, 'hours_override', '');
+                            } else {
+                              e.currentTarget.setCustomValidity('Please type a duration hh:mm');
                             }
-                          />
-                        ),
-                      },
-                      entry.user.first_name,
-                      entry.user.last_name,
-                      {
-                        key: 'phone_numbers',
-                        content: (
-                          <span>
-                            <a href={`tel:${entry.user.phone_1}`}>{entry.user.phone_1}</a>
-                            <br />
-                            <a href={`tel:${entry.user.phone_2}`}>{entry.user.phone_2}</a>
-                          </span>
-                        ),
-                      },
-                      {
-                        key: 'email',
-                        content: <a href={`mailto:${entry.user.email}`}>{entry.user.email}</a>,
-                      },
-                      {
-                        key: 'time',
-                        content: (
-                          <>
-                            <DateTimePicker
-                              value={new Date(entry.start_time)}
-                              onChange={value =>
-                                this.handleUpdate(
-                                  entry.user_shift_id,
-                                  'start_time',
-                                  value.toISOString(),
-                                )
-                              }
-                            />
-                            <DateTimePicker
-                              value={new Date(entry.end_time)}
-                              onChange={value =>
-                                this.handleUpdate(
-                                  entry.user_shift_id,
-                                  'end_time',
-                                  value.toISOString(),
-                                )
-                              }
-                            />
-                          </>
-                        ),
-                      },
-                      {
-                        key: 'hours',
-                        content: (
-                          <>
-                            {timeFormat(
-                              moment.duration(moment(entry.end_time).diff(entry.start_time)),
-                            )}{' '}
-                            +
-                            <Form.Input
-                              inline
-                              fluid
-                              type="text"
-                              size="mini"
-                              pattern="-?[0-9]+(:[0-9]{2})?(:[0-9]{2})?"
-                              value={entry.hours_override || ''}
-                              placeholder="00:00"
-                              onChange={(e, { value }) => {
-                                if (/^-?[0-9]+:?[0-9]{0,2}:?[0-9]{0,2}?$/.test(value)) {
-                                  e.currentTarget.setCustomValidity('');
-                                  this.handleUpdate(entry.user_shift_id, 'hours_override', value);
-                                } else if (!value) {
-                                  // set to '' if empty (because empty doesn't match regex)
-                                  this.handleUpdate(entry.user_shift_id, 'hours_override', '');
-                                } else {
-                                  e.currentTarget.setCustomValidity('Please type a duration hh:mm');
-                                }
-                              }}
-                            />
-                            ={' '}
-                            {timeFormat(
-                              moment
-                                .duration(moment(entry.end_time).diff(entry.start_time))
-                                .add(entry.hours_override),
-                            )}
-                          </>
-                        ),
-                      },
-                      entry.other_shifts,
-                      {
-                        key: 'assigned_exec',
-                        content: (
-                          <Dropdown
-                            inline
-                            fluid
-                            search
-                            options={this.state.execList}
-                            value={entry.assigned_exec}
-                            onChange={(e, { value }) =>
-                              this.handleUpdate(entry.user_shift_id, 'assigned_exec', value)
-                            }
-                          />
-                        ),
-                        positive: entry.assigned_exec === this.props.user.user_id,
-                      },
-                    ],
-                    (__, i) => !this.state.hidden.has(i),
-                  ),
-                  warning: entry.changed,
-                };
-              }}
-              tableData={filteredData}
-            />
-            <Form.Button type="submit">Save</Form.Button>
-          </>
+                          }}
+                        />
+                        ={' '}
+                        {timeFormat(
+                          moment
+                            .duration(moment(entry.end_time).diff(entry.start_time))
+                            .add(entry.hours_override),
+                        )}
+                      </>
+                    ),
+                  },
+                  entry.other_shifts,
+                  {
+                    key: 'assigned_exec',
+                    content: (
+                      <Dropdown
+                        inline
+                        fluid
+                        search
+                        options={this.state.execList}
+                        value={entry.assigned_exec}
+                        onChange={(e, { value }) =>
+                          this.handleUpdate(entry.user_shift_id, 'assigned_exec', value)
+                        }
+                      />
+                    ),
+                    positive: entry.assigned_exec === this.props.user.user_id,
+                  },
+                ],
+                warning: entry.changed,
+              };
+            }}
+          />
         )}
       </Form>
     );
