@@ -30,6 +30,7 @@ interface EditEventState {
   shifts: Shift[];
   selectedShiftNum: number;
   deleteShifts: number[];
+  letter: File;
 }
 
 export default class EditEvent extends React.Component<EditEventProps, EditEventState> {
@@ -46,6 +47,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       notes: props.originalEvent.notes,
       selectedShiftNum: null,
       deleteShifts: [],
+      letter: null,
     };
   }
 
@@ -66,7 +68,8 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   }
 
   public handleChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
-    this.setState({ [name]: value || checked });
+    if (name === 'letter') this.setState({ letter: (e.target as HTMLInputElement).files[0] });
+    else this.setState({ [name]: value || checked });
   };
 
   public handleAddShift = () => {
@@ -141,29 +144,29 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   };
 
   public handleSubmit = () => {
+    const data = new FormData();
+    const values: any = {
+      name: this.state.name,
+      description: this.state.description,
+      address: this.state.address,
+      transport: this.state.transport,
+      active: this.state.active,
+      notes: this.state.notes,
+      deleteShifts: this.state.deleteShifts,
+      shifts: _.map(this.state.shifts, shift => ({
+        ...shift,
+        // format start and end times for MySQL insertion (should probably be done on backend but oh well)
+        start_time: formatDateForMySQL(new Date(shift.start_time)),
+        end_time: formatDateForMySQL(new Date(shift.end_time)),
+      })),
+    };
+    for (const value in values) data.append(value, JSON.stringify(values[value]));
+    if (this.state.letter) data.append('letter', this.state.letter);
     Promise.resolve(this.props.loading(true))
       .then(() =>
-        axios.post(
-          `/api/event/${this.props.originalEvent.event_id}`,
-          {
-            name: this.state.name,
-            description: this.state.description,
-            address: this.state.address,
-            transport: this.state.transport,
-            active: this.state.active,
-            notes: this.state.notes,
-            deleteShifts: this.state.deleteShifts,
-            shifts: _.map(this.state.shifts, shift => ({
-              ...shift,
-              // format start and end times for MySQL insertion (should probably be done on backend but oh well)
-              start_time: formatDateForMySQL(new Date(shift.start_time)),
-              end_time: formatDateForMySQL(new Date(shift.end_time)),
-            })),
-          },
-          {
-            headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
-          },
-        ),
+        axios.post(`/api/event/${this.props.originalEvent.event_id}`, data, {
+          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+        }),
       )
       .then(res => {
         this.props.addMessage({ message: res.data.data, severity: 'positive' });
@@ -265,6 +268,13 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
             onChange={this.handleChange}
           />
         </Form.Group>
+        <Form.Input
+          fluid
+          label="Upload hours letter"
+          name="letter"
+          type="file"
+          onChange={this.handleChange}
+        />
         <Menu attached="top" tabular>
           {_.map(shifts, shift => (
             <Menu.Item

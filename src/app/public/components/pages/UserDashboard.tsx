@@ -6,6 +6,7 @@ import { Redirect } from 'react-router';
 import {
   Button,
   Container,
+  Form,
   Header,
   Icon,
   Menu,
@@ -17,6 +18,9 @@ import {
 // App Imports
 import { timeFormat } from '@app/common/utilities';
 
+// Component Imports
+import FancyTable from '@app/common/components/FancyTable';
+
 interface UserDashboardProps {
   user: UserState;
   loading: boolean;
@@ -24,11 +28,12 @@ interface UserDashboardProps {
 
 export default class UserDashboard extends React.Component<UserDashboardProps> {
   public render() {
-    if (this.props.user.status !== 'in') return <Redirect to="/" />;
+    if (this.props.user.status === 'out') return <Redirect to="/" />;
+    if (this.props.user.status === 'loading') return null;
 
     const confirmedHours = timeFormat(
       _.reduce(
-        _.filter(this.props.user.user.userShifts, userShift => userShift.confirmLevel.id > 100),
+        _.filter(this.props.user.user.userShifts, userShift => userShift.confirmLevel.id >= 100),
         (acc: moment.Duration, event) => acc.add(event.hours),
         moment.duration(),
       ),
@@ -58,32 +63,45 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
         <Segment style={{ padding: '2em 0' }} vertical>
           <Header as="h2" content="Events" />
           {this.props.user.user.userShifts.length > 0 ? (
-            <Table compact celled definition>
-              <Table.Header>
-                <Table.Row>
-                  <Table.HeaderCell />
-                  <Table.HeaderCell>Status</Table.HeaderCell>
-                  <Table.HeaderCell>Event</Table.HeaderCell>
-                  <Table.HeaderCell>Shift</Table.HeaderCell>
-                  <Table.HeaderCell>Hours</Table.HeaderCell>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {_.map(this.props.user.user.userShifts, userShift => (
-                  <Table.Row key={userShift.user_shift_id}>
-                    <Table.Cell collapsing>
-                      <Button size="mini" primary>
-                        ...
-                      </Button>
-                    </Table.Cell>
-                    <Table.Cell>{_.lowerCase(userShift.confirmLevel.name)}</Table.Cell>
-                    <Table.Cell>{userShift.parentEvent.name}</Table.Cell>
-                    <Table.Cell>{userShift.shift.shift_num}</Table.Cell>
-                    <Table.Cell>{userShift.hours}</Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
+            <Form>
+              <FancyTable
+                tableData={this.props.user.user.userShifts}
+                headerRow={['Status', 'Event', 'Shift', 'Hours', 'Hours Letter']}
+                filters={[
+                  {
+                    name: 'confirmed',
+                    description: 'Confirmed',
+                    filter: userShift => userShift.confirmLevel.id >= 100,
+                  },
+                  {
+                    name: 'letter',
+                    description: 'Has hours letter',
+                    filter: userShift => !!userShift.letter,
+                  },
+                ]}
+                renderBodyRow={(userShift: UserShift) => ({
+                  key: userShift.user_shift_id,
+                  positive: userShift.confirmLevel.id >= 100,
+                  negative: userShift.confirmLevel.id < 0,
+                  cells: [
+                    userShift.confirmLevel.name,
+                    userShift.parentEvent.name,
+                    userShift.shift.shift_num,
+                    timeFormat(moment.duration(userShift.hours)),
+                    userShift.letter
+                      ? {
+                          key: 'letter',
+                          content: (
+                            <a href={`/upload/${userShift.letter}`} target="_blank">
+                              Download
+                            </a>
+                          ),
+                        }
+                      : 'Not available',
+                  ],
+                })}
+              />
+            </Form>
           ) : (
             <>
               No events found 😢<br />Sign up for an event!

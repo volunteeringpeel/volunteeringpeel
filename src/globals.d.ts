@@ -100,6 +100,7 @@ interface UserShift {
   user_shift_id: number;
   hours: string;
   confirmLevel: ConfirmLevel;
+  letter: string;
   shift: Shift;
   parentEvent: {
     event_id: number;

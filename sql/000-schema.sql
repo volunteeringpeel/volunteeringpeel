@@ -21,7 +21,8 @@ create table if not exists event (
   transport   varchar(32)   default null                        comment 'Transport origin location (null if none)',
   description text          not null                            comment 'Event description',
   active      boolean       not null default 0                  comment 'Event visible on events page?',
-  notes       boolean       not null default 0                  comment 'Is the additional information field required?'
+  notes       boolean       not null default 0                  comment 'Is the additional information field required?',
+  letter      varchar(256)                                      comment 'Hours letter path'
 );
 
 create table if not exists shift (

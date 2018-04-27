@@ -8,7 +8,7 @@ import * as mysql from 'promise-mysql';
 // Import API core
 import * as API from '@api/api';
 
-export async function getAllUsers(req: Express.Request, res: Express.Response) {
+export const getAllUsers = API.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err, users: User[];
@@ -34,9 +34,9 @@ export async function getAllUsers(req: Express.Request, res: Express.Response) {
   if (err) return res.error(500, 'Error getting mail list data', err);
 
   res.success(users, 200);
-}
+});
 
-export async function getCurrentUser(req: Express.Request, res: Express.Response) {
+export const getCurrentUser = API.asyncMiddleware(async (req, res) => {
   let err;
 
   const out: UserData = {
@@ -96,7 +96,7 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
         confirm_level_id, confirm_level, confirm_description,
         shift_id, shift_num,
         start_time, end_time, hours, meals, notes
-        event_id, name, address, transport, description
+        event_id, name, address, transport, description, letter
       FROM vw_user_shift WHERE user_id = ?`,
       [out.user.user_id],
     ),
@@ -110,6 +110,7 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
       description: userShift.confirm_description,
     },
     hours: userShift.hours,
+    letter: userShift.letter,
     shift: {
       shift_id: +userShift.shift_id,
       shift_num: +userShift.shift_num,
@@ -130,9 +131,9 @@ export async function getCurrentUser(req: Express.Request, res: Express.Response
   );
   if (err) return res.error(500, 'Error finding mail list data', err);
   res.success(out, out.new ? 201 : 200);
-}
+});
 
-export async function deleteUser(req: Express.Request, res: Express.Response) {
+export const deleteUser = API.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   // Delete user
@@ -141,9 +142,9 @@ export async function deleteUser(req: Express.Request, res: Express.Response) {
   if (err) return res.error(500, 'Error deleting user', err);
 
   res.success('User deleted successfully', 200);
-}
+});
 
-export async function updateUser(req: Express.Request, res: Express.Response) {
+export const updateUser = API.asyncMiddleware(async (req, res) => {
   let err;
 
   // get parameters from request body
@@ -226,7 +227,7 @@ export async function updateUser(req: Express.Request, res: Express.Response) {
 
     res.success(`User ${req.params.id === -1 ? 'added' : 'updated'} successfully`, 200);
   }
-}
+});
 
 export async function getUserMailLists(id: number, db: mysql.PoolConnection): Promise<MailList[]> {
   return _.map(

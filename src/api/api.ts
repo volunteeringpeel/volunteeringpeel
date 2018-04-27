@@ -8,16 +8,23 @@ import * as _ from 'lodash';
 import * as multer from 'multer';
 import * as mysql from 'promise-mysql';
 
+// Roles
+export const ROLE_VOLUNTEER = 1;
+export const ROLE_ORGANIZER = 2;
+export const ROLE_EXECUTIVE = 3;
+export const asyncMiddleware: ((fn: Express.RequestHandler) => Express.RequestHandler) = fn => (
+  req,
+  res,
+  next,
+) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
 // Import sub-APIs
 import * as AttendanceAPI from '@api/attendance';
 import * as EventAPI from '@api/event';
 import * as MailingListAPI from '@api/mailing-list';
 import * as UserAPI from '@api/user';
-
-// Roles
-export const ROLE_VOLUNTEER = 1;
-export const ROLE_ORGANIZER = 2;
-export const ROLE_EXECUTIVE = 3;
 
 // Initialize API
 const api = Express.Router();
@@ -67,37 +74,39 @@ const checkJwt = jwt({
 }).unless({ path: [/\/public*/] });
 
 // Success/error functions
-api.use(async (req, res, next) => {
-  // Return functions
-  res.error = async (status, error, details) => {
-    if (req.db) {
-      await req.db.rollback();
-      req.db.release();
-    }
-    res
-      .status(status)
-      .json({ error, details: details || 'No further information', status: 'error' });
-  };
+api.use(
+  asyncMiddleware(async (req, res, next) => {
+    // Return functions
+    res.error = async (status, error, details) => {
+      if (req.db) {
+        await req.db.rollback();
+        req.db.release();
+      }
+      res
+        .status(status)
+        .json({ error, details: details || 'No further information', status: 'error' });
+    };
 
-  res.success = async (data, status = 200) => {
-    if (req.db) {
-      [err] = await to(req.db.commit());
-      if (err) return res.error(500, 'Error saving changes', err);
-      req.db.release();
-    }
-    if (data) res.status(status).json({ data, status: 'success' });
-    else res.status(status).json({ status: 'success' });
-  };
+    res.success = async (data, status = 200) => {
+      if (req.db) {
+        [err] = await to(req.db.commit());
+        if (err) return res.error(500, 'Error saving changes', err);
+        req.db.release();
+      }
+      if (data) res.status(status).json({ data, status: 'success' });
+      else res.status(status).json({ status: 'success' });
+    };
 
-  // Store db connection inside of req for access by other API files
-  let err;
-  [err, req.db] = await to(pool.getConnection());
-  if (err) return res.error(500, 'Error connecting to database', err);
-  [err] = await to(req.db.beginTransaction());
-  if (err) return res.error(500, 'Error opening transaction', err);
+    // Store db connection inside of req for access by other API files
+    let err;
+    [err, req.db] = await to(pool.getConnection());
+    if (err) return res.error(500, 'Error connecting to database', err);
+    [err] = await to(req.db.beginTransaction());
+    if (err) return res.error(500, 'Error opening transaction', err);
 
-  next();
-});
+    next();
+  }),
+);
 
 api.use(checkJwt);
 
@@ -131,68 +140,80 @@ api.delete('/mailing-list/:id', MailingListAPI.deleteMailingList);
 api.post('/public/mailing-list/:id', MailingListAPI.signup);
 
 // FAQ's
-api.get('/public/faq', async (req, res) => {
-  let err, faqs;
-  [err, faqs] = await to(req.db.query('SELECT question, answer FROM faq ORDER BY priority'));
-  if (err) return res.error(500, 'Error retrieving FAQs', err);
-  res.success(faqs, 200);
-});
+api.get(
+  '/public/faq',
+  asyncMiddleware(async (req, res) => {
+    let err, faqs;
+    [err, faqs] = await to(req.db.query('SELECT question, answer FROM faq ORDER BY priority'));
+    if (err) return res.error(500, 'Error retrieving FAQs', err);
+    res.success(faqs, 200);
+  }),
+);
 
 // Execs
-api.get('/public/execs', async (req, res) => {
-  let err, execs;
-  [err, execs] = await to(
-    req.db.query(
-      'SELECT user_id, first_name, last_name, title, bio, pic FROM user WHERE role_id = 3',
-    ),
-  );
-  if (err) return res.error(500, 'Error retrieving executive data', err);
-  res.success(execs, 200);
-});
+api.get(
+  '/public/execs',
+  asyncMiddleware(async (req, res) => {
+    let err, execs;
+    [err, execs] = await to(
+      req.db.query(
+        'SELECT user_id, first_name, last_name, title, bio, pic FROM user WHERE role_id = 3',
+      ),
+    );
+    if (err) return res.error(500, 'Error retrieving executive data', err);
+    res.success(execs, 200);
+  }),
+);
 
 // Sponsors
-api.get('/public/sponsors', async (req, res) => {
-  let err, sponsors;
-  [err, sponsors] = await to(
-    req.db.query('SELECT name, image, website FROM sponsor ORDER BY priority'),
-  );
-  if (err) return res.error(500, 'Error retrieving sponsor data', err);
-  res.success(sponsors, 200);
-});
+api.get(
+  '/public/sponsors',
+  asyncMiddleware(async (req, res) => {
+    let err, sponsors;
+    [err, sponsors] = await to(
+      req.db.query('SELECT name, image, website FROM sponsor ORDER BY priority'),
+    );
+    if (err) return res.error(500, 'Error retrieving sponsor data', err);
+    res.success(sponsors, 200);
+  }),
+);
 
 // Prived/authorized by JWT endpoint
 api.get('/event', EventAPI.eventQuery(true));
 // Endpoint doesn't require JWT (i.e. not logged in)
 api.get('/public/event', EventAPI.eventQuery(false));
 // Edit event
-api.post('/event/:id', EventAPI.editEvent);
+api.post('/event/:id', upload.single('letter'), EventAPI.editEvent);
 // Delete event
 api.delete('/event/:id', EventAPI.deleteEvent);
 
 // Signup
-api.post('/signup', async (req, res) => {
-  // Get user id from email
-  let err, users: { user_id: number }[];
-  [err, users] = await to(
-    req.db.query('SELECT user_id FROM user WHERE email = ?', [req.user.email]),
-  );
-  if (err || !users[0] || !users[0].user_id) {
-    // lack of existence of users[0].user_id means user couldn't be found
-    return res.error(500, 'Error retrieving user information', err);
-  }
+api.post(
+  '/signup',
+  asyncMiddleware(async (req, res) => {
+    // Get user id from email
+    let err, users: { user_id: number }[];
+    [err, users] = await to(
+      req.db.query('SELECT user_id FROM user WHERE email = ?', [req.user.email]),
+    );
+    if (err || !users[0] || !users[0].user_id) {
+      // lack of existence of users[0].user_id means user couldn't be found
+      return res.error(500, 'Error retrieving user information', err);
+    }
 
-  const values = (req.body.shifts as number[]).map(shift => [users[0].user_id, shift]);
+    const values = (req.body.shifts as number[]).map(shift => [users[0].user_id, shift]);
 
-  let affectedRows;
-  [err, { affectedRows }] = await to(
-    req.db.query('INSERT INTO user_shift (user_id, shift_id) VALUES ?', [values]),
-  );
-  if (err || affectedRows !== req.body.shifts.length) {
-    return res.error(500, 'Error signing up', err);
-  }
+    let affectedRows;
+    [err, { affectedRows }] = await to(
+      req.db.query('INSERT INTO user_shift (user_id, shift_id) VALUES ?', [values]),
+    );
+    if (err || affectedRows !== req.body.shifts.length) {
+      return res.error(500, 'Error signing up', err);
+    }
 
-  res.success('Signed up successfully', 201);
-});
+    res.success('Signed up successfully', 201);
+  }),
+);
 
 // 404
 api.get('*', (req, res) => {
