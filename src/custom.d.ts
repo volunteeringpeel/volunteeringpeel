@@ -18,4 +18,10 @@ declare global {
       userData: User;
     }
   }
+
+  namespace NodeJS {
+    interface Global {
+      appDir: string;
+    }
+  }
 }

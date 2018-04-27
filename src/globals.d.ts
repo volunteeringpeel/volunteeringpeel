@@ -53,6 +53,7 @@ interface Exec extends User {
   role_id: 3;
   bio: string;
   title: string;
+  pic: string;
 }
 
 interface MailList {

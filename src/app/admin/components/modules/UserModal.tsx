@@ -18,7 +18,9 @@ interface UserModalProps {
   user: User | Exec;
 }
 
-export default class UserModal extends React.Component<UserModalProps, User | Exec> {
+type UserModalState = (User | Exec) & { pic: File };
+
+export default class UserModal extends React.Component<UserModalProps, UserModalState> {
   constructor(props: UserModalProps) {
     super(props);
 
@@ -32,6 +34,7 @@ export default class UserModal extends React.Component<UserModalProps, User | Ex
       mail_lists: props.user.mail_lists || props.mailListTemplate,
       title: (props.user as Exec).title || null,
       bio: (props.user as Exec).bio || null,
+      pic: null,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -49,14 +52,23 @@ export default class UserModal extends React.Component<UserModalProps, User | Ex
         mail_lists: nextProps.user.mail_lists || this.props.mailListTemplate,
         title: nextProps.user.role_id === 3 ? (nextProps.user as Exec).title : null,
         bio: nextProps.user.role_id === 3 ? (nextProps.user as Exec).bio : null,
+        pic: null,
       });
     }
   }
 
   public handleSubmit() {
+    const data = new FormData();
+    _.forOwn(this.state, (value, key) => {
+      if (value === null) return;
+      let param: string | Blob = value.toString() || null;
+      if (key === 'mail_lists') param = JSON.stringify(value);
+      if (key === 'pic') param = (value || null) as File;
+      if (param) data.append(key, param);
+    });
     Promise.resolve(this.props.loading(true))
       .then(() =>
-        axios.post(`/api/user/${this.props.user.user_id}`, this.state, {
+        axios.post(`/api/user/${this.props.user.user_id}`, data, {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
         }),
       )
@@ -76,7 +88,8 @@ export default class UserModal extends React.Component<UserModalProps, User | Ex
   }
 
   public handleChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
-    this.setState({ [name]: value || checked });
+    if (name === 'pic') this.setState({ pic: (e.target as HTMLInputElement).files[0] });
+    else this.setState({ [name]: value || checked });
   };
 
   public render() {
@@ -158,9 +171,16 @@ export default class UserModal extends React.Component<UserModalProps, User | Ex
                   onChange={this.handleChange}
                   required
                 />
+                <Form.Input
+                  label="Picture"
+                  data-tooltip="Maximum size 1 MB, type PNG or JPG"
+                  type="file"
+                  name="pic"
+                  onChange={this.handleChange}
+                />
               </>
             )}
-            
+
             <Form.Group inline>
               <label>Sign up for mailing lists</label>
               {_.map(this.state.mail_lists, (list, i) => (
