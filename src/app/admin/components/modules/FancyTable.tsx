@@ -87,6 +87,12 @@ export default class FancyTable<T> extends React.Component<
       _.reduce(activeFilters, (acc, filter) => _.filter(acc, filter.filter), this.props.tableData),
     );
 
+    const sortedData = _.sortBy(filteredData, [
+      _.snakeCase(this.props.headerRow[this.state.sortCol] as string),
+    ]);
+
+    const processedData = this.state.sortDir === 'descending' ? sortedData.reverse() : sortedData;
+
     return (
       <>
         <Form.Field inline>
@@ -127,7 +133,7 @@ export default class FancyTable<T> extends React.Component<
         </Form.Field>
         <Table
           {...this.props}
-          tableData={filteredData}
+          tableData={processedData}
           compact
           celled
           sortable

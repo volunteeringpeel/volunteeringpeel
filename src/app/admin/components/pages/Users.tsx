@@ -4,7 +4,7 @@ import * as Promise from 'bluebird';
 import { LocationDescriptor } from 'history';
 import * as React from 'react';
 import { Route, RouteComponentProps } from 'react-router';
-import { Button, Dropdown, Header, Label, Menu, Segment, Table, Form } from 'semantic-ui-react';
+import { Button, Dropdown, Form, Header, Label, Menu, Segment, Table } from 'semantic-ui-react';
 
 // Component Imports
 import FancyTable from '@app/admin/components/modules/FancyTable';

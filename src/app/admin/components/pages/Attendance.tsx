@@ -196,23 +196,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       'Assigned Exec',
     ];
 
-    const filters: {
-      name: string;
-      description: string;
-      filter: (entry: AttendanceEntry) => boolean;
-    }[] = [
-      {
-        name: 'mine',
-        description: 'Assigned to me',
-        filter: __ => __.assigned_exec === this.props.user.user_id,
-      },
-      {
-        name: 'unconfirmed',
-        description: 'Unconfirmed',
-        filter: __ => __.confirm_level_id <= 0,
-      },
-    ];
-
     return (
       <Form onSubmit={this.handleSubmit}>
         <Form.Field>
@@ -233,7 +216,18 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         </Form.Field>
         {this.state.activeEntry && (
           <FancyTable
-            filters={filters}
+            filters={[
+              {
+                name: 'mine',
+                description: 'Assigned to me',
+                filter: __ => __.assigned_exec === this.props.user.user_id,
+              },
+              {
+                name: 'unconfirmed',
+                description: 'Unconfirmed',
+                filter: __ => __.confirm_level_id <= 0,
+              },
+            ]}
             headerRow={columns}
             tableData={this.state.activeData}
             renderBodyRow={(entry: AttendanceEntry) => {
