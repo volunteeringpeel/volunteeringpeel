@@ -25,6 +25,7 @@ import * as AttendanceAPI from '@api/attendance';
 import * as EventAPI from '@api/event';
 import * as MailingListAPI from '@api/mailing-list';
 import * as UserAPI from '@api/user';
+import { wss } from '../index';
 
 // Initialize API
 const api = Express.Router();
@@ -131,6 +132,7 @@ api.get('/attendance', AttendanceAPI.getAttendance);
 api.post('/attendance', AttendanceAPI.updateAttendance);
 // WebSocket
 api.ws('/attendance/ws', AttendanceAPI.webSocket);
+export const attendanceWss = wss.getWss('/api/attendance/ws');
 
 // Get all mailing lists
 api.get('/mailing-list', MailingListAPI.getMailingList);

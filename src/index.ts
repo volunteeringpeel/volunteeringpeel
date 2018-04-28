@@ -11,7 +11,7 @@ import 'babel-polyfill';
 // Setup Express
 const app = express();
 // Enable WebSockets
-const wss = expressWs(app);
+export const wss = expressWs(app);
 
 import api from './api/api';
 

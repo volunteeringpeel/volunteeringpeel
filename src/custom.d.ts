@@ -2,6 +2,7 @@
 // Extend Express definitions
 import * as Bluebird from 'bluebird';
 import * as mysql from 'promise-mysql';
+import * as ws from 'ws';
 
 declare global {
   namespace Express {
@@ -23,5 +24,10 @@ declare global {
     interface Global {
       appDir: string;
     }
+  }
+}
+declare module 'express-ws' {
+  interface Instance {
+    getWss(path: string): ws.Server;
   }
 }

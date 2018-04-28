@@ -94,14 +94,43 @@ export const updateAttendance = API.asyncMiddleware(async (req, res) => {
   res.success(`Attendance updated successfully`, 200);
 });
 
-export const webSocket = (ws: WebSocket, req: Express.Request) => {
-  // connection is up, let's add a simple simple event
+interface AttendanceWebSocket extends WebSocket {
+  isAlive: boolean;
+}
+const broadcast = (msg: any) =>
+  API.attendanceWss.clients.forEach(client => client.send(JSON.stringify(msg)));
+export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
   ws.on('message', (message: string) => {
-    // log the received message and send it back to the client
     console.log('received: %s', message);
     ws.send(`Hello, you sent -> ${message}`);
   });
 
+  // update all other clients if someone dies
+  ws.on('close', () => {
+    broadcast({ connections: API.attendanceWss.clients.size });
+  });
+
+  // pong handling
+  ws.isAlive = true;
+  ws.on('pong', () => {
+    ws.isAlive = true;
+  });
+
   // send immediatly a feedback to the incoming connection
   ws.send('Hi there, I am a WebSocket server');
+  broadcast({ connections: API.attendanceWss.clients.size });
 };
+
+// ping to make sure client is still there
+setInterval(() => {
+  API.attendanceWss.clients.forEach((ws: AttendanceWebSocket) => {
+    if (!ws.isAlive) {
+      ws.terminate();
+      broadcast({ connections: API.attendanceWss.clients.size });
+      return;
+    }
+
+    ws.isAlive = false;
+    ws.ping(null, false);
+  });
+}, 1000);
