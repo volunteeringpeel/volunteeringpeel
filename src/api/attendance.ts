@@ -4,6 +4,7 @@ import * as Bluebird from 'bluebird';
 import * as Express from 'express';
 import * as _ from 'lodash';
 import * as mysql from 'promise-mysql';
+import * as WebSocket from 'ws';
 
 // API Imports
 import * as API from '@api/api';
@@ -92,3 +93,15 @@ export const updateAttendance = API.asyncMiddleware(async (req, res) => {
 
   res.success(`Attendance updated successfully`, 200);
 });
+
+export const webSocket = (ws: WebSocket, req: Express.Request) => {
+  // connection is up, let's add a simple simple event
+  ws.on('message', (message: string) => {
+    // log the received message and send it back to the client
+    console.log('received: %s', message);
+    ws.send(`Hello, you sent -> ${message}`);
+  });
+
+  // send immediatly a feedback to the incoming connection
+  ws.send('Hi there, I am a WebSocket server');
+};

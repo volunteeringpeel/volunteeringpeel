@@ -71,7 +71,7 @@ const checkJwt = jwt({
   audience: process.env.AUTH0_AUDIENCE,
   issuer: `https://volunteering-peel.auth0.com/`,
   algorithms: ['RS256'],
-}).unless({ path: [/\/public*/] });
+}).unless({ path: [/\/public*/, /.*\/ws/] });
 
 // Success/error functions
 api.use(
@@ -129,6 +129,8 @@ api.get('/user/current', UserAPI.getCurrentUser);
 api.get('/attendance', AttendanceAPI.getAttendance);
 // Update user shift
 api.post('/attendance', AttendanceAPI.updateAttendance);
+// WebSocket
+api.ws('/attendance/ws', AttendanceAPI.webSocket);
 
 // Get all mailing lists
 api.get('/mailing-list', MailingListAPI.getMailingList);
@@ -216,7 +218,8 @@ api.post(
 );
 
 // 404
-api.get('*', (req, res) => {
+api.get('*', (req, res, next) => {
+  if (req.headers.upgrade === 'websocket') res.end();
   res.error(404, 'Unknown endpoint');
 });
 
