@@ -76,7 +76,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       activeEntry: null,
     };
 
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.refresh = this.refresh.bind(this);
   }
 
   public componentDidMount() {
@@ -166,7 +166,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
   }
 
   public handleUpdate(entry: number, field: string, value: any) {
-    const valid = field === 'hours_override' ? /^\d+(:\d{2})?(:\d{2})?$/.test(value) : true;
+    const valid = field === 'hours_override' ? /^-?\d+:\d{2}?(:\d{2})?$/.test(value) : true;
     const ix = _.findIndex(this.state.activeData, ['user_shift_id', entry]);
     const id = this.state.activeData[ix].user_shift_id;
     const action = `update/${id}/${field}|${new Date().getTime()}`;
@@ -184,7 +184,9 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
             }),
           );
         }
-        // add proper error handling
+        if (data.status === 'error') {
+          this.props.addMessage({ message: data.error, more: data.details, severity: 'negative' });
+        }
       },
     );
     this.setState(
@@ -203,41 +205,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         },
       }),
     );
-  }
-
-  public handleSubmit() {
-    return Bluebird.resolve(this.props.loading(true))
-      .then(() =>
-        axios.post(
-          '/api/attendance',
-          _.map(_.filter(this.state.activeData, 'changed'), __ => ({
-            user_shift_id: __.user_shift_id,
-            confirm_level_id: __.confirm_level_id.value,
-            start_override: formatDateForMySQL(new Date(__.start_time.value)),
-            end_override: formatDateForMySQL(new Date(__.end_time.value)),
-            hours_override: __.hours_override.value,
-            assigned_exec: __.assigned_exec.value,
-          })),
-          { headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` } },
-        ),
-      )
-      .then(res => {
-        this.props.addMessage({
-          message: res.data.data,
-          severity: 'positive',
-        });
-      })
-      .catch((error: AxiosError) => {
-        this.props.addMessage({
-          message: error.response.data.error,
-          more: error.response.data.details,
-          severity: 'negative',
-        });
-      })
-      .finally(() => {
-        this.props.loading(false);
-        this.refresh();
-      });
   }
 
   public render() {
@@ -279,7 +246,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     };
 
     return (
-      <Form onSubmit={this.handleSubmit}>
+      <Form>
         <Form.Field>
           <Dropdown
             placeholder="Select Shift"

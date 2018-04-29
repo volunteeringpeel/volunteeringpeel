@@ -56,6 +56,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
     const actionParts = action.split('|');
     if (actionParts.length !== 2) return die(action, 'Invalid action', 'Cannot parse timestamp');
     const command = actionParts[0].split('/');
+    if (process.env.NODE_ENV !== 'production') console.log('WebSocket: ' + action);
     // Parse JWT key
     let err, user;
     [err, user] = await to(Bluebird.resolve(JwtAPI.verify(data.key)));
