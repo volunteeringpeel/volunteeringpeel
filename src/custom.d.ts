@@ -31,3 +31,30 @@ declare module 'express-ws' {
     getWss(path: string): ws.Server;
   }
 }
+interface JWT {
+  header: {
+    typ: 'JWT';
+    alg: string;
+    kid?: string;
+  };
+  payload: JWTPayload;
+}
+interface JWTPayload {
+  iss?: string;
+  sub?: string;
+  aud?: string[];
+  exp?: number;
+  nbf?: number;
+  iat?: number;
+  email: string;
+  [x: string]: any;
+}
+declare module 'jsonwebtoken' {
+  function decode(token: string, options?: DecodeOptions): JWT;
+  function verify(
+    token: string,
+    secretOrPublicKey?: string | Buffer,
+    options?: VerifyOptions,
+    callback?: VerifyCallback,
+  ): JWTPayload;
+}
