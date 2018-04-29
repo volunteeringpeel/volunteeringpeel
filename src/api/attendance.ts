@@ -8,6 +8,7 @@ import * as WebSocket from 'ws';
 
 // API Imports
 import * as API from '@api/api';
+import * as JwtAPI from '@api/jwt';
 
 export const getAttendance = API.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
@@ -100,9 +101,19 @@ interface AttendanceWebSocket extends WebSocket {
 const broadcast = (msg: any) =>
   API.attendanceWss.clients.forEach(client => client.send(JSON.stringify(msg)));
 export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
-  ws.on('message', (message: string) => {
-    console.log('received: %s', message);
-    ws.send(`Hello, you sent -> ${message}`);
+  const send = (res: APIData<any>) => ws.send(JSON.stringify(res));
+  ws.on('message', async (message: string) => {
+    let data: any = {};
+    try {
+      data = JSON.parse(message);
+    } catch (e) {
+      return send({ status: 'error', error: 'Invalid JSON message', details: e.message });
+    }
+    let err, user;
+    [err, user] = await to(Bluebird.resolve(JwtAPI.verify(data.key)));
+    if (err) return send({ status: 'error', error: 'Cannot parse token', details: err });
+
+    return send({ status: 'success', data: `yay: ${user.email}` });
   });
 
   // update all other clients if someone dies
