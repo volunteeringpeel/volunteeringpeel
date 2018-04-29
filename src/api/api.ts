@@ -59,20 +59,28 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-const checkJwt = jwt({
-  // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://volunteering-peel.auth0.com/.well-known/jwks.json`,
-  }),
+api.use(
+  jwt({
+    // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
+    secret: jwksRsa.expressJwtSecret({
+      cache: true,
+      rateLimit: true,
+      jwksRequestsPerMinute: 5,
+      jwksUri: `https://volunteering-peel.auth0.com/.well-known/jwks.json`,
+    }),
 
-  // Validate the audience and the issuer.
-  audience: process.env.AUTH0_AUDIENCE,
-  issuer: `https://volunteering-peel.auth0.com/`,
-  algorithms: ['RS256'],
-}).unless({ path: [/\/public*/, /.*\/ws/] });
+    // Validate the audience and the issuer.
+    audience: process.env.AUTH0_AUDIENCE,
+    issuer: `https://volunteering-peel.auth0.com/`,
+    algorithms: ['RS256'],
+  }).unless({ path: [/\/public*/, /.*\/ws/] }),
+);
+
+api.use((err: any, req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
+  if (err.name === 'UnauthorizedError') {
+    res.error((err as jwt.UnauthorizedError).status, (err as jwt.UnauthorizedError).message);
+  }
+});
 
 // Success/error functions
 api.use(
@@ -105,17 +113,15 @@ api.use(
     [err] = await to(req.db.beginTransaction());
     if (err) return res.error(500, 'Error opening transaction', err);
 
+    if (req.user) {
+      [err, [{ role_id: req.user.role_id }]] = await to(
+        req.db.query('SELECT role_id FROM user WHERE email = ?', [req.user.email]),
+      );
+    }
+
     next();
   }),
 );
-
-api.use(checkJwt);
-
-api.use((err: any, req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
-  if (err.name === 'UnauthorizedError') {
-    res.error((err as jwt.UnauthorizedError).status, (err as jwt.UnauthorizedError).message);
-  }
-});
 
 // Get all users
 api.get('/user', UserAPI.getAllUsers);
