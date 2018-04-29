@@ -42,6 +42,7 @@
     "@types/react-widgets-moment": "^4.0.1",
     "@types/redux-actions": "^2.2.4",
     "@types/redux-logger": "^3.0.5",
+    "@types/web-animations-js": "^2.2.6",
     "@types/webpack-env": "^1.13.5",
     "@types/ws": "^4.0.2",
     "awesome-typescript-loader": "^3.5.0",
@@ -114,6 +115,7 @@
     "reselect": "^3.0.1",
     "semantic-ui-less": "^2.3.0",
     "semantic-ui-react": "^0.78.2",
+    "web-animations-js": "^2.3.1",
     "ws": "^5.1.1"
   },
   "stylelint": {
