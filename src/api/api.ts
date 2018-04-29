@@ -132,10 +132,6 @@ api.delete('/user/:id', UserAPI.deleteUser);
 // Get current user
 api.get('/user/current', UserAPI.getCurrentUser);
 
-// Get user shifts (but formatted)
-api.get('/attendance', AttendanceAPI.getAttendance);
-// Update user shift
-api.post('/attendance', AttendanceAPI.updateAttendance);
 // WebSocket
 api.ws('/attendance/ws', AttendanceAPI.webSocket);
 export const attendanceWss = wss.getWss('/api/attendance/ws');

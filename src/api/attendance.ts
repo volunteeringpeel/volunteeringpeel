@@ -10,115 +10,169 @@ import * as WebSocket from 'ws';
 import * as API from '@api/api';
 import * as JwtAPI from '@api/jwt';
 
-export const getAttendance = API.asyncMiddleware(async (req, res) => {
-  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
-
-  // grab user's first and last name as well as vw_user_shift
-  let err, userShifts: any[]; // update typings at a later date
-  [err, userShifts] = await to(
-    req.db.query(`
-        SELECT us.*, u.first_name, u.last_name,
-        u.phone_1, u.phone_2, u.email
-        FROM vw_user_shift us
-        JOIN user u ON u.user_id = us.user_id
-      `),
-  );
-  if (err) return res.error(500, 'Error retreiving attendance', err);
-
-  let confirmLevels: ConfirmLevel[];
-  [err, confirmLevels] = await to(
-    req.db.query('SELECT confirm_level_id as id, name, description FROM confirm_level'),
-  );
-  if (err) return res.error(500, 'Error retrieving attendance statuses', err);
-
-  let execs: Exec[];
-  [err, execs] = await to(req.db.query('SELECT * FROM user WHERE role_id = 3'));
-
-  res.success({
-    attendance: _.map(userShifts, userShift => ({
-      user_shift_id: +userShift.user_shift_id,
-      confirm_level_id: +userShift.confirm_level_id,
-      start_time: userShift.start_time,
-      end_time: userShift.end_time,
-      hours_override: userShift.hours_override,
-      other_shifts: userShift.other_shifts,
-      assigned_exec: +userShift.assigned_exec,
-      shift: {
-        shift_id: +userShift.shift_id,
-        shift_num: +userShift.shift_num,
-      },
-      parentEvent: {
-        event_id: +userShift.event_id,
-        name: userShift.name,
-      },
-      user: {
-        user_id: +userShift.user_id,
-        first_name: userShift.first_name,
-        last_name: userShift.last_name,
-        phone_1: userShift.phone_1,
-        phone_2: userShift.phone_2,
-        email: userShift.email,
-      },
-    })),
-    levels: confirmLevels,
-    execList: _.map(execs, exec => ({
-      key: exec.user_id,
-      value: exec.user_id,
-      text: `${exec.first_name} ${exec.last_name}`,
-    })),
-  });
-});
-
-export const updateAttendance = API.asyncMiddleware(async (req, res) => {
-  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
-
-  let err;
-
-  // update an attendance entry for each one
-  _.forEach(req.body, async userShift => {
-    let affectedRows;
-    [err, { affectedRows }] = await to(
-      req.db.query('UPDATE user_shift SET ? WHERE user_shift_id = ?', [
-        {
-          confirm_level_id: userShift.confirm_level_id,
-          start_override: userShift.start_override,
-          end_override: userShift.end_override,
-          hours_override: userShift.hours_override,
-          assigned_exec: userShift.assigned_exec,
-        },
-        userShift.user_shift_id,
-      ]),
-    );
-    if (err || affectedRows !== 1) res.error(500, 'Error updating attendance entries');
-  });
-
-  res.success(`Attendance updated successfully`, 200);
-});
-
 interface AttendanceWebSocket extends WebSocket {
   isAlive: boolean;
+  user: User;
 }
-const broadcast = (msg: any) =>
+
+// send a message to all clients
+const broadcast = (msg: WebSocketData<any>) =>
   API.attendanceWss.clients.forEach(client => client.send(JSON.stringify(msg)));
+// send out list of currently connected clients
+const broadcastClients = () => {
+  const clientList: string[] = [];
+  API.attendanceWss.clients.forEach((client: AttendanceWebSocket) => {
+    if (client.user) {
+      clientList.push(`${client.user.first_name} ${client.user.last_name}`);
+    }
+  });
+  broadcast({ action: 'clients', status: 'success', data: clientList });
+};
 export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
-  const send = (res: APIData<any>) => ws.send(JSON.stringify(res));
+  // Utility functions
+  const send = (res: WebSocketData<any>) => ws.send(JSON.stringify(res));
+  const die = async (action: string, error: string, details: any) => {
+    await to(req.db.rollback());
+    send({ action, error, details, status: 'error' });
+  };
+  const success = async (action: string, data: any) => {
+    let err;
+    [err] = await to(req.db.commit());
+    if (err) return die(action, 'Cannot commit changes', err);
+    send({ action, data, status: 'success' });
+  };
+
   ws.on('message', async (message: string) => {
-    let data: any = {};
+    // Parse data
+    let data: WebSocketRequest<any>;
     try {
       data = JSON.parse(message);
     } catch (e) {
-      return send({ status: 'error', error: 'Invalid JSON message', details: e.message });
+      return die('parse', 'Invalid JSON message', e.message);
     }
+
+    // action is in form action[/param]|time
+    const action = data.action;
+    if (!action) return die(action, 'Invalid JSON request', 'Missing key "action"');
+    const actionParts = action.split('|');
+    if (actionParts.length !== 2) return die(action, 'Invalid action', 'Cannot parse timestamp');
+    const command = actionParts[0].split('/');
+    // Parse JWT key
     let err, user;
     [err, user] = await to(Bluebird.resolve(JwtAPI.verify(data.key)));
-    if (err) return send({ status: 'error', error: 'Cannot parse token', details: err });
+    if (err) return die(action, 'Cannot parse token', err);
+    // Get user data
+    [err, [ws.user]] = await to(
+      req.db.query('SELECT first_name, last_name, role_id, pic FROM user WHERE email = ?', [
+        user.email,
+      ]),
+    );
+    if (err) return die(action, 'Cannot find user', err);
+    if (ws.user.role_id < 3) return die(action, 'Unauthorized', 'Token has no admin perms');
 
-    return send({ status: 'success', data: `yay: ${user.email}` });
+    [err] = await to(req.db.beginTransaction());
+    if (err) return die(action, 'Cannot begin transaction', err);
+
+    switch (command[0]) {
+      case 'refresh': {
+        // ex. refresh|1524957214
+        // grab user's first and last name as well as vw_user_shift
+        let userShifts: any[]; // update typings at a later date
+        [err, userShifts] = await to(
+          req.db.query(`
+            SELECT us.*, u.first_name, u.last_name,
+            u.phone_1, u.phone_2, u.email
+            FROM vw_user_shift us
+            JOIN user u ON u.user_id = us.user_id
+          `),
+        );
+        if (err) return die(action, 'Error retreiving attendance', err);
+
+        let confirmLevels: ConfirmLevel[];
+        [err, confirmLevels] = await to(
+          req.db.query('SELECT confirm_level_id as id, name, description FROM confirm_level'),
+        );
+        if (err) return die(action, 'Error retrieving attendance statuses', err);
+
+        let execs: Exec[];
+        [err, execs] = await to(req.db.query('SELECT * FROM user WHERE role_id = 3'));
+
+        return success(action, {
+          attendance: _.map(userShifts, userShift => ({
+            user_shift_id: +userShift.user_shift_id,
+            confirm_level_id: +userShift.confirm_level_id,
+            start_time: userShift.start_time,
+            end_time: userShift.end_time,
+            hours_override: userShift.hours_override,
+            other_shifts: userShift.other_shifts,
+            assigned_exec: +userShift.assigned_exec,
+            shift: {
+              shift_id: +userShift.shift_id,
+              shift_num: +userShift.shift_num,
+            },
+            parentEvent: {
+              event_id: +userShift.event_id,
+              name: userShift.name,
+            },
+            user: {
+              user_id: +userShift.user_id,
+              first_name: userShift.first_name,
+              last_name: userShift.last_name,
+              phone_1: userShift.phone_1,
+              phone_2: userShift.phone_2,
+              email: userShift.email,
+            },
+          })),
+          levels: confirmLevels,
+          execList: _.map(execs, exec => ({
+            key: exec.user_id,
+            value: exec.user_id,
+            text: `${exec.first_name} ${exec.last_name}`,
+          })),
+        });
+      }
+      case 'update': {
+        // ex. update/1/confirm_level_id|1524957214
+        if (command.length < 3) {
+          return die(action, 'Not enough parameters', 'Command requires 2 parameters');
+        }
+        const entryID = +command[1];
+        const field = command[2];
+        // check if field is allowed (i.e. not a bug/sqli)
+        if (
+          !_.includes(
+            [
+              'confirm_level_id',
+              'start_override',
+              'end_override',
+              'hours_override',
+              'assigned_exec',
+            ],
+            field,
+          )
+        ) {
+          return die(action, 'Invalid field', 'Field is not set as updatable via live API');
+        }
+        let result;
+        [err, result] = await to(
+          req.db.query('UPDATE user_shift SET ? WHERE user_shift_id = ?', [
+            { [field]: data.data },
+            entryID,
+          ]),
+        );
+        if (err) return die(action, 'Error updating attendance, please try again', err);
+
+        return success(action, 'Attendance updated successfully');
+      }
+      default: {
+        return die(action, 'Unknown command', '');
+      }
+    }
   });
 
   // update all other clients if someone dies
   ws.on('close', () => {
-    broadcast({ connections: API.attendanceWss.clients.size });
+    broadcastClients();
   });
 
   // pong handling
@@ -128,8 +182,8 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
   });
 
   // send immediatly a feedback to the incoming connection
-  ws.send('Hi there, I am a WebSocket server');
-  broadcast({ connections: API.attendanceWss.clients.size });
+  console.log('WebSocket connection');
+  broadcastClients();
 };
 
 // ping to make sure client is still there
@@ -137,7 +191,7 @@ setInterval(() => {
   API.attendanceWss.clients.forEach((ws: AttendanceWebSocket) => {
     if (!ws.isAlive) {
       ws.terminate();
-      broadcast({ connections: API.attendanceWss.clients.size });
+      broadcastClients();
       return;
     }
 

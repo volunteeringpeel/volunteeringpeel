@@ -18,6 +18,15 @@ interface APIDataError {
 }
 
 type APIData<T> = APIDataSuccess<T> | APIDataError;
+type WebSocketData<T> = APIData<T> & {
+  action: string;
+};
+
+interface WebSocketRequest<T> {
+  action: string;
+  key: string;
+  data: T;
+}
 
 interface Message {
   id?: number;
