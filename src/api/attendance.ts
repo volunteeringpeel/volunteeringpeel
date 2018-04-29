@@ -26,7 +26,7 @@ const broadcast = (msg: WebSocketData<any>) =>
 const broadcastClients = () => {
   const clientList: string[] = [];
   API.attendanceWss.clients.forEach((client: AttendanceWebSocket) => {
-    if (client.user) {
+    if (client.readyState === client.OPEN && client.user) {
       clientList.push(`${client.user.first_name} ${client.user.last_name}`);
     }
   });
@@ -36,20 +36,11 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
   // Utility functions
   const send = (res: WebSocketData<any>) => ws.send(JSON.stringify(res));
   const die = async (action: string, error: string, details: any) => {
-    if (ws.db) {
-      let err;
-      [err] = await to(ws.db.rollback());
-      ws.release();
-    }
+    ws.release();
     send({ action, error, details, status: 'error' });
   };
   const success = async (action: string, data: any) => {
-    if (ws.db) {
-      let err;
-      [err] = await to(ws.db.commit());
-      if (err) return die(action, 'Error saving changes', err);
-      ws.release();
-    }
+    ws.release();
     send({ action, data, status: 'success' });
   };
 
@@ -92,9 +83,6 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
     );
     if (err) return die(action, 'Cannot find user', err);
     if (ws.user.role_id < 3) return die(action, 'Unauthorized', 'Token has no admin perms');
-
-    [err] = await to(ws.db.beginTransaction());
-    if (err) return die(action, 'Cannot begin transaction', err);
 
     switch (command[0]) {
       case 'refresh': {
@@ -185,7 +173,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
         );
         if (err) return die(action, 'Error updating attendance, please try again', err);
 
-        return success(action, 'Attendance updated successfully');
+        return broadcast({ action, status: 'success', data: data.data });
       }
       default: {
         return die(action, 'Unknown command', '');

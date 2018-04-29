@@ -8,7 +8,14 @@ import * as moment from 'moment';
 import * as React from 'react';
 import 'react-widgets/dist/css/react-widgets.css';
 import * as DateTimePicker from 'react-widgets/lib/DateTimePicker';
-import { Button, Dropdown, DropdownItemProps, Form, Table } from 'semantic-ui-react';
+import {
+  Button,
+  Dropdown,
+  DropdownItemProps,
+  Form,
+  Table,
+  TableCellProps,
+} from 'semantic-ui-react';
 
 // App Imports
 import { formatDateForMySQL, timeFormat } from '@app/common/utilities';
@@ -59,7 +66,7 @@ interface AttendanceEntry {
 
 interface AttendanceField<T> {
   value: T;
-  lock: { action: string; status: 'success' | 'loading' | 'error' };
+  lock: { action: string; status: 'success' | 'loading' | 'error' | 'changed' };
 }
 
 export default class Attendance extends React.Component<AttendanceProps, AttendanceState> {
@@ -103,22 +110,60 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     this.ws.send(JSON.stringify(message));
   }
 
-  public recieveMessage(data: WebSocketData<any>) {
+  public recieveMessage(data: WebSocketData<any>): void {
+    console.log(data);
     if (data.action === 'global') {
       // global error, handle
+      if (data.status === 'error') {
+        return this.props.addMessage({
+          message: data.error,
+          more: data.details,
+          severity: 'negative',
+        });
+      }
       return;
     }
     if (this.wsCallbacks[data.action]) {
       this.wsCallbacks[data.action](data);
       delete this.wsCallbacks[data.action];
-    } else {
-      this.recieveMessage({
-        action: 'global',
-        status: 'error',
-        error: 'Recieved response with no known request',
-        details: JSON.stringify(data),
-      });
+      return;
     }
+    // parse action (action/param|timestamp)
+    if (data.status === 'success') {
+      const actionParts = data.action.split('|');
+      const command = actionParts[0].split('/');
+      if (command[0] === 'update') {
+        // command in form update/id/field
+        const ix = _.findIndex(this.state.activeData, ['user_shift_id', +command[1]]);
+        if (ix < 0) return;
+
+        this.setState(
+          update(this.state, {
+            activeData: {
+              [ix]: {
+                [command[2]]: {
+                  value: {
+                    $set: data.data,
+                  },
+                  lock: { $set: { action: data.action, lock: 'changed' } },
+                },
+              },
+            },
+          }),
+        );
+        return;
+      }
+      if (command[0] === 'clients') {
+        // todo: handle client changes
+        return;
+      }
+    }
+    return this.recieveMessage({
+      action: 'global',
+      status: 'error',
+      error: 'Recieved response with no known request',
+      details: JSON.stringify(data),
+    });
   }
 
   public refresh() {
@@ -242,13 +287,14 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       'Assigned Exec',
     ];
 
-    const getLock = (row: number, field: string) => {
+    const getLock = (row: number, field: string): TableCellProps => {
       const data: any = this.state.activeData[row];
       const lock = (data[field] as AttendanceField<any>).lock;
       if (!lock) return {};
       if (lock.status === 'success') return { positive: true };
       if (lock.status === 'error') return { negative: true };
       if (lock.status === 'loading') return { warning: true };
+      if (lock.status === 'changed') return { className: 'changed' };
     };
 
     return (
