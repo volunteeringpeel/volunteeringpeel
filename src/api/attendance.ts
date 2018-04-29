@@ -13,6 +13,7 @@ import * as JwtAPI from '@api/jwt';
 interface AttendanceWebSocket extends WebSocket {
   isAlive: boolean;
   user: User;
+  db: mysql.PoolConnection;
 }
 
 // send a message to all clients
@@ -34,7 +35,8 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
   // Utility functions
   const send = (res: WebSocketData<any>) => ws.send(JSON.stringify(res));
   const die = async (action: string, error: string, details: any) => {
-    await to(req.db.rollback());
+    let err;
+    [err] = await to(req.db.rollback());
     send({ action, error, details, status: 'error' });
   };
   const success = async (action: string, data: any) => {
@@ -43,6 +45,8 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
     if (err) return die(action, 'Cannot commit changes', err);
     send({ action, data, status: 'success' });
   };
+
+  ws.db = req.db;
 
   ws.on('message', async (message: string) => {
     // Parse data
@@ -175,6 +179,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
   // update all other clients if someone dies
   ws.on('close', () => {
     broadcastClients();
+    req.db.end();
   });
 
   // pong handling
@@ -193,6 +198,7 @@ setInterval(() => {
   API.attendanceWss.clients.forEach((ws: AttendanceWebSocket) => {
     if (!ws.isAlive) {
       ws.terminate();
+      ws.db.end();
       broadcastClients();
       return;
     }
