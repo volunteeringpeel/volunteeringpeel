@@ -33,12 +33,12 @@ interface AttendanceState {
 
 interface AttendanceEntry {
   user_shift_id: number;
-  confirm_level_id: number;
-  start_time: string;
-  end_time: string;
-  hours_override: string;
+  confirm_level_id: AttendanceField<number>;
+  start_time: AttendanceField<string>;
+  end_time: AttendanceField<string>;
+  hours_override: AttendanceField<string>;
   other_shifts: string;
-  assigned_exec: number;
+  assigned_exec: AttendanceField<number>;
   shift: {
     shift_id: number;
     shift_num: number;
@@ -55,7 +55,11 @@ interface AttendanceEntry {
     phone_2: string;
     email: string;
   };
-  status: 'success' | 'loading' | 'error';
+}
+
+interface AttendanceField<T> {
+  value: T;
+  locks: { action: string; status: 'success' | 'loading' | 'error' }[];
 }
 
 export default class Attendance extends React.Component<AttendanceProps, AttendanceState> {
@@ -127,9 +131,21 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         if (data.status === 'success') {
           this.setState({
             attendance: _.map(
-              data.data.attendance as AttendanceEntry[],
-              // set status to null by default
-              __ => ({ ...__, status: null }),
+              data.data.attendance as any[],
+              // set empty maps by default
+              __ => ({
+                user_shift_id: __.user_shift_id,
+                shift: __.shift,
+                other_shifts: __.other_shifts,
+                parentEvent: __.parentEvent,
+                user: __.user,
+                confirm_level_id: { value: __.confirm_level_id, locks: [] },
+                start_time: { value: __.start_time, locks: [] },
+                end_time: { value: __.end_time, locks: [] },
+                hours_override: { value: __.hours_override, locks: [] },
+                assigned_exec: { value: __.assigned_exec, locks: [] },
+                status: null,
+              }),
             ),
             confirmLevels: data.data.levels,
             execList: data.data.execList,
@@ -150,15 +166,18 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
   }
 
   public handleUpdate(entry: number, field: string, value: any) {
+    const valid = field === 'hours_override' ? /^\d+(:\d{2})?(:\d{2})?$/.test(value) : true;
     this.setState(
       update(this.state, {
         activeData: {
           [_.findIndex(this.state.activeData, ['user_shift_id', entry])]: {
             [field]: {
-              $set: value,
-            },
-            changed: {
-              $set: true,
+              value: {
+                $set: value,
+              },
+              locks: {
+                $push: [{ action: new Date().getTime(), status: valid ? 'loading' : 'error' }],
+              },
             },
           },
         },
@@ -173,11 +192,11 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
           '/api/attendance',
           _.map(_.filter(this.state.activeData, 'changed'), __ => ({
             user_shift_id: __.user_shift_id,
-            confirm_level_id: __.confirm_level_id,
-            start_override: formatDateForMySQL(new Date(__.start_time)),
-            end_override: formatDateForMySQL(new Date(__.end_time)),
-            hours_override: __.hours_override,
-            assigned_exec: __.assigned_exec,
+            confirm_level_id: __.confirm_level_id.value,
+            start_override: formatDateForMySQL(new Date(__.start_time.value)),
+            end_override: formatDateForMySQL(new Date(__.end_time.value)),
+            hours_override: __.hours_override.value,
+            assigned_exec: __.assigned_exec.value,
           })),
           { headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` } },
         ),
@@ -230,6 +249,16 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       'Assigned Exec',
     ];
 
+    const getLock = (row: number, field: string) => {
+      const data: any = this.state.activeData[row];
+      const locks = (data[field] as AttendanceField<any>).locks;
+      if (locks.length === 0) return {};
+      const topLock = locks[locks.length - 1];
+      if (topLock.status === 'success') return { positive: true };
+      if (topLock.status === 'error') return { negative: true };
+      if (topLock.status === 'loading') return { warning: true };
+    };
+
     return (
       <Form onSubmit={this.handleSubmit}>
         <Form.Field>
@@ -254,17 +283,17 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
               {
                 name: 'mine',
                 description: 'Assigned to me',
-                filter: __ => __.assigned_exec === this.props.user.user_id,
+                filter: __ => __.assigned_exec.value === this.props.user.user_id,
               },
               {
                 name: 'unconfirmed',
                 description: 'Unconfirmed',
-                filter: __ => __.confirm_level_id <= 0,
+                filter: __ => __.confirm_level_id.value <= 0,
               },
             ]}
             headerRow={columns}
             tableData={this.state.activeData}
-            renderBodyRow={(entry: AttendanceEntry) => {
+            renderBodyRow={(entry: AttendanceEntry, i: number) => {
               const assignedExec = _.find(this.state.execList, ['user_id', entry.assigned_exec]);
               return {
                 key: entry.user_shift_id,
@@ -277,12 +306,13 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         fluid
                         search
                         options={statuses}
-                        value={entry.confirm_level_id}
+                        value={entry.confirm_level_id.value}
                         onChange={(e, { value }) =>
                           this.handleUpdate(entry.user_shift_id, 'confirm_level_id', value)
                         }
                       />
                     ),
+                    ...getLock(i, 'confirm_level_id'),
                   },
                   entry.user.first_name,
                   entry.user.last_name,
@@ -305,7 +335,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                     content: (
                       <>
                         <DateTimePicker
-                          value={new Date(entry.start_time)}
+                          value={new Date(entry.start_time.value)}
                           onChange={value =>
                             this.handleUpdate(
                               entry.user_shift_id,
@@ -315,19 +345,25 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                           }
                         />
                         <DateTimePicker
-                          value={new Date(entry.end_time)}
+                          value={new Date(entry.end_time.value)}
                           onChange={value =>
                             this.handleUpdate(entry.user_shift_id, 'end_time', value.toISOString())
                           }
                         />
                       </>
                     ),
+                    ...getLock(i, 'start_time'),
+                    ...getLock(i, 'end_time'),
                   },
                   {
                     key: 'hours',
                     content: (
                       <>
-                        {timeFormat(moment.duration(moment(entry.end_time).diff(entry.start_time)))}{' '}
+                        {timeFormat(
+                          moment.duration(
+                            moment(entry.end_time.value).diff(entry.start_time.value),
+                          ),
+                        )}{' '}
                         +
                         <Form.Input
                           inline
@@ -335,7 +371,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                           type="text"
                           size="mini"
                           pattern="-?[0-9]+(:[0-9]{2})?(:[0-9]{2})?"
-                          value={entry.hours_override || ''}
+                          value={entry.hours_override.value || ''}
                           placeholder="00:00"
                           onChange={(e, { value }) => {
                             if (/^-?[0-9]+:?[0-9]{0,2}:?[0-9]{0,2}?$/.test(value)) {
@@ -352,11 +388,12 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         ={' '}
                         {timeFormat(
                           moment
-                            .duration(moment(entry.end_time).diff(entry.start_time))
-                            .add(entry.hours_override),
+                            .duration(moment(entry.end_time.value).diff(entry.start_time.value))
+                            .add(entry.hours_override.value),
                         )}
                       </>
                     ),
+                    ...getLock(i, 'hours_override'),
                   },
                   entry.other_shifts,
                   {
@@ -367,18 +404,15 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         fluid
                         search
                         options={this.state.execList}
-                        value={entry.assigned_exec}
+                        value={entry.assigned_exec.value}
                         onChange={(e, { value }) =>
                           this.handleUpdate(entry.user_shift_id, 'assigned_exec', value)
                         }
                       />
                     ),
-                    positive: entry.assigned_exec === this.props.user.user_id,
+                    ...getLock(i, 'assigned_exec'),
                   },
                 ],
-                warning: entry.status === 'loading',
-                negative: entry.status === 'error',
-                positive: entry.status === 'success',
               };
             }}
           />
