@@ -59,7 +59,7 @@ interface AttendanceEntry {
 
 interface AttendanceField<T> {
   value: T;
-  locks: { action: string; status: 'success' | 'loading' | 'error' }[];
+  lock: { action: string; status: 'success' | 'loading' | 'error' };
 }
 
 export default class Attendance extends React.Component<AttendanceProps, AttendanceState> {
@@ -139,11 +139,11 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                 other_shifts: __.other_shifts,
                 parentEvent: __.parentEvent,
                 user: __.user,
-                confirm_level_id: { value: __.confirm_level_id, locks: [] },
-                start_time: { value: __.start_time, locks: [] },
-                end_time: { value: __.end_time, locks: [] },
-                hours_override: { value: __.hours_override, locks: [] },
-                assigned_exec: { value: __.assigned_exec, locks: [] },
+                confirm_level_id: { value: __.confirm_level_id, lock: null },
+                start_time: { value: __.start_time, lock: null },
+                end_time: { value: __.end_time, lock: null },
+                hours_override: { value: __.hours_override, lock: null },
+                assigned_exec: { value: __.assigned_exec, lock: null },
                 status: null,
               }),
             ),
@@ -167,16 +167,36 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
 
   public handleUpdate(entry: number, field: string, value: any) {
     const valid = field === 'hours_override' ? /^\d+(:\d{2})?(:\d{2})?$/.test(value) : true;
+    const ix = _.findIndex(this.state.activeData, ['user_shift_id', entry]);
+    const id = this.state.activeData[ix].user_shift_id;
+    const action = `update/${id}/${field}|${new Date().getTime()}`;
+    this.sendMessage(
+      {
+        action,
+        key: localStorage.getItem('id_token'),
+        data: value,
+      },
+      data => {
+        if ((this.state.activeData[ix] as any)[field].lock) {
+          this.setState(
+            update(this.state, {
+              activeData: { [ix]: { [field]: { lock: { status: { $set: data.status } } } } },
+            }),
+          );
+        }
+        // add proper error handling
+      },
+    );
     this.setState(
       update(this.state, {
         activeData: {
-          [_.findIndex(this.state.activeData, ['user_shift_id', entry])]: {
+          [ix]: {
             [field]: {
               value: {
                 $set: value,
               },
-              locks: {
-                $push: [{ action: new Date().getTime(), status: valid ? 'loading' : 'error' }],
+              lock: {
+                $set: { action, status: valid ? 'loading' : 'error' },
               },
             },
           },
@@ -251,12 +271,11 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
 
     const getLock = (row: number, field: string) => {
       const data: any = this.state.activeData[row];
-      const locks = (data[field] as AttendanceField<any>).locks;
-      if (locks.length === 0) return {};
-      const topLock = locks[locks.length - 1];
-      if (topLock.status === 'success') return { positive: true };
-      if (topLock.status === 'error') return { negative: true };
-      if (topLock.status === 'loading') return { warning: true };
+      const lock = (data[field] as AttendanceField<any>).lock;
+      if (!lock) return {};
+      if (lock.status === 'success') return { positive: true };
+      if (lock.status === 'error') return { negative: true };
+      if (lock.status === 'loading') return { warning: true };
     };
 
     return (
