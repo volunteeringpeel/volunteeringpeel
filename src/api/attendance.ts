@@ -17,7 +17,9 @@ interface AttendanceWebSocket extends WebSocket {
 
 // send a message to all clients
 const broadcast = (msg: WebSocketData<any>) =>
-  API.attendanceWss.clients.forEach(client => client.send(JSON.stringify(msg)));
+  API.attendanceWss.clients.forEach(client => {
+    if (client.readyState === client.OPEN) client.send(JSON.stringify(msg));
+  });
 // send out list of currently connected clients
 const broadcastClients = () => {
   const clientList: string[] = [];
