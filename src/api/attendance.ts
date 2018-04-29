@@ -35,18 +35,11 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
   // Utility functions
   const send = (res: WebSocketData<any>) => ws.send(JSON.stringify(res));
   const die = async (action: string, error: string, details: any) => {
-    let err;
-    [err] = await to(req.db.rollback());
     send({ action, error, details, status: 'error' });
   };
   const success = async (action: string, data: any) => {
-    let err;
-    [err] = await to(req.db.commit());
-    if (err) return die(action, 'Cannot commit changes', err);
     send({ action, data, status: 'success' });
   };
-
-  ws.db = req.db;
 
   ws.on('message', async (message: string) => {
     // Parse data
@@ -67,16 +60,19 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
     let err, user;
     [err, user] = await to(Bluebird.resolve(JwtAPI.verify(data.key)));
     if (err) return die(action, 'Cannot parse token', err);
+    // Get database connection if not exist
+    if (!ws.db) [err, ws.db] = await to(API.pool.getConnection());
+    if (err) return die(action, 'Cannot connect to database', err);
     // Get user data
     [err, [ws.user]] = await to(
-      req.db.query('SELECT first_name, last_name, role_id, pic FROM user WHERE email = ?', [
+      ws.db.query('SELECT first_name, last_name, role_id, pic FROM user WHERE email = ?', [
         user.email,
       ]),
     );
     if (err) return die(action, 'Cannot find user', err);
     if (ws.user.role_id < 3) return die(action, 'Unauthorized', 'Token has no admin perms');
 
-    [err] = await to(req.db.beginTransaction());
+    [err] = await to(ws.db.beginTransaction());
     if (err) return die(action, 'Cannot begin transaction', err);
 
     switch (command[0]) {
@@ -85,7 +81,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
         // grab user's first and last name as well as vw_user_shift
         let userShifts: any[]; // update typings at a later date
         [err, userShifts] = await to(
-          req.db.query(`
+          ws.db.query(`
             SELECT us.*, u.first_name, u.last_name,
             u.phone_1, u.phone_2, u.email
             FROM vw_user_shift us
@@ -96,12 +92,12 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
 
         let confirmLevels: ConfirmLevel[];
         [err, confirmLevels] = await to(
-          req.db.query('SELECT confirm_level_id as id, name, description FROM confirm_level'),
+          ws.db.query('SELECT confirm_level_id as id, name, description FROM confirm_level'),
         );
         if (err) return die(action, 'Error retrieving attendance statuses', err);
 
         let execs: Exec[];
-        [err, execs] = await to(req.db.query('SELECT * FROM user WHERE role_id = 3'));
+        [err, execs] = await to(ws.db.query('SELECT * FROM user WHERE role_id = 3'));
 
         return success(action, {
           attendance: _.map(userShifts, userShift => ({
@@ -161,7 +157,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
         }
         let result;
         [err, result] = await to(
-          req.db.query('UPDATE user_shift SET ? WHERE user_shift_id = ?', [
+          ws.db.query('UPDATE user_shift SET ? WHERE user_shift_id = ?', [
             { [field]: data.data },
             entryID,
           ]),
@@ -179,7 +175,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
   // update all other clients if someone dies
   ws.on('close', () => {
     broadcastClients();
-    req.db.end();
+    if (ws.db) ws.db.end();
   });
 
   // pong handling
@@ -198,7 +194,7 @@ setInterval(() => {
   API.attendanceWss.clients.forEach((ws: AttendanceWebSocket) => {
     if (!ws.isAlive) {
       ws.terminate();
-      ws.db.end();
+      if (ws.db) ws.db.end();
       broadcastClients();
       return;
     }

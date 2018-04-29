@@ -31,7 +31,7 @@ import { wss } from '../index';
 const api = Express.Router();
 
 // Setup MySQL
-const pool = mysql.createPool({
+export const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
@@ -85,6 +85,7 @@ api.use((err: any, req: Express.Request, res: Express.Response, next: Express.Ne
 // Success/error functions
 api.use(
   asyncMiddleware(async (req, res, next) => {
+    if (req.path.indexOf('/ws') > -1) return next();
     // Return functions
     res.error = async (status, error, details) => {
       if (req.db) {
