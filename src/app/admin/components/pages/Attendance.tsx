@@ -16,6 +16,7 @@ import {
   Table,
   TableCellProps,
 } from 'semantic-ui-react';
+import 'web-animations-js';
 
 // App Imports
 import { formatDateForMySQL, timeFormat } from '@app/common/utilities';
@@ -111,7 +112,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
   }
 
   public recieveMessage(data: WebSocketData<any>): void {
-    console.log(data);
     if (data.action === 'global') {
       // global error, handle
       if (data.status === 'error') {
@@ -150,6 +150,32 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
               },
             },
           }),
+        );
+        // flashy animate
+        const color = '#276f86';
+        const backgroundColor = '#f8ffff';
+        document.querySelector(`.cell-${command[1]}-${command[2]}`).animate(
+          [
+            {
+              color,
+              backgroundColor,
+              opacity: 0,
+            },
+            {
+              color,
+              backgroundColor,
+              opacity: 1,
+              offset: 0.1,
+            },
+            {
+              color: '#000',
+              backgroundColor: '#fff',
+              opacity: 1,
+            },
+          ],
+          {
+            duration: 5000,
+          },
         );
         return;
       }
@@ -294,7 +320,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       if (lock.status === 'success') return { positive: true };
       if (lock.status === 'error') return { negative: true };
       if (lock.status === 'loading') return { warning: true };
-      if (lock.status === 'changed') return { className: 'changed' };
     };
 
     return (
@@ -350,6 +375,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         }
                       />
                     ),
+                    className: `cell-${entry.user_shift_id}-confirm_level_id`,
                     ...getLock(i, 'confirm_level_id'),
                   },
                   entry.user.first_name,
@@ -390,6 +416,10 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         />
                       </>
                     ),
+                    className: [
+                      `cell-${entry.user_shift_id}-start_time`,
+                      `cell-${entry.user_shift_id}-end_time`,
+                    ],
                     ...getLock(i, 'start_time'),
                     ...getLock(i, 'end_time'),
                   },
@@ -431,6 +461,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         )}
                       </>
                     ),
+                    className: `cell-${entry.user_shift_id}-hours_override`,
                     ...getLock(i, 'hours_override'),
                   },
                   entry.other_shifts,
@@ -448,6 +479,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         }
                       />
                     ),
+                    className: `cell-${entry.user_shift_id}-assigned_exec`,
                     ...getLock(i, 'assigned_exec'),
                   },
                 ],
