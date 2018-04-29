@@ -170,25 +170,31 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     const ix = _.findIndex(this.state.activeData, ['user_shift_id', entry]);
     const id = this.state.activeData[ix].user_shift_id;
     const action = `update/${id}/${field}|${new Date().getTime()}`;
-    this.sendMessage(
-      {
-        action,
-        key: localStorage.getItem('id_token'),
-        data: value,
-      },
-      data => {
-        if ((this.state.activeData[ix] as any)[field].lock) {
-          this.setState(
-            update(this.state, {
-              activeData: { [ix]: { [field]: { lock: { status: { $set: data.status } } } } },
-            }),
-          );
-        }
-        if (data.status === 'error') {
-          this.props.addMessage({ message: data.error, more: data.details, severity: 'negative' });
-        }
-      },
-    );
+    if (valid) {
+      this.sendMessage(
+        {
+          action,
+          key: localStorage.getItem('id_token'),
+          data: value,
+        },
+        data => {
+          if ((this.state.activeData[ix] as any)[field].lock) {
+            this.setState(
+              update(this.state, {
+                activeData: { [ix]: { [field]: { lock: { status: { $set: data.status } } } } },
+              }),
+            );
+          }
+          if (data.status === 'error') {
+            this.props.addMessage({
+              message: data.error,
+              more: data.details,
+              severity: 'negative',
+            });
+          }
+        },
+      );
+    }
     this.setState(
       update(this.state, {
         activeData: {
