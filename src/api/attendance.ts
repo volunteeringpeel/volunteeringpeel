@@ -14,6 +14,7 @@ interface AttendanceWebSocket extends WebSocket {
   isAlive: boolean;
   user: User;
   db: mysql.PoolConnection;
+  release: () => void;
 }
 
 // send a message to all clients
@@ -35,10 +36,29 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
   // Utility functions
   const send = (res: WebSocketData<any>) => ws.send(JSON.stringify(res));
   const die = async (action: string, error: string, details: any) => {
+    if (ws.db) {
+      let err;
+      [err] = await to(ws.db.rollback());
+      ws.release();
+    }
     send({ action, error, details, status: 'error' });
   };
   const success = async (action: string, data: any) => {
+    if (ws.db) {
+      let err;
+      [err] = await to(ws.db.commit());
+      if (err) return die(action, 'Error saving changes', err);
+      ws.release();
+    }
     send({ action, data, status: 'success' });
+  };
+
+  ws.release = () => {
+    if (ws.db) {
+      if ((API.pool as any).pool._freeConnections.indexOf(ws.db) !== -1) {
+        ws.db.release();
+      }
+    }
   };
 
   ws.on('message', async (message: string) => {
@@ -176,7 +196,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
   // update all other clients if someone dies
   ws.on('close', () => {
     broadcastClients();
-    if (ws.db) ws.db.end();
+    ws.release();
   });
 
   // pong handling
@@ -195,7 +215,7 @@ setInterval(() => {
   API.attendanceWss.clients.forEach((ws: AttendanceWebSocket) => {
     if (!ws.isAlive) {
       ws.terminate();
-      if (ws.db) ws.db.end();
+      ws.release();
       broadcastClients();
       return;
     }
