@@ -48,7 +48,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
     try {
       data = JSON.parse(message);
     } catch (e) {
-      return die('parse', 'Invalid JSON message', e.message);
+      return die('global', 'Invalid JSON message', e.message);
     }
 
     // action is in form action[/param]|time
