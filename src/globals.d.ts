@@ -25,7 +25,7 @@ type WebSocketData<T> = APIData<T> & {
 interface WebSocketRequest<T> {
   action: string;
   key: string;
-  data: T;
+  data?: T;
 }
 
 interface Message {

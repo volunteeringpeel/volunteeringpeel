@@ -55,10 +55,12 @@ interface AttendanceEntry {
     phone_2: string;
     email: string;
   };
-  changed: boolean;
+  status: 'success' | 'loading' | 'error';
 }
 
 export default class Attendance extends React.Component<AttendanceProps, AttendanceState> {
+  private ws: WebSocket;
+  private wsCallbacks: { [action: string]: (data: WebSocketData<any>) => void } = {};
   constructor(props: AttendanceProps) {
     super(props);
 
@@ -74,45 +76,77 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
   }
 
   public componentDidMount() {
-    this.refresh();
+    const protocol = window.location.protocol === 'https' ? 'wss' : 'ws';
+    const host = window.location.host;
+    this.ws = new WebSocket(`${protocol}://${host}/api/attendance/ws`);
+    this.ws.onopen = () => {
+      this.refresh();
+    };
+    this.ws.onmessage = (e: MessageEvent) => {
+      let data: WebSocketData<any>;
+      try {
+        data = JSON.parse(e.data);
+      } catch (e) {
+        // handle error
+        return;
+      }
+      this.recieveMessage(data);
+    };
+  }
+
+  public sendMessage(message: WebSocketRequest<any>, callback: (data: WebSocketData<any>) => void) {
+    this.wsCallbacks[message.action] = callback;
+    this.ws.send(JSON.stringify(message));
+  }
+
+  public recieveMessage(data: WebSocketData<any>) {
+    if (data.action === 'global') {
+      // global error, handle
+      return;
+    }
+    if (this.wsCallbacks[data.action]) {
+      this.wsCallbacks[data.action](data);
+      delete this.wsCallbacks[data.action];
+    } else {
+      this.recieveMessage({
+        action: 'global',
+        status: 'error',
+        error: 'Recieved response with no known request',
+        details: JSON.stringify(data),
+      });
+    }
   }
 
   public refresh() {
-    return Bluebird.resolve(this.props.loading(true))
-      .then(() => {
-        return axios.get('/api/attendance', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
-        });
-      })
-      .then(res => {
-        this.setState({
-          attendance: _.map(
-            res.data.data.attendance as AttendanceEntry[],
-            // set changed to false by default
-            __ => ({ ...__, changed: false }),
-          ),
-          confirmLevels: res.data.data.levels,
-          execList: res.data.data.execList,
-        });
-      })
-      .catch((error: AxiosError) => {
-        this.props.addMessage({
-          message: error.response.data.error,
-          more: error.response.data.details,
-          severity: 'negative',
-        });
-      })
-      .finally(() => {
-        this.props.loading(false);
-        if (this.state.activeEntry) {
+    this.sendMessage(
+      {
+        action: `refresh|${new Date().getTime()}`,
+        key: localStorage.getItem('id_token'),
+      },
+      data => {
+        if (data.status === 'success') {
           this.setState({
-            activeData: _.filter(this.state.attendance, [
-              'shift.shift_id',
-              +this.state.activeEntry,
-            ]),
+            attendance: _.map(
+              data.data.attendance as AttendanceEntry[],
+              // set status to null by default
+              __ => ({ ...__, status: null }),
+            ),
+            confirmLevels: data.data.levels,
+            execList: data.data.execList,
           });
+          if (this.state.activeEntry) {
+            this.setState({
+              activeData: _.filter(this.state.attendance, [
+                'shift.shift_id',
+                +this.state.activeEntry,
+              ]),
+            });
+          }
+        } else {
+          this.props.addMessage({ message: data.error, more: data.details, severity: 'negative' });
         }
-      });
+      },
+    );
   }
 
   public handleUpdate(entry: number, field: string, value: any) {
@@ -342,7 +376,9 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                     positive: entry.assigned_exec === this.props.user.user_id,
                   },
                 ],
-                warning: entry.changed,
+                warning: entry.status === 'loading',
+                negative: entry.status === 'error',
+                positive: entry.status === 'success',
               };
             }}
           />
