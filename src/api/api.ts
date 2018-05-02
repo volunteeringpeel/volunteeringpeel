@@ -110,9 +110,12 @@ api.use(
     // if (err) return res.error(500, 'Error opening transaction', err);
 
     if (req.user) {
-      [err, [{ role_id: req.user.role_id }]] = await to(
+      let data;
+      [err, data] = await to(
         req.db.query('SELECT role_id FROM user WHERE email = ?', [req.user.email]),
       );
+      // only assign role_id if it exists, otherwise 0
+      req.user.role_id = data && data[0] && data[0].role_id ? data[0].role_id : 0;
     }
 
     next();
