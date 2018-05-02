@@ -89,7 +89,7 @@ api.use(
     // Return functions
     res.error = async (status, error, details) => {
       if (req.db) {
-        await req.db.rollback();
+        // await req.db.rollback();
         req.db.release();
       }
       res
@@ -99,8 +99,8 @@ api.use(
 
     res.success = async (data, status = 200) => {
       if (req.db) {
-        [err] = await to(req.db.commit());
-        if (err) return res.error(500, 'Error saving changes', err);
+        // [err] = await to(req.db.commit());
+        // if (err) return res.error(500, 'Error saving changes', err);
         req.db.release();
       }
       if (data) res.status(status).json({ data, status: 'success' });
@@ -111,8 +111,8 @@ api.use(
     let err;
     [err, req.db] = await to(pool.getConnection());
     if (err) return res.error(500, 'Error connecting to database', err);
-    [err] = await to(req.db.beginTransaction());
-    if (err) return res.error(500, 'Error opening transaction', err);
+    // [err] = await to(req.db.beginTransaction());
+    // if (err) return res.error(500, 'Error opening transaction', err);
 
     if (req.user) {
       [err, [{ role_id: req.user.role_id }]] = await to(
