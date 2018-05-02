@@ -13,10 +13,10 @@ import {
   Dropdown,
   DropdownItemProps,
   Form,
+  Label,
   Message,
   Table,
   TableCellProps,
-  Label,
 } from 'semantic-ui-react';
 import 'web-animations-js';
 
