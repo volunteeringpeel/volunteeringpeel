@@ -50,6 +50,7 @@ interface AttendanceEntry {
   hours_override: AttendanceField<string>;
   other_shifts: string;
   assigned_exec: AttendanceField<number>;
+  notes: AttendanceField<string>;
   shift: {
     shift_id: number;
     shift_num: number;
@@ -223,6 +224,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                 end_time: { value: __.end_time, lock: null },
                 hours_override: { value: __.hours_override, lock: null },
                 assigned_exec: { value: __.assigned_exec, lock: null },
+                notes: { value: __.notes, lock: null },
                 status: null,
               }),
             ),
@@ -325,6 +327,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       'Hours',
       'Other Shifts',
       'Assigned Exec',
+      'Notes',
     ];
 
     const getLock = (row: number, field: string): TableCellProps => {
@@ -455,6 +458,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                           inline
                           fluid
                           type="text"
+                          control="input"
                           size="mini"
                           pattern="-?[0-9]+(:[0-9]{2})?(:[0-9]{2})?"
                           value={entry.hours_override.value || ''}
@@ -499,6 +503,21 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                     ),
                     className: `cell-${entry.user_shift_id}-assigned_exec`,
                     ...getLock(i, 'assigned_exec'),
+                  },
+                  {
+                    key: 'notes',
+                    content: (
+                      <Form.TextArea
+                        inline
+                        fluid
+                        value={entry.notes.value || ''}
+                        onChange={(e, { value }) =>
+                          this.handleUpdate(entry.user_shift_id, 'notes', value)
+                        }
+                      />
+                    ),
+                    className: `cell-${entry.user_shift_id}-notes`,
+                    ...getLock(i, 'notes'),
                   },
                 ],
               };
