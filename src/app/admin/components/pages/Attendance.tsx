@@ -15,6 +15,7 @@ import {
   Form,
   Label,
   Message,
+  Segment,
   Table,
   TableCellProps,
 } from 'semantic-ui-react';
@@ -40,6 +41,10 @@ interface AttendanceState {
   execList: DropdownItemProps[];
   confirmLevels: ConfirmLevel[];
   clients: string[];
+  addEntry: boolean;
+  addUser: number;
+  addState: 'positive' | 'negative' | 'warning' | 'primary';
+  users: { text: string; value: number }[];
 }
 
 interface AttendanceEntry {
@@ -87,6 +92,10 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       activeData: [],
       activeEntry: null,
       clients: [],
+      users: [],
+      addEntry: false,
+      addState: 'primary',
+      addUser: null,
     };
 
     this.refresh = this.refresh.bind(this);
@@ -362,167 +371,268 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
           />
         </Form.Field>
         {this.state.activeEntry && (
-          <FancyTable
-            filters={[
-              {
-                name: 'mine',
-                description: 'Assigned to me',
-                filter: __ => __.assigned_exec.value === this.props.user.user_id,
-              },
-              {
-                name: 'unconfirmed',
-                description: 'Unconfirmed',
-                filter: __ => __.confirm_level_id.value <= 0,
-              },
-            ]}
-            headerRow={columns}
-            tableData={this.state.activeData}
-            renderBodyRow={(entry: AttendanceEntry, i: number) => {
-              const assignedExec = _.find(this.state.execList, ['user_id', entry.assigned_exec]);
-              return {
-                key: entry.user_shift_id,
-                cells: [
-                  {
-                    key: 'confirm_level_id',
-                    content: (
-                      <Dropdown
-                        inline
-                        fluid
-                        search
-                        options={statuses}
-                        value={entry.confirm_level_id.value}
-                        onChange={(e, { value }) =>
-                          this.handleUpdate(entry.user_shift_id, 'confirm_level_id', value)
+          <>
+            <Form.Field inline>
+              <label>Actions: </label>
+              <Button.Group>
+                <Button
+                  content="Add Entry"
+                  onClick={() => {
+                    this.setState({
+                      addEntry: !this.state.addEntry,
+                      addState: this.state.addEntry ? null : 'primary',
+                    });
+                    this.sendMessage(
+                      {
+                        action: `users|${new Date().getTime()}`,
+                        key: localStorage.getItem('id_token'),
+                      },
+                      data => {
+                        if (data.status === 'success') {
+                          this.setState({ users: data.data });
+                        } else {
+                          this.setState({ addState: 'negative' });
+                          this.props.addMessage({
+                            message: data.error,
+                            more: data.details,
+                            severity: 'negative',
+                          });
                         }
-                      />
-                    ),
-                    className: `cell-${entry.user_shift_id}-confirm_level_id`,
-                    ...getLock(i, 'confirm_level_id'),
-                  },
-                  entry.user.first_name,
-                  entry.user.last_name,
-                  {
-                    key: 'phone_numbers',
-                    content: (
-                      <span>
-                        <a href={`tel:${entry.user.phone_1}`}>{entry.user.phone_1}</a>
-                        <br />
-                        <a href={`tel:${entry.user.phone_2}`}>{entry.user.phone_2}</a>
-                      </span>
-                    ),
-                  },
-                  {
-                    key: 'email',
-                    content: <a href={`mailto:${entry.user.email}`}>{entry.user.email}</a>,
-                  },
-                  {
-                    key: 'time',
-                    content: (
-                      <>
-                        <DateTimePicker
-                          value={new Date(entry.start_time.value)}
-                          onChange={value =>
-                            this.handleUpdate(
-                              entry.user_shift_id,
-                              'start_time',
-                              value.toISOString(),
-                            )
-                          }
-                        />
-                        <DateTimePicker
-                          value={new Date(entry.end_time.value)}
-                          onChange={value =>
-                            this.handleUpdate(entry.user_shift_id, 'end_time', value.toISOString())
-                          }
-                        />
-                      </>
-                    ),
-                    className: [
-                      `cell-${entry.user_shift_id}-start_time`,
-                      `cell-${entry.user_shift_id}-end_time`,
-                    ],
-                    ...getLock(i, 'start_time'),
-                    ...getLock(i, 'end_time'),
-                  },
-                  {
-                    key: 'hours',
-                    content: (
-                      <>
-                        {timeFormat(
-                          moment.duration(
-                            moment(entry.end_time.value).diff(entry.start_time.value),
-                          ),
-                        )}{' '}
-                        +
-                        <Form.Input
+                      },
+                    );
+                  }}
+                  {...{ [this.state.addState]: true }}
+                />
+                <Button content="Print" />
+                <Button
+                  content="Export (CSV)"
+                  onClick={() =>
+                    axios
+                      .get(`/api/attendance/csv/${this.state.activeEntry}`, {
+                        headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+                      })
+                      .then(res => {
+                        const link = document.createElement('a');
+                        link.download = `attendance-${this.state.activeEntry}.csv`;
+                        link.href = `data:text/csv;charset=UTF-8,${encodeURIComponent(res.data)}`;
+                        link.dispatchEvent(new MouseEvent('click'));
+                        link.remove();
+                      })
+                  }
+                />
+              </Button.Group>
+            </Form.Field>
+            {this.state.addEntry && (
+              <Segment>
+                <Form.Field>
+                  <Dropdown
+                    placeholder="Select user"
+                    fluid
+                    search
+                    selection
+                    loading={this.state.users.length === 0}
+                    options={this.state.users}
+                    value={this.state.addUser ? this.state.addUser : null}
+                    onChange={(e, { value }) =>
+                      this.setState({
+                        addUser: +value,
+                      })
+                    }
+                  />
+                </Form.Field>
+                <Button
+                  content="Add"
+                  onClick={() =>
+                    this.sendMessage(
+                      {
+                        action: `add/${this.state.activeEntry}|${new Date().getTime()}`,
+                        key: localStorage.getItem('id_token'),
+                        data: this.state.addUser,
+                      },
+                      data => {
+                        if (data.status === 'success') {
+                          this.setState({ addUser: null, addState: 'positive' });
+                          this.refresh();
+                        } else {
+                          this.setState({ addState: 'negative' });
+                          this.props.addMessage({
+                            message: data.error,
+                            more: data.details,
+                            severity: 'negative',
+                          });
+                        }
+                      },
+                    )
+                  }
+                />
+              </Segment>
+            )}
+            <FancyTable
+              filters={[
+                {
+                  name: 'mine',
+                  description: 'Assigned to me',
+                  filter: __ => __.assigned_exec.value === this.props.user.user_id,
+                },
+                {
+                  name: 'unconfirmed',
+                  description: 'Unconfirmed',
+                  filter: __ => __.confirm_level_id.value <= 0,
+                },
+              ]}
+              headerRow={columns}
+              tableData={this.state.activeData}
+              renderBodyRow={(entry: AttendanceEntry, i: number) => {
+                const assignedExec = _.find(this.state.execList, ['user_id', entry.assigned_exec]);
+                return {
+                  key: entry.user_shift_id,
+                  cells: [
+                    {
+                      key: 'confirm_level_id',
+                      content: (
+                        <Dropdown
                           inline
                           fluid
-                          type="text"
-                          control="input"
-                          size="mini"
-                          pattern="-?[0-9]+(:[0-9]{2})?(:[0-9]{2})?"
-                          value={entry.hours_override.value || ''}
-                          placeholder="00:00"
-                          onChange={(e, { value }) => {
-                            if (/^-?[0-9]+:?[0-9]{0,2}:?[0-9]{0,2}?$/.test(value)) {
-                              e.currentTarget.setCustomValidity('');
-                              this.handleUpdate(entry.user_shift_id, 'hours_override', value);
-                            } else if (!value) {
-                              // set to '' if empty (because empty doesn't match regex)
-                              this.handleUpdate(entry.user_shift_id, 'hours_override', '');
-                            } else {
-                              e.currentTarget.setCustomValidity('Please type a duration hh:mm');
-                            }
-                          }}
+                          search
+                          options={statuses}
+                          value={entry.confirm_level_id.value}
+                          onChange={(e, { value }) =>
+                            this.handleUpdate(entry.user_shift_id, 'confirm_level_id', value)
+                          }
                         />
-                        ={' '}
-                        {timeFormat(
-                          moment
-                            .duration(moment(entry.end_time.value).diff(entry.start_time.value))
-                            .add(entry.hours_override.value),
-                        )}
-                      </>
-                    ),
-                    className: `cell-${entry.user_shift_id}-hours_override`,
-                    ...getLock(i, 'hours_override'),
-                  },
-                  entry.other_shifts,
-                  {
-                    key: 'assigned_exec',
-                    content: (
-                      <Dropdown
-                        inline
-                        fluid
-                        search
-                        options={this.state.execList}
-                        value={entry.assigned_exec.value}
-                        onChange={(e, { value }) =>
-                          this.handleUpdate(entry.user_shift_id, 'assigned_exec', value)
-                        }
-                      />
-                    ),
-                    className: `cell-${entry.user_shift_id}-assigned_exec`,
-                    ...getLock(i, 'assigned_exec'),
-                  },
-                  {
-                    key: 'notes',
-                    content: (
-                      <Form.TextArea
-                        inline
-                        fluid
-                        value={entry.notes.value || ''}
-                        onChange={(e, { value }) =>
-                          this.handleUpdate(entry.user_shift_id, 'notes', value)
-                        }
-                      />
-                    ),
-                    className: `cell-${entry.user_shift_id}-notes`,
-                    ...getLock(i, 'notes'),
-                  },
-                ],
-              };
-            }}
-          />
+                      ),
+                      className: `cell-${entry.user_shift_id}-confirm_level_id`,
+                      ...getLock(i, 'confirm_level_id'),
+                    },
+                    entry.user.first_name,
+                    entry.user.last_name,
+                    {
+                      key: 'phone_numbers',
+                      content: (
+                        <span>
+                          <a href={`tel:${entry.user.phone_1}`}>{entry.user.phone_1}</a>
+                          <br />
+                          <a href={`tel:${entry.user.phone_2}`}>{entry.user.phone_2}</a>
+                        </span>
+                      ),
+                    },
+                    {
+                      key: 'email',
+                      content: <a href={`mailto:${entry.user.email}`}>{entry.user.email}</a>,
+                    },
+                    {
+                      key: 'time',
+                      content: (
+                        <>
+                          <DateTimePicker
+                            value={new Date(entry.start_time.value)}
+                            onChange={value =>
+                              this.handleUpdate(
+                                entry.user_shift_id,
+                                'start_time',
+                                value.toISOString(),
+                              )
+                            }
+                          />
+                          <DateTimePicker
+                            value={new Date(entry.end_time.value)}
+                            onChange={value =>
+                              this.handleUpdate(
+                                entry.user_shift_id,
+                                'end_time',
+                                value.toISOString(),
+                              )
+                            }
+                          />
+                        </>
+                      ),
+                      className: [
+                        `cell-${entry.user_shift_id}-start_time`,
+                        `cell-${entry.user_shift_id}-end_time`,
+                      ],
+                      ...getLock(i, 'start_time'),
+                      ...getLock(i, 'end_time'),
+                    },
+                    {
+                      key: 'hours',
+                      content: (
+                        <>
+                          {timeFormat(
+                            moment.duration(
+                              moment(entry.end_time.value).diff(entry.start_time.value),
+                            ),
+                          )}{' '}
+                          +
+                          <Form.Input
+                            inline
+                            fluid
+                            type="text"
+                            control="input"
+                            size="mini"
+                            pattern="-?[0-9]+(:[0-9]{2})?(:[0-9]{2})?"
+                            value={entry.hours_override.value || ''}
+                            placeholder="00:00"
+                            onChange={(e, { value }) => {
+                              if (/^-?[0-9]+:?[0-9]{0,2}:?[0-9]{0,2}?$/.test(value)) {
+                                e.currentTarget.setCustomValidity('');
+                                this.handleUpdate(entry.user_shift_id, 'hours_override', value);
+                              } else if (!value) {
+                                // set to '' if empty (because empty doesn't match regex)
+                                this.handleUpdate(entry.user_shift_id, 'hours_override', '');
+                              } else {
+                                e.currentTarget.setCustomValidity('Please type a duration hh:mm');
+                              }
+                            }}
+                          />
+                          ={' '}
+                          {timeFormat(
+                            moment
+                              .duration(moment(entry.end_time.value).diff(entry.start_time.value))
+                              .add(entry.hours_override.value),
+                          )}
+                        </>
+                      ),
+                      className: `cell-${entry.user_shift_id}-hours_override`,
+                      ...getLock(i, 'hours_override'),
+                    },
+                    entry.other_shifts,
+                    {
+                      key: 'assigned_exec',
+                      content: (
+                        <Dropdown
+                          inline
+                          fluid
+                          search
+                          options={this.state.execList}
+                          value={entry.assigned_exec.value}
+                          onChange={(e, { value }) =>
+                            this.handleUpdate(entry.user_shift_id, 'assigned_exec', value)
+                          }
+                        />
+                      ),
+                      className: `cell-${entry.user_shift_id}-assigned_exec`,
+                      ...getLock(i, 'assigned_exec'),
+                    },
+                    {
+                      key: 'notes',
+                      content: (
+                        <Form.TextArea
+                          inline
+                          fluid
+                          value={entry.notes.value || ''}
+                          onChange={(e, { value }) =>
+                            this.handleUpdate(entry.user_shift_id, 'notes', value)
+                          }
+                        />
+                      ),
+                      className: `cell-${entry.user_shift_id}-notes`,
+                      ...getLock(i, 'notes'),
+                    },
+                  ],
+                };
+              }}
+            />
+          </>
         )}
       </Form>
     );

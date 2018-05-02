@@ -179,6 +179,28 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
 
         return broadcast({ action, status: 'success', data: data.data });
       }
+      case 'users': {
+        // ex. users|1524957214
+        let users;
+        // todo: filter out already signed up users
+        [err, users] = await to(ws.db.query('SELECT user_id, first_name, last_name FROM user'));
+        if (err) return die(action, 'Cannot find users', err);
+
+        return success(
+          action,
+          _.map(users, u => ({ text: `${u.first_name} ${u.last_name}`, value: +u.user_id })),
+        );
+      }
+      case 'add': {
+        // ex. add/1|1524957214
+        [err] = await to(
+          ws.db.query('INSERT INTO user_shift SET ?', [
+            { user_id: data.data, shift_id: command[1] },
+          ]),
+        );
+        if (err) return die(action, 'Cannot insert record', err);
+        return success(action, 'Added record successfully');
+      }
       default: {
         return die(action, 'Unknown command', '');
       }
