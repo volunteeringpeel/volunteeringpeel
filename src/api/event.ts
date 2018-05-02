@@ -6,10 +6,10 @@ import * as _ from 'lodash';
 import * as mysql from 'promise-mysql';
 
 // API Imports
-import * as API from '@api/api';
+import * as Utilities from '@api/utilities';
 
 export const eventQuery = (authorized: boolean) =>
-  API.asyncMiddleware(async (req: Express.Request, res: Express.Response) => {
+  Utilities.asyncMiddleware(async (req: Express.Request, res: Express.Response) => {
     // Grab all events
     let err, events, query;
     // If logged in, grab admin data (active)
@@ -64,8 +64,8 @@ export const eventQuery = (authorized: boolean) =>
     res.success(withShifts, 200);
   });
 
-export const editEvent = API.asyncMiddleware(async (req, res) => {
-  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+export const editEvent = Utilities.asyncMiddleware(async (req, res) => {
+  if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   const params: any = {};
   for (const param in req.body) params[param] = JSON.parse(req.body[param]);
@@ -145,8 +145,8 @@ export const editEvent = API.asyncMiddleware(async (req, res) => {
   );
 });
 
-export const deleteEvent = API.asyncMiddleware(async (req, res) => {
-  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+export const deleteEvent = Utilities.asyncMiddleware(async (req, res) => {
+  if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err, affectedRows;
   [err, { affectedRows }] = await to(

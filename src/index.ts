@@ -13,8 +13,6 @@ const app = express();
 // Enable WebSockets
 export const wss = expressWs(app);
 
-import api from './api/api';
-
 // If dev do webpack things
 let compiler: any = null;
 if (process.env.NODE_ENV !== 'production') {
@@ -56,7 +54,7 @@ const appDir = (global.appDir =
 app.use(express.static(path.resolve(appDir)));
 
 // API
-app.use('/api', api);
+app.use('/api', require('@api/api').default);
 
 // Admin page
 // Really hacky use of .use instead of .get here. Should probably be changed
