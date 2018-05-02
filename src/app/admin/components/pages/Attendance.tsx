@@ -13,6 +13,7 @@ import {
   Dropdown,
   DropdownItemProps,
   Form,
+  Message,
   Table,
   TableCellProps,
 } from 'semantic-ui-react';
@@ -104,6 +105,10 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       }
       this.recieveMessage(data);
     };
+  }
+
+  public componentWillUnmount() {
+    this.ws.close();
   }
 
   public sendMessage(message: WebSocketRequest<any>, callback: (data: WebSocketData<any>) => void) {
@@ -285,6 +290,12 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
   }
 
   public render() {
+    if (!this.ws || this.ws.readyState === this.ws.CONNECTING) {
+      return <Message header="Establishing connection..." />;
+    }
+    if (this.ws.readyState !== this.ws.OPEN) {
+      return <Message header="Connection lost" />;
+    }
     const shifts = _.map(
       // filtered[0] will be the first one in each shift
       _.groupBy(this.state.attendance, 'shift.shift_id'),
