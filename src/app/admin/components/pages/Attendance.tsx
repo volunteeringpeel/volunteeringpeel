@@ -16,6 +16,7 @@ import {
   Message,
   Table,
   TableCellProps,
+  Label,
 } from 'semantic-ui-react';
 import 'web-animations-js';
 
@@ -38,6 +39,7 @@ interface AttendanceState {
   activeEntry: number;
   execList: DropdownItemProps[];
   confirmLevels: ConfirmLevel[];
+  clients: string[];
 }
 
 interface AttendanceEntry {
@@ -83,6 +85,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       execList: [],
       activeData: [],
       activeEntry: null,
+      clients: [],
     };
 
     this.refresh = this.refresh.bind(this);
@@ -185,7 +188,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         return;
       }
       if (command[0] === 'clients') {
-        // todo: handle client changes
+        this.setState({ clients: data.data });
         return;
       }
     }
@@ -335,6 +338,10 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
 
     return (
       <Form>
+        <p>
+          Also editing:{' '}
+          {_.map(this.state.clients, (client, i) => <Label as="span" key={i} content={client} />)}
+        </p>
         <Form.Field>
           <Dropdown
             placeholder="Select Shift"
