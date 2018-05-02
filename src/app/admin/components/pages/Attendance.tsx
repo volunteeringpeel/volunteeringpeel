@@ -8,7 +8,17 @@ import * as moment from 'moment';
 import * as React from 'react';
 import 'react-widgets/dist/css/react-widgets.css';
 import * as DateTimePicker from 'react-widgets/lib/DateTimePicker';
-import { Button, Dropdown, DropdownItemProps, Form, Table } from 'semantic-ui-react';
+import {
+  Button,
+  Dropdown,
+  DropdownItemProps,
+  Form,
+  Label,
+  Message,
+  Table,
+  TableCellProps,
+} from 'semantic-ui-react';
+import 'web-animations-js';
 
 // App Imports
 import { formatDateForMySQL, timeFormat } from '@app/common/utilities';
@@ -29,16 +39,17 @@ interface AttendanceState {
   activeEntry: number;
   execList: DropdownItemProps[];
   confirmLevels: ConfirmLevel[];
+  clients: string[];
 }
 
 interface AttendanceEntry {
   user_shift_id: number;
-  confirm_level_id: number;
-  start_time: string;
-  end_time: string;
-  hours_override: string;
+  confirm_level_id: AttendanceField<number>;
+  start_time: AttendanceField<string>;
+  end_time: AttendanceField<string>;
+  hours_override: AttendanceField<string>;
   other_shifts: string;
-  assigned_exec: number;
+  assigned_exec: AttendanceField<number>;
   shift: {
     shift_id: number;
     shift_num: number;
@@ -55,10 +66,16 @@ interface AttendanceEntry {
     phone_2: string;
     email: string;
   };
-  changed: boolean;
+}
+
+interface AttendanceField<T> {
+  value: T;
+  lock: { action: string; status: 'success' | 'loading' | 'error' | 'changed' };
 }
 
 export default class Attendance extends React.Component<AttendanceProps, AttendanceState> {
+  private ws: WebSocket;
+  private wsCallbacks: { [action: string]: (data: WebSocketData<any>) => void } = {};
   constructor(props: AttendanceProps) {
     super(props);
 
@@ -68,63 +85,206 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       execList: [],
       activeData: [],
       activeEntry: null,
+      clients: [],
     };
 
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.refresh = this.refresh.bind(this);
   }
 
   public componentDidMount() {
-    this.refresh();
+    const protocol = window.location.protocol === 'https' ? 'wss' : 'ws';
+    const host = window.location.host;
+    this.ws = new WebSocket(`${protocol}://${host}/api/attendance/ws`);
+    this.ws.onopen = () => {
+      this.refresh();
+    };
+    this.ws.onmessage = (e: MessageEvent) => {
+      let data: WebSocketData<any>;
+      try {
+        data = JSON.parse(e.data);
+      } catch (e) {
+        // handle error
+        return;
+      }
+      this.recieveMessage(data);
+    };
+  }
+
+  public componentWillUnmount() {
+    this.ws.close();
+  }
+
+  public sendMessage(message: WebSocketRequest<any>, callback: (data: WebSocketData<any>) => void) {
+    this.wsCallbacks[message.action] = callback;
+    this.ws.send(JSON.stringify(message));
+  }
+
+  public recieveMessage(data: WebSocketData<any>): void {
+    if (data.action === 'global') {
+      // global error, handle
+      if (data.status === 'error') {
+        return this.props.addMessage({
+          message: data.error,
+          more: data.details,
+          severity: 'negative',
+        });
+      }
+      return;
+    }
+    if (this.wsCallbacks[data.action]) {
+      this.wsCallbacks[data.action](data);
+      delete this.wsCallbacks[data.action];
+      return;
+    }
+    // parse action (action/param|timestamp)
+    if (data.status === 'success') {
+      const actionParts = data.action.split('|');
+      const command = actionParts[0].split('/');
+      if (command[0] === 'update') {
+        // command in form update/id/field
+        const ix = _.findIndex(this.state.activeData, ['user_shift_id', +command[1]]);
+        if (ix < 0) return;
+
+        this.setState(
+          update(this.state, {
+            activeData: {
+              [ix]: {
+                [command[2]]: {
+                  value: {
+                    $set: data.data,
+                  },
+                  lock: { $set: { action: data.action, lock: 'changed' } },
+                },
+              },
+            },
+          }),
+        );
+        // flashy animate
+        const color = '#276f86';
+        const backgroundColor = '#f8ffff';
+        document.querySelector(`.cell-${command[1]}-${command[2]}`).animate(
+          [
+            {
+              color,
+              backgroundColor,
+              opacity: 0,
+            },
+            {
+              color,
+              backgroundColor,
+              opacity: 1,
+              offset: 0.1,
+            },
+            {
+              color: '#000',
+              backgroundColor: '#fff',
+              opacity: 1,
+            },
+          ],
+          {
+            duration: 5000,
+          },
+        );
+        return;
+      }
+      if (command[0] === 'clients') {
+        this.setState({ clients: data.data });
+        return;
+      }
+    }
+    return this.recieveMessage({
+      action: 'global',
+      status: 'error',
+      error: 'Recieved response with no known request',
+      details: JSON.stringify(data),
+    });
   }
 
   public refresh() {
-    return Bluebird.resolve(this.props.loading(true))
-      .then(() => {
-        return axios.get('/api/attendance', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
-        });
-      })
-      .then(res => {
-        this.setState({
-          attendance: _.map(
-            res.data.data.attendance as AttendanceEntry[],
-            // set changed to false by default
-            __ => ({ ...__, changed: false }),
-          ),
-          confirmLevels: res.data.data.levels,
-          execList: res.data.data.execList,
-        });
-      })
-      .catch((error: AxiosError) => {
-        this.props.addMessage({
-          message: error.response.data.error,
-          more: error.response.data.details,
-          severity: 'negative',
-        });
-      })
-      .finally(() => {
-        this.props.loading(false);
-        if (this.state.activeEntry) {
+    this.sendMessage(
+      {
+        action: `refresh|${new Date().getTime()}`,
+        key: localStorage.getItem('id_token'),
+      },
+      data => {
+        if (data.status === 'success') {
           this.setState({
-            activeData: _.filter(this.state.attendance, [
-              'shift.shift_id',
-              +this.state.activeEntry,
-            ]),
+            attendance: _.map(
+              data.data.attendance as any[],
+              // set empty maps by default
+              __ => ({
+                user_shift_id: __.user_shift_id,
+                shift: __.shift,
+                other_shifts: __.other_shifts,
+                parentEvent: __.parentEvent,
+                user: __.user,
+                confirm_level_id: { value: __.confirm_level_id, lock: null },
+                start_time: { value: __.start_time, lock: null },
+                end_time: { value: __.end_time, lock: null },
+                hours_override: { value: __.hours_override, lock: null },
+                assigned_exec: { value: __.assigned_exec, lock: null },
+                status: null,
+              }),
+            ),
+            confirmLevels: data.data.levels,
+            execList: data.data.execList,
           });
+          if (this.state.activeEntry) {
+            this.setState({
+              activeData: _.filter(this.state.attendance, [
+                'shift.shift_id',
+                +this.state.activeEntry,
+              ]),
+            });
+          }
+        } else {
+          this.props.addMessage({ message: data.error, more: data.details, severity: 'negative' });
         }
-      });
+      },
+    );
   }
 
   public handleUpdate(entry: number, field: string, value: any) {
+    const valid = field === 'hours_override' ? /^-?\d+:\d{2}?(:\d{2})?$/.test(value) : true;
+    const ix = _.findIndex(this.state.activeData, ['user_shift_id', entry]);
+    const id = this.state.activeData[ix].user_shift_id;
+    const action = `update/${id}/${field}|${new Date().getTime()}`;
+    if (valid) {
+      this.sendMessage(
+        {
+          action,
+          key: localStorage.getItem('id_token'),
+          data: value,
+        },
+        data => {
+          if ((this.state.activeData[ix] as any)[field].lock) {
+            this.setState(
+              update(this.state, {
+                activeData: { [ix]: { [field]: { lock: { status: { $set: data.status } } } } },
+              }),
+            );
+          }
+          if (data.status === 'error') {
+            this.props.addMessage({
+              message: data.error,
+              more: data.details,
+              severity: 'negative',
+            });
+          }
+        },
+      );
+    }
     this.setState(
       update(this.state, {
         activeData: {
-          [_.findIndex(this.state.activeData, ['user_shift_id', entry])]: {
+          [ix]: {
             [field]: {
-              $set: value,
-            },
-            changed: {
-              $set: true,
+              value: {
+                $set: value,
+              },
+              lock: {
+                $set: { action, status: valid ? 'loading' : 'error' },
+              },
             },
           },
         },
@@ -132,42 +292,13 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     );
   }
 
-  public handleSubmit() {
-    return Bluebird.resolve(this.props.loading(true))
-      .then(() =>
-        axios.post(
-          '/api/attendance',
-          _.map(_.filter(this.state.activeData, 'changed'), __ => ({
-            user_shift_id: __.user_shift_id,
-            confirm_level_id: __.confirm_level_id,
-            start_override: formatDateForMySQL(new Date(__.start_time)),
-            end_override: formatDateForMySQL(new Date(__.end_time)),
-            hours_override: __.hours_override,
-            assigned_exec: __.assigned_exec,
-          })),
-          { headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` } },
-        ),
-      )
-      .then(res => {
-        this.props.addMessage({
-          message: res.data.data,
-          severity: 'positive',
-        });
-      })
-      .catch((error: AxiosError) => {
-        this.props.addMessage({
-          message: error.response.data.error,
-          more: error.response.data.details,
-          severity: 'negative',
-        });
-      })
-      .finally(() => {
-        this.props.loading(false);
-        this.refresh();
-      });
-  }
-
   public render() {
+    if (!this.ws || this.ws.readyState === this.ws.CONNECTING) {
+      return <Message header="Establishing connection..." />;
+    }
+    if (this.ws.readyState !== this.ws.OPEN) {
+      return <Message header="Connection lost" />;
+    }
     const shifts = _.map(
       // filtered[0] will be the first one in each shift
       _.groupBy(this.state.attendance, 'shift.shift_id'),
@@ -196,8 +327,21 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       'Assigned Exec',
     ];
 
+    const getLock = (row: number, field: string): TableCellProps => {
+      const data: any = this.state.activeData[row];
+      const lock = (data[field] as AttendanceField<any>).lock;
+      if (!lock) return {};
+      if (lock.status === 'success') return { positive: true };
+      if (lock.status === 'error') return { negative: true };
+      if (lock.status === 'loading') return { warning: true };
+    };
+
     return (
-      <Form onSubmit={this.handleSubmit}>
+      <Form>
+        <p>
+          Also editing:{' '}
+          {_.map(this.state.clients, (client, i) => <Label as="span" key={i} content={client} />)}
+        </p>
         <Form.Field>
           <Dropdown
             placeholder="Select Shift"
@@ -220,17 +364,17 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
               {
                 name: 'mine',
                 description: 'Assigned to me',
-                filter: __ => __.assigned_exec === this.props.user.user_id,
+                filter: __ => __.assigned_exec.value === this.props.user.user_id,
               },
               {
                 name: 'unconfirmed',
                 description: 'Unconfirmed',
-                filter: __ => __.confirm_level_id <= 0,
+                filter: __ => __.confirm_level_id.value <= 0,
               },
             ]}
             headerRow={columns}
             tableData={this.state.activeData}
-            renderBodyRow={(entry: AttendanceEntry) => {
+            renderBodyRow={(entry: AttendanceEntry, i: number) => {
               const assignedExec = _.find(this.state.execList, ['user_id', entry.assigned_exec]);
               return {
                 key: entry.user_shift_id,
@@ -243,12 +387,14 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         fluid
                         search
                         options={statuses}
-                        value={entry.confirm_level_id}
+                        value={entry.confirm_level_id.value}
                         onChange={(e, { value }) =>
                           this.handleUpdate(entry.user_shift_id, 'confirm_level_id', value)
                         }
                       />
                     ),
+                    className: `cell-${entry.user_shift_id}-confirm_level_id`,
+                    ...getLock(i, 'confirm_level_id'),
                   },
                   entry.user.first_name,
                   entry.user.last_name,
@@ -271,7 +417,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                     content: (
                       <>
                         <DateTimePicker
-                          value={new Date(entry.start_time)}
+                          value={new Date(entry.start_time.value)}
                           onChange={value =>
                             this.handleUpdate(
                               entry.user_shift_id,
@@ -281,19 +427,29 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                           }
                         />
                         <DateTimePicker
-                          value={new Date(entry.end_time)}
+                          value={new Date(entry.end_time.value)}
                           onChange={value =>
                             this.handleUpdate(entry.user_shift_id, 'end_time', value.toISOString())
                           }
                         />
                       </>
                     ),
+                    className: [
+                      `cell-${entry.user_shift_id}-start_time`,
+                      `cell-${entry.user_shift_id}-end_time`,
+                    ],
+                    ...getLock(i, 'start_time'),
+                    ...getLock(i, 'end_time'),
                   },
                   {
                     key: 'hours',
                     content: (
                       <>
-                        {timeFormat(moment.duration(moment(entry.end_time).diff(entry.start_time)))}{' '}
+                        {timeFormat(
+                          moment.duration(
+                            moment(entry.end_time.value).diff(entry.start_time.value),
+                          ),
+                        )}{' '}
                         +
                         <Form.Input
                           inline
@@ -301,7 +457,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                           type="text"
                           size="mini"
                           pattern="-?[0-9]+(:[0-9]{2})?(:[0-9]{2})?"
-                          value={entry.hours_override || ''}
+                          value={entry.hours_override.value || ''}
                           placeholder="00:00"
                           onChange={(e, { value }) => {
                             if (/^-?[0-9]+:?[0-9]{0,2}:?[0-9]{0,2}?$/.test(value)) {
@@ -318,11 +474,13 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         ={' '}
                         {timeFormat(
                           moment
-                            .duration(moment(entry.end_time).diff(entry.start_time))
-                            .add(entry.hours_override),
+                            .duration(moment(entry.end_time.value).diff(entry.start_time.value))
+                            .add(entry.hours_override.value),
                         )}
                       </>
                     ),
+                    className: `cell-${entry.user_shift_id}-hours_override`,
+                    ...getLock(i, 'hours_override'),
                   },
                   entry.other_shifts,
                   {
@@ -333,16 +491,16 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         fluid
                         search
                         options={this.state.execList}
-                        value={entry.assigned_exec}
+                        value={entry.assigned_exec.value}
                         onChange={(e, { value }) =>
                           this.handleUpdate(entry.user_shift_id, 'assigned_exec', value)
                         }
                       />
                     ),
-                    positive: entry.assigned_exec === this.props.user.user_id,
+                    className: `cell-${entry.user_shift_id}-assigned_exec`,
+                    ...getLock(i, 'assigned_exec'),
                   },
                 ],
-                warning: entry.changed,
               };
             }}
           />

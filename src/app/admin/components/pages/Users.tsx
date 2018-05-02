@@ -13,21 +13,21 @@ import FancyTable from '@app/common/components/FancyTable';
 import UserModal from '@app/admin/controllers/modules/UserModal';
 import * as _ from 'lodash';
 
-interface EventProps {
+interface UsersProps {
   addMessage: (message: Message) => any;
   loading: (status: boolean) => any;
   push: (location: LocationDescriptor) => any;
 }
 
-interface EventState {
+interface UsersState {
   users: User[];
 }
 
-export default class Events extends React.Component<
-  EventProps & RouteComponentProps<any>,
-  EventState
+export default class Users extends React.Component<
+  UsersProps & RouteComponentProps<any>,
+  UsersState
 > {
-  constructor(props: EventProps & RouteComponentProps<any>) {
+  constructor(props: UsersProps & RouteComponentProps<any>) {
     super(props);
 
     this.state = {
@@ -85,7 +85,7 @@ export default class Events extends React.Component<
   public render() {
     const headerRow = ['Role', 'First Name', 'Last Name', 'Email', 'Phone 1', 'Phone 2', 'Actions'];
     const footerRow = [
-      <th colSpan={headerRow.length}>
+      <th colSpan={headerRow.length} key="footer">
         <Button
           size="mini"
           content="Add"

@@ -25,12 +25,13 @@ import * as AttendanceAPI from '@api/attendance';
 import * as EventAPI from '@api/event';
 import * as MailingListAPI from '@api/mailing-list';
 import * as UserAPI from '@api/user';
+import { wss } from '../index';
 
 // Initialize API
 const api = Express.Router();
 
 // Setup MySQL
-const pool = mysql.createPool({
+export const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
@@ -58,28 +59,37 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-const checkJwt = jwt({
-  // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: `https://volunteering-peel.auth0.com/.well-known/jwks.json`,
-  }),
+api.use(
+  jwt({
+    // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
+    secret: jwksRsa.expressJwtSecret({
+      cache: true,
+      rateLimit: true,
+      jwksRequestsPerMinute: 5,
+      jwksUri: `https://volunteering-peel.auth0.com/.well-known/jwks.json`,
+    }),
 
-  // Validate the audience and the issuer.
-  audience: process.env.AUTH0_AUDIENCE,
-  issuer: `https://volunteering-peel.auth0.com/`,
-  algorithms: ['RS256'],
-}).unless({ path: [/\/public*/] });
+    // Validate the audience and the issuer.
+    audience: process.env.AUTH0_AUDIENCE,
+    issuer: `https://volunteering-peel.auth0.com/`,
+    algorithms: ['RS256'],
+  }).unless({ path: [/\/public*/, /.*\/ws/] }),
+);
+
+api.use((err: any, req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
+  if (err.name === 'UnauthorizedError') {
+    res.error((err as jwt.UnauthorizedError).status, (err as jwt.UnauthorizedError).message);
+  }
+});
 
 // Success/error functions
 api.use(
   asyncMiddleware(async (req, res, next) => {
+    if (req.path.indexOf('/ws') > -1) return next();
     // Return functions
     res.error = async (status, error, details) => {
       if (req.db) {
-        await req.db.rollback();
+        // await req.db.rollback();
         req.db.release();
       }
       res
@@ -89,8 +99,8 @@ api.use(
 
     res.success = async (data, status = 200) => {
       if (req.db) {
-        [err] = await to(req.db.commit());
-        if (err) return res.error(500, 'Error saving changes', err);
+        // [err] = await to(req.db.commit());
+        // if (err) return res.error(500, 'Error saving changes', err);
         req.db.release();
       }
       if (data) res.status(status).json({ data, status: 'success' });
@@ -101,20 +111,18 @@ api.use(
     let err;
     [err, req.db] = await to(pool.getConnection());
     if (err) return res.error(500, 'Error connecting to database', err);
-    [err] = await to(req.db.beginTransaction());
-    if (err) return res.error(500, 'Error opening transaction', err);
+    // [err] = await to(req.db.beginTransaction());
+    // if (err) return res.error(500, 'Error opening transaction', err);
+
+    if (req.user) {
+      [err, [{ role_id: req.user.role_id }]] = await to(
+        req.db.query('SELECT role_id FROM user WHERE email = ?', [req.user.email]),
+      );
+    }
 
     next();
   }),
 );
-
-api.use(checkJwt);
-
-api.use((err: any, req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
-  if (err.name === 'UnauthorizedError') {
-    res.error((err as jwt.UnauthorizedError).status, (err as jwt.UnauthorizedError).message);
-  }
-});
 
 // Get all users
 api.get('/user', UserAPI.getAllUsers);
@@ -125,10 +133,9 @@ api.delete('/user/:id', UserAPI.deleteUser);
 // Get current user
 api.get('/user/current', UserAPI.getCurrentUser);
 
-// Get user shifts (but formatted)
-api.get('/attendance', AttendanceAPI.getAttendance);
-// Update user shift
-api.post('/attendance', AttendanceAPI.updateAttendance);
+// WebSocket
+api.ws('/attendance/ws', AttendanceAPI.webSocket);
+export const attendanceWss = wss.getWss('/api/attendance/ws');
 
 // Get all mailing lists
 api.get('/mailing-list', MailingListAPI.getMailingList);
@@ -216,7 +223,8 @@ api.post(
 );
 
 // 404
-api.get('*', (req, res) => {
+api.get('*', (req, res, next) => {
+  if (req.headers.upgrade === 'websocket') res.end();
   res.error(404, 'Unknown endpoint');
 });
 

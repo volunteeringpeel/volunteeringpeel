@@ -5,7 +5,7 @@ import { withRouter } from 'react-router';
 import { push } from 'react-router-redux';
 
 // App Imports
-import { loading } from '@app/common/actions';
+import { addMessage, loading } from '@app/common/actions';
 
 // Component Imports
 import Attendance from '@app/admin/components/pages/Attendance';
@@ -16,6 +16,7 @@ const mapStateToProps = (state: State) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
+  addMessage: (message: Message) => dispatch(addMessage(message)),
   loading: (status: boolean) => dispatch(loading(status)),
 });
 

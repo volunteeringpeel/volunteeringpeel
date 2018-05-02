@@ -7,12 +7,12 @@ import { Redirect } from 'react-router-dom';
 // App Imports
 import Loading from '@app/common/components/Loading';
 
-interface Route extends RouteConfig {
+export interface CustomRouteConfig extends RouteConfig {
   title: string;
   display?: string;
 }
 
-const routes: Route[] = [
+const routes: CustomRouteConfig[] = [
   {
     path: '/admin/home',
     component: reactLoadable({

@@ -2,14 +2,18 @@
 import * as Promise from 'bluebird';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
+import * as expressWs from 'express-ws';
 import * as path from 'path';
-
-import api from './api/api';
+import * as WebSocket from 'ws';
 
 import 'babel-polyfill';
 
 // Setup Express
 const app = express();
+// Enable WebSockets
+export const wss = expressWs(app);
+
+import api from './api/api';
 
 // If dev do webpack things
 let compiler: any = null;
@@ -74,6 +78,7 @@ app.use('/admin', (req, res, next) => {
 
 // Public page
 app.get('*', (req, res, next) => {
+  if (req.headers.upgrade === 'websocket') res.end();
   if (compiler) {
     const filename = path.join(compiler.outputPath, 'index.html');
     compiler.outputFileSystem.readFile(filename, (err: any, result: any) => {

@@ -45,7 +45,7 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                     render={({ match }) => {
                       const page = _.find(routes, route => {
                         const regex = new RegExp(`^\/admin\/${match.params.page}`, 'gi');
-                        return route.path.match(regex);
+                        return !!route.path.match(regex);
                       });
 
                       if (!page) {
