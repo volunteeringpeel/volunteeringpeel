@@ -94,7 +94,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       clients: [],
       users: [],
       addEntry: false,
-      addState: 'primary',
+      addState: null,
       addUser: null,
     };
 
@@ -403,7 +403,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   }}
                   {...{ [this.state.addState]: true }}
                 />
-                <Button content="Print" />
+                <Button content="Print" disabled />
                 <Button
                   content="Export (CSV)"
                   onClick={() =>
