@@ -49,6 +49,32 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+// JSON middleware
+api.use((req, res, next) => {
+  // Return functions
+  res.error = async (status, error, details) => {
+    if (req.db) {
+      // await req.db.rollback();
+      req.db.release();
+    }
+    res
+      .status(status)
+      .json({ error, details: details || 'No further information', status: 'error' });
+  };
+
+  res.success = async (data, status = 200) => {
+    if (req.db) {
+      // [err] = await to(req.db.commit());
+      // if (err) return res.error(500, 'Error saving changes', err);
+      req.db.release();
+    }
+    if (data) res.status(status).json({ data, status: 'success' });
+    else res.status(status).json({ status: 'success' });
+  };
+
+  next();
+});
+
 api.use(
   jwt({
     // Dynamically provide a signing key based on the kid in the header and the singing keys provided by the JWKS endpoint.
@@ -65,37 +91,16 @@ api.use(
     algorithms: ['RS256'],
   }).unless({ path: [/\/public*/, /.*\/ws/] }),
 );
-
 api.use((err: any, req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
   if (err.name === 'UnauthorizedError') {
     res.error((err as jwt.UnauthorizedError).status, (err as jwt.UnauthorizedError).message);
   }
 });
 
-// Success/error functions
+// Database middleware
 api.use(
   Utilities.asyncMiddleware(async (req, res, next) => {
     if (req.path.indexOf('/ws') > -1) return next();
-    // Return functions
-    res.error = async (status, error, details) => {
-      if (req.db) {
-        // await req.db.rollback();
-        req.db.release();
-      }
-      res
-        .status(status)
-        .json({ error, details: details || 'No further information', status: 'error' });
-    };
-
-    res.success = async (data, status = 200) => {
-      if (req.db) {
-        // [err] = await to(req.db.commit());
-        // if (err) return res.error(500, 'Error saving changes', err);
-        req.db.release();
-      }
-      if (data) res.status(status).json({ data, status: 'success' });
-      else res.status(status).json({ status: 'success' });
-    };
 
     // Store db connection inside of req for access by other API files
     let err;
