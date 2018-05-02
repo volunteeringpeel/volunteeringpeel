@@ -158,6 +158,12 @@
   dependencies:
     "@types/node" "*"
 
+"@types/csv-stringify@^1.4.2":
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/@types/csv-stringify/-/csv-stringify-1.4.2.tgz#3a71c6f508ae434339e2304d36bb00177e659d95"
+  dependencies:
+    "@types/node" "*"
+
 "@types/dotenv@^4.0.3":
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/@types/dotenv/-/dotenv-4.0.3.tgz#ebcfc40da7bc0728b705945b7db48485ec5b4b67"
@@ -2003,6 +2009,12 @@ csso@~2.3.1:
 csstype@^2.2.0:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.4.2.tgz#158e36c69566bf968da63d0ba14eda1c20e8643a"
+
+csv-stringify@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/csv-stringify/-/csv-stringify-3.0.0.tgz#ed2b4eaae5a3be382309f7864168458970307d7f"
+  dependencies:
+    lodash.get "~4.4.2"
 
 currently-unhandled@^0.4.1:
   version "0.4.1"
@@ -3930,6 +3942,10 @@ lodash-es@^4.17.4, lodash-es@^4.17.5, lodash-es@^4.2.1:
 lodash.camelcase@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lodash.camelcase/-/lodash.camelcase-4.3.0.tgz#b28aa6288a2b9fc651035c7711f65ab6190331a6"
+
+lodash.get@~4.4.2:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
 
 lodash.includes@^4.3.0:
   version "4.3.0"

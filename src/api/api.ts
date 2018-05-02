@@ -126,6 +126,8 @@ api.get('/user/current', UserAPI.getCurrentUser);
 // WebSocket
 api.ws('/attendance/ws', AttendanceAPI.webSocket);
 export const attendanceWss = wss.getWss('/api/attendance/ws');
+// Export as CSV
+api.get('/attendance/csv/:id', AttendanceAPI.exportToCSV);
 
 // Get all mailing lists
 api.get('/mailing-list', MailingListAPI.getMailingList);

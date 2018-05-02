@@ -1,6 +1,7 @@
 /* tslint:disable:no-console no-var-requires import-name */
 import to from '@lib/await-to-js';
 import * as Bluebird from 'bluebird';
+import * as csvStringify from 'csv-stringify';
 import * as Express from 'express';
 import * as _ from 'lodash';
 import * as mysql from 'promise-mysql';
@@ -215,3 +216,34 @@ setInterval(() => {
     ws.ping(null, false);
   });
 }, 1000);
+
+export const exportToCSV: Express.RequestHandler = async (req, res) => {
+  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+
+  let err, data;
+  [err, data] = await to(
+    req.db.query(
+      `SELECT 
+        first_name, last_name, phone_1, phone_2, notes
+        FROM user_shift us
+        JOIN user u ON u.user_id = us.user_id
+        WHERE us.shift_id = ?`,
+      [req.params.id],
+    ),
+  );
+  if (err) return res.error(500, 'Error selecting attendance data', err);
+
+  let rows = [['First', 'Last', 'Phone #1', 'Phone #2', 'Notes']];
+  rows = rows.concat(
+    _.map(data, row => [row.first_name, row.last_name, row.phone_1, row.phone_2, row.notes]),
+  );
+
+  let csv;
+  [err, csv] = await to(Bluebird.promisify(csvStringify)(rows));
+  if (err) return res.error(500, 'Error parsing data', err);
+
+  res.setHeader('Content-disposition', 'attachment; filename=attendance.csv');
+  res.set('Content-Type', 'text/csv');
+  res.status(200).send(csv);
+  req.db.release();
+};
