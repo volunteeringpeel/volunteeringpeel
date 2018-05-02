@@ -9,6 +9,7 @@ import * as WebSocket from 'ws';
 // API Imports
 import * as API from '@api/api';
 import * as JwtAPI from '@api/jwt';
+import * as Utilities from '@api/utilities';
 
 interface AttendanceWebSocket extends WebSocket {
   isAlive: boolean;

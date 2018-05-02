@@ -6,10 +6,10 @@ import * as _ from 'lodash';
 import * as mysql from 'promise-mysql';
 
 // Import API core
-import * as API from '@api/api';
+import * as Utilities from '@api/utilities';
 
-export const getMailingList = API.asyncMiddleware(async (req, res) => {
-  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+export const getMailingList = Utilities.asyncMiddleware(async (req, res) => {
+  if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err, results;
   [err, results] = await to(
@@ -39,8 +39,8 @@ export const getMailingList = API.asyncMiddleware(async (req, res) => {
   res.success(lists, 200);
 });
 
-export const deleteMailingList = API.asyncMiddleware(async (req, res) => {
-  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+export const deleteMailingList = Utilities.asyncMiddleware(async (req, res) => {
+  if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err;
   [err] = await to(req.db.query('DELETE FROM mail_list WHERE mail_list_id = ?', +req.params.id));
@@ -48,8 +48,8 @@ export const deleteMailingList = API.asyncMiddleware(async (req, res) => {
   res.success('Mail list deleted successfully', 200);
 });
 
-export const updateMailingList = API.asyncMiddleware(async (req, res) => {
-  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+export const updateMailingList = Utilities.asyncMiddleware(async (req, res) => {
+  if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err;
   const { display_name, description } = req.body;
@@ -72,7 +72,7 @@ export const updateMailingList = API.asyncMiddleware(async (req, res) => {
   res.success('Mail list updated successfully', 200);
 });
 
-export const signup = API.asyncMiddleware(async (req, res) => {
+export const signup = Utilities.asyncMiddleware(async (req, res) => {
   let err;
 
   let userID: number;

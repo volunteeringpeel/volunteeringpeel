@@ -6,10 +6,10 @@ import * as _ from 'lodash';
 import * as mysql from 'promise-mysql';
 
 // Import API core
-import * as API from '@api/api';
+import * as Utilities from '@api/utilities';
 
-export const getAllUsers = API.asyncMiddleware(async (req, res) => {
-  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
+  if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err, users: User[];
   [err, users] = await to(
@@ -36,7 +36,7 @@ export const getAllUsers = API.asyncMiddleware(async (req, res) => {
   res.success(users, 200);
 });
 
-export const getCurrentUser = API.asyncMiddleware(async (req, res) => {
+export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
   let err;
 
   const out: UserData = {
@@ -133,8 +133,8 @@ export const getCurrentUser = API.asyncMiddleware(async (req, res) => {
   res.success(out, out.new ? 201 : 200);
 });
 
-export const deleteUser = API.asyncMiddleware(async (req, res) => {
-  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+export const deleteUser = Utilities.asyncMiddleware(async (req, res) => {
+  if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   // Delete user
   let err;
@@ -144,7 +144,7 @@ export const deleteUser = API.asyncMiddleware(async (req, res) => {
   res.success('User deleted successfully', 200);
 });
 
-export const updateUser = API.asyncMiddleware(async (req, res) => {
+export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
   let err;
 
   // get parameters from request body
@@ -195,7 +195,7 @@ export const updateUser = API.asyncMiddleware(async (req, res) => {
     res.success('Profile updated successfully', 200);
   } else {
     // updating another user, so you need admin permissions
-    if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+    if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
     // get parameters from request body
     const { email, role_id }: User = req.body;

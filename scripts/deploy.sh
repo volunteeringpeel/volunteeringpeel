@@ -28,8 +28,8 @@ HOME=/var/www pm2 stop volunteeringpeel
 echo "Installing new site..."
 rm -rf dist
 cp -rf .artifacts/dist ./
+# Reset SQL database
+cat .artifacts/sql/*.sql | mysql -u "$DB_USER" -p"$DB_PASS" volunteeringpeel -v
+
 echo "Starting site..."
 HOME=/var/www pm2 start volunteeringpeel
-
-# Reset SQL database
-cat .artifacts/sql/*.sql | mysql -u "$DB_USER" -p"$DB_PASS" volunteeringpeel

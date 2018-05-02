@@ -8,17 +8,7 @@ import * as _ from 'lodash';
 import * as multer from 'multer';
 import * as mysql from 'promise-mysql';
 
-// Roles
-export const ROLE_VOLUNTEER = 1;
-export const ROLE_ORGANIZER = 2;
-export const ROLE_EXECUTIVE = 3;
-export const asyncMiddleware: ((fn: Express.RequestHandler) => Express.RequestHandler) = fn => (
-  req,
-  res,
-  next,
-) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
+import * as Utilities from '@api/utilities';
 
 // Import sub-APIs
 import * as AttendanceAPI from '@api/attendance';
@@ -84,7 +74,7 @@ api.use((err: any, req: Express.Request, res: Express.Response, next: Express.Ne
 
 // Success/error functions
 api.use(
-  asyncMiddleware(async (req, res, next) => {
+  Utilities.asyncMiddleware(async (req, res, next) => {
     if (req.path.indexOf('/ws') > -1) return next();
     // Return functions
     res.error = async (status, error, details) => {
@@ -149,7 +139,7 @@ api.post('/public/mailing-list/:id', MailingListAPI.signup);
 // FAQ's
 api.get(
   '/public/faq',
-  asyncMiddleware(async (req, res) => {
+  Utilities.asyncMiddleware(async (req, res) => {
     let err, faqs;
     [err, faqs] = await to(req.db.query('SELECT question, answer FROM faq ORDER BY priority'));
     if (err) return res.error(500, 'Error retrieving FAQs', err);
@@ -160,7 +150,7 @@ api.get(
 // Execs
 api.get(
   '/public/execs',
-  asyncMiddleware(async (req, res) => {
+  Utilities.asyncMiddleware(async (req, res) => {
     let err, execs;
     [err, execs] = await to(
       req.db.query(
@@ -175,7 +165,7 @@ api.get(
 // Sponsors
 api.get(
   '/public/sponsors',
-  asyncMiddleware(async (req, res) => {
+  Utilities.asyncMiddleware(async (req, res) => {
     let err, sponsors;
     [err, sponsors] = await to(
       req.db.query('SELECT name, image, website FROM sponsor ORDER BY priority'),
@@ -197,7 +187,7 @@ api.delete('/event/:id', EventAPI.deleteEvent);
 // Signup
 api.post(
   '/signup',
-  asyncMiddleware(async (req, res) => {
+  Utilities.asyncMiddleware(async (req, res) => {
     // Get user id from email
     let err, users: { user_id: number }[];
     [err, users] = await to(
