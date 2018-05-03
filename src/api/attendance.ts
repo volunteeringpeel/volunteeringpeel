@@ -240,7 +240,7 @@ setInterval(() => {
 }, 1000);
 
 export const exportToCSV: Express.RequestHandler = async (req, res) => {
-  if (req.user.role_id < API.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+  if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err, data;
   [err, data] = await to(
