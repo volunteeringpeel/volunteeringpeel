@@ -1,6 +1,7 @@
 /* tslint:disable:no-console no-var-requires import-name */
 import to from '@lib/await-to-js';
 import * as Bluebird from 'bluebird';
+import * as csvStringify from 'csv-stringify';
 import * as Express from 'express';
 import * as _ from 'lodash';
 import * as mysql from 'promise-mysql';
@@ -77,12 +78,17 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
     if (!ws.db) [err, ws.db] = await to(API.pool.getConnection());
     if (err) return die(action, 'Cannot connect to database', err);
     // Get user data
-    [err, [ws.user]] = await to(
-      ws.db.query('SELECT first_name, last_name, role_id, pic FROM user WHERE email = ?', [
-        user.email,
-      ]),
-    );
-    if (err) return die(action, 'Cannot find user', err);
+    if (!ws.user) {
+      let userInfo;
+      [err, userInfo] = await to(
+        ws.db.query('SELECT first_name, last_name, role_id, pic FROM user WHERE email = ?', [
+          user.email,
+        ]),
+      );
+      console.log(userInfo);
+      if (err || !userInfo || !userInfo[0]) return die(action, 'Cannot find user', err);
+      ws.user = userInfo[0];
+    }
     if (ws.user.role_id < 3) return die(action, 'Unauthorized', 'Token has no admin perms');
 
     switch (command[0]) {
@@ -118,6 +124,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
             hours_override: userShift.hours_override,
             other_shifts: userShift.other_shifts,
             assigned_exec: +userShift.assigned_exec,
+            notes: userShift.notes,
             shift: {
               shift_id: +userShift.shift_id,
               shift_num: +userShift.shift_num,
@@ -159,6 +166,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
               'end_override',
               'hours_override',
               'assigned_exec',
+              'notes',
             ],
             field,
           )
@@ -175,6 +183,28 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
         if (err) return die(action, 'Error updating attendance, please try again', err);
 
         return broadcast({ action, status: 'success', data: data.data });
+      }
+      case 'users': {
+        // ex. users|1524957214
+        let users;
+        // todo: filter out already signed up users
+        [err, users] = await to(ws.db.query('SELECT user_id, first_name, last_name FROM user'));
+        if (err) return die(action, 'Cannot find users', err);
+
+        return success(
+          action,
+          _.map(users, u => ({ text: `${u.first_name} ${u.last_name}`, value: +u.user_id })),
+        );
+      }
+      case 'add': {
+        // ex. add/1|1524957214
+        [err] = await to(
+          ws.db.query('INSERT INTO user_shift SET ?', [
+            { user_id: data.data, shift_id: command[1] },
+          ]),
+        );
+        if (err) return die(action, 'Cannot insert record', err);
+        return success(action, 'Added record successfully');
       }
       default: {
         return die(action, 'Unknown command', '');
@@ -213,3 +243,34 @@ setInterval(() => {
     ws.ping(null, false);
   });
 }, 1000);
+
+export const exportToCSV: Express.RequestHandler = async (req, res) => {
+  if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+
+  let err, data;
+  [err, data] = await to(
+    req.db.query(
+      `SELECT 
+        first_name, last_name, phone_1, phone_2, notes
+        FROM user_shift us
+        JOIN user u ON u.user_id = us.user_id
+        WHERE us.shift_id = ?`,
+      [req.params.id],
+    ),
+  );
+  if (err) return res.error(500, 'Error selecting attendance data', err);
+
+  let rows = [['First', 'Last', 'Phone #1', 'Phone #2', 'Notes']];
+  rows = rows.concat(
+    _.map(data, row => [row.first_name, row.last_name, row.phone_1, row.phone_2, row.notes]),
+  );
+
+  let csv;
+  [err, csv] = await to(Bluebird.promisify(csvStringify)(rows));
+  if (err) return res.error(500, 'Error parsing data', err);
+
+  res.setHeader('Content-disposition', 'attachment; filename=attendance.csv');
+  res.set('Content-Type', 'text/csv');
+  res.status(200).send(csv);
+  req.db.release();
+};
