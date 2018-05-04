@@ -102,7 +102,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
   }
 
   public componentDidMount() {
-    const protocol = window.location.protocol === 'https' ? 'wss' : 'ws';
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const host = window.location.host;
     this.ws = new WebSocket(`${protocol}://${host}/api/attendance/ws`);
     this.ws.onopen = () => {
@@ -121,7 +121,9 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
   }
 
   public componentWillUnmount() {
-    this.ws.close();
+    if (this.ws && this.ws.readyState !== this.ws.CLOSED) {
+      this.ws.close();
+    }
   }
 
   public sendMessage(message: WebSocketRequest<any>, callback: (data: WebSocketData<any>) => void) {

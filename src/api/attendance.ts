@@ -78,12 +78,17 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
     if (!ws.db) [err, ws.db] = await to(API.pool.getConnection());
     if (err) return die(action, 'Cannot connect to database', err);
     // Get user data
-    [err, [ws.user]] = await to(
-      ws.db.query('SELECT first_name, last_name, role_id, pic FROM user WHERE email = ?', [
-        user.email,
-      ]),
-    );
-    if (err) return die(action, 'Cannot find user', err);
+    if (!ws.user) {
+      let userInfo;
+      [err, userInfo] = await to(
+        ws.db.query('SELECT first_name, last_name, role_id, pic FROM user WHERE email = ?', [
+          user.email,
+        ]),
+      );
+      console.log(userInfo);
+      if (err || !userInfo || !userInfo[0]) return die(action, 'Cannot find user', err);
+      ws.user = userInfo[0];
+    }
     if (ws.user.role_id < 3) return die(action, 'Unauthorized', 'Token has no admin perms');
 
     switch (command[0]) {
