@@ -5,6 +5,8 @@ import { LocationDescriptor } from 'history';
 import update from 'immutability-helper'; // tslint:disable-line:import-name
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as vfsFonts from 'pdfmake/build/vfs_fonts';
 import * as React from 'react';
 import 'react-widgets/dist/css/react-widgets.css';
 import * as DateTimePicker from 'react-widgets/lib/DateTimePicker';
@@ -20,6 +22,9 @@ import {
   TableCellProps,
 } from 'semantic-ui-react';
 import 'web-animations-js';
+
+// Hack to get VFS fonts to work
+(pdfMake as any).vfs = vfsFonts.pdfMake.vfs;
 
 // App Imports
 import { formatDateForMySQL, timeFormat } from '@app/common/utilities';
@@ -405,7 +410,54 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   }}
                   {...{ [this.state.addState]: true }}
                 />
-                <Button content="Print" disabled />
+                <Button
+                  content="Print (PDF)"
+                  onClick={() => {
+                    const pdf: pdfMake.TDocumentDefinitions = {
+                      pageOrientation: 'landscape',
+                      header: { text: '\nDiwalicious - Shift 1', alignment: 'center' },
+                      footer: (currentPage: number, pageCount: number) => ({
+                        text: currentPage + ' of ' + pageCount,
+                        alignment: 'center',
+                      }),
+                      content: {
+                        table: {
+                          headerRows: 1,
+                          widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', '*'],
+
+                          body: [
+                            // header row
+                            [
+                              'First',
+                              'Last',
+                              'Phone #1',
+                              'Phone #2',
+                              'Check-In Time',
+                              'Check-Out Time',
+                              'Notes',
+                            ].map(text => ({
+                              text,
+                              bold: true,
+                              alignment: 'center',
+                              noWrap: true,
+                            })),
+                            // body rows
+                            ..._.map(_.sortBy(this.state.activeData, 'user.first_name'), entry => [
+                              entry.user.first_name,
+                              entry.user.last_name,
+                              entry.user.phone_1 || '',
+                              entry.user.phone_2 || '',
+                              '',
+                              '',
+                              entry.notes.value || '',
+                            ]),
+                          ],
+                        },
+                      },
+                    };
+                    pdfMake.createPdf(pdf).download(`attendance-${this.state.activeEntry}.pdf`);
+                  }}
+                />
                 <Button
                   content="Export (CSV)"
                   onClick={() =>
