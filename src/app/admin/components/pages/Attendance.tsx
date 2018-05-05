@@ -415,7 +415,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   onClick={() => {
                     const pdf: pdfMake.TDocumentDefinitions = {
                       pageSize: 'LETTER',
-                      pageOrientation: 'landscape',
                       header: { text: '\nDiwalicious - Shift 1', alignment: 'center' },
                       footer: (currentPage: number, pageCount: number) => ({
                         text: currentPage + ' of ' + pageCount,
@@ -424,7 +423,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                       content: {
                         table: {
                           headerRows: 1,
-                          widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', '*'],
+                          widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
 
                           body: [
                             // header row
