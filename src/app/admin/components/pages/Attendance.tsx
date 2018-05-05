@@ -60,7 +60,7 @@ interface AttendanceEntry {
   hours_override: AttendanceField<string>;
   other_shifts: string;
   assigned_exec: AttendanceField<number>;
-  notes: AttendanceField<string>;
+  add_info: AttendanceField<string>;
   shift: {
     shift_id: number;
     shift_num: number;
@@ -240,7 +240,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                 end_time: { value: __.end_time, lock: null },
                 hours_override: { value: __.hours_override, lock: null },
                 assigned_exec: { value: __.assigned_exec, lock: null },
-                notes: { value: __.notes, lock: null },
+                add_info: { value: __.add_info, lock: null },
                 status: null,
               }),
             ),
@@ -667,19 +667,19 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                       ...getLock(i, 'assigned_exec'),
                     },
                     {
-                      key: 'notes',
+                      key: 'add_info',
                       content: (
                         <Form.TextArea
                           inline
                           fluid
-                          value={entry.notes.value || ''}
+                          value={entry.add_info.value || ''}
                           onChange={(e, { value }) =>
-                            this.handleUpdate(entry.user_shift_id, 'notes', value)
+                            this.handleUpdate(entry.user_shift_id, 'add_info', value)
                           }
                         />
                       ),
-                      className: `cell-${entry.user_shift_id}-notes`,
-                      ...getLock(i, 'notes'),
+                      className: `cell-${entry.user_shift_id}-add_info`,
+                      ...getLock(i, 'add_info'),
                     },
                   ],
                 };

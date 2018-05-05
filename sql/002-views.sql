@@ -68,7 +68,8 @@ select
   e.address,
   e.transport,
   e.description,
-  e.letter
+  e.letter,
+  us.add_info
   from user_shift us
   join confirm_level c on c.confirm_level_id = us.confirm_level_id
   join vw_shift s on s.shift_id = us.shift_id
