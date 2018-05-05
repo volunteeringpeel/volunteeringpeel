@@ -435,7 +435,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                               'Phone #2',
                               'Check-In Time',
                               'Check-Out Time',
-                              'Notes',
                             ].map(text => ({
                               text,
                               bold: true,
@@ -450,7 +449,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                               entry.user.phone_2 || '',
                               '',
                               '',
-                              entry.notes.value || '',
                             ]),
                           ],
                         },
