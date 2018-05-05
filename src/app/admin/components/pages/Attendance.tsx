@@ -414,6 +414,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   content="Print (PDF)"
                   onClick={() => {
                     const pdf: pdfMake.TDocumentDefinitions = {
+                      pageSize: 'LETTER',
                       pageOrientation: 'landscape',
                       header: { text: '\nDiwalicious - Shift 1', alignment: 'center' },
                       footer: (currentPage: number, pageCount: number) => ({
