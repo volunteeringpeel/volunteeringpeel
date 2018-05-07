@@ -148,7 +148,7 @@ export default class Contact extends React.Component {
             <Link to="/user/profile">profile page</Link>. It is also acessible and editable by all
             executives and committee members. For any questions, concerns, or requests, including a
             request for the deletion of data, please contact us through the{' '}
-            <Link to="/about/contact">contact page</Link> or by email at{' '}
+            <Link to="/contact">contact page</Link> or by email at{' '}
             <a href="mailto:info@volunteeringpeel.org">info@volunteeringpeel.org</a>
           </p>
           <Header as="h3">Information We Collect</Header>

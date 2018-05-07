@@ -64,7 +64,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
     return (
       <>
         <Segment inverted textAlign="center" vertical style={{ paddingBottom: '1em' }}>
-          <Menu inverted stackable size="large" widths={4}>
+          <Menu inverted stackable size="large" widths={5}>
             <Container textAlign="center">
               <Route path="/" exact>
                 {({ match }) => (
@@ -87,9 +87,6 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                       <Dropdown.Item onClick={() => this.props.push('/about/sponsors')}>
                         Sponsors
                       </Dropdown.Item>
-                      <Dropdown.Item onClick={() => this.props.push('/about/contact')}>
-                        Contact
-                      </Dropdown.Item>
                       <Dropdown.Item onClick={() => this.props.push('/about/legal')}>
                         Legal
                       </Dropdown.Item>
@@ -101,6 +98,13 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                 {({ match }) => (
                   <Menu.Item active={!!match} onClick={() => this.props.push('/events')}>
                     Events
+                  </Menu.Item>
+                )}
+              </Route>
+              <Route path="/contact">
+                {({ match }) => (
+                  <Menu.Item active={!!match} onClick={() => this.props.push('/contact')}>
+                    Contact
                   </Menu.Item>
                 )}
               </Route>
