@@ -1,6 +1,6 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
-import * as Promise from 'bluebird';
+import * as Bluebird from 'bluebird';
 import update, { Query } from 'immutability-helper'; // tslint:disable-line:import-name
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -17,7 +17,8 @@ interface EditEventProps {
   cancel: () => void;
   loading: (status: boolean) => any;
   originalEvent: VPEvent;
-  refresh: () => void;
+  refresh: () => Promise<void>;
+  push: (path: string) => void;
 }
 
 interface EditEventState {
@@ -162,15 +163,15 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
     };
     for (const value in values) data.append(value, JSON.stringify(values[value]));
     if (this.state.letter) data.append('letter', this.state.letter);
-    Promise.resolve(this.props.loading(true))
+    Bluebird.resolve(this.props.loading(true))
       .then(() =>
         axios.post(`/api/event/${this.props.originalEvent.event_id}`, data, {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
         }),
       )
       .then(res => {
-        this.props.addMessage({ message: res.data.data, severity: 'positive' });
-        this.props.refresh();
+        // redirect to new event id if changed/created (-1 => whatever)
+        this.props.refresh().then(() => this.props.push(`/admin/events/${res.data.data.event_id}`));
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
@@ -183,7 +184,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   };
 
   public handleDelete = () => {
-    Promise.resolve(this.props.loading(true))
+    Bluebird.resolve(this.props.loading(true))
       .then(() =>
         axios.delete(`/api/event/${this.props.originalEvent.event_id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },

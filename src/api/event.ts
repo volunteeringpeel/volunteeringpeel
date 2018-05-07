@@ -139,10 +139,7 @@ export const editEvent = Utilities.asyncMiddleware(async (req, res) => {
     if (err || affectedRows !== 1) return res.error(500, 'Error handling hours letter upload');
   }
 
-  res.success(
-    `Event ${eventID === -1 ? 'added' : 'updated'} successfully`,
-    eventID === -1 ? 201 : 200,
-  );
+  res.success({ event_id: eventID }, eventID === -1 ? 201 : 200);
 });
 
 export const deleteEvent = Utilities.asyncMiddleware(async (req, res) => {

@@ -95,34 +95,41 @@ export default class Events extends React.Component<
           </Grid.Column>
           <Grid.Column stretched>
             <Segment>
-              {this.state.events.length && (
-                <Route path="/admin/events/:id?">
-                  {({ match }) =>
-                    +match.params.id ? (
-                      <EditEvent
-                        originalEvent={
-                          +match.params.id < 0
-                            ? {
-                                event_id: +match.params.id,
-                                name: '',
-                                description: '',
-                                address: '',
-                                transport: '',
-                                active: false,
-                                shifts: [],
-                                notes: false,
-                              }
-                            : _.find(this.state.events, ['event_id', +match.params.id])
-                        }
-                        refresh={() => this.refresh()}
-                        cancel={() => this.setState({ activeEvent: null })}
-                      />
-                    ) : (
-                      <p>Please select an event to edit</p>
-                    )
+              <Route path="/admin/events/:id?">
+                {({ match }) => {
+                  // no selected event (i.e. id is not number/blank)
+                  if (!+match.params.id) return <p>Please select an event to edit</p>;
+                  // if can't find data deselect
+                  const eventData = _.find(this.state.events, ['event_id', +match.params.id]);
+                  if (!eventData && +match.params.id !== -1) {
+                    this.props.push('/admin/events');
+                    return null;
                   }
-                </Route>
-              )}
+                  return (
+                    <EditEvent
+                      originalEvent={
+                        +match.params.id < 0
+                          ? {
+                              event_id: +match.params.id,
+                              name: '',
+                              description: '',
+                              address: '',
+                              transport: '',
+                              active: false,
+                              shifts: [],
+                              notes: false,
+                            }
+                          : _.find(this.state.events, ['event_id', +match.params.id])
+                      }
+                      refresh={() => this.refresh()}
+                      cancel={() => {
+                        this.setState({ activeEvent: null });
+                        this.props.push('/admin/events');
+                      }}
+                    />
+                  );
+                }}
+              </Route>
             </Segment>
           </Grid.Column>
         </Grid.Row>
