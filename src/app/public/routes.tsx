@@ -32,6 +32,14 @@ const routes: Route[] = [
     }),
     title: 'Events',
   },
+  {
+    path: '/contact',
+    component: reactLoadable({
+      loading: Loading,
+      loader: () => import('@app/public/components/pages/Contact'),
+    }),
+    title: 'Contact',
+  },
   // ABOUT PAGES
   {
     path: '/about',
@@ -67,14 +75,6 @@ const routes: Route[] = [
     }),
     title: 'Team',
     display: 'Meet the Team',
-  },
-  {
-    path: '/about/contact',
-    component: reactLoadable({
-      loading: Loading,
-      loader: () => import('@app/public/components/pages/Contact'),
-    }),
-    title: 'Contact',
   },
   {
     path: '/about/legal',

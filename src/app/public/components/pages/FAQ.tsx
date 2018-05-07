@@ -40,7 +40,7 @@ export default class FAQPage extends React.Component<FAQProps, FAQState> {
           <Container>
             <p>
               Have a question? <a href="mailto:info@volunteeringpeel.org">Email us</a> or contact us
-              through the <Link to="/about/contact">contact form</Link>.
+              through the <Link to="/contact">contact form</Link>.
             </p>
             <Accordion
               defaultActiveIndex={0}

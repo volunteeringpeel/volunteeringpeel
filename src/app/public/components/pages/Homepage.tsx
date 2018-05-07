@@ -108,8 +108,8 @@ export default class Homepage extends React.Component {
                 <Header as="h3">Have a question?</Header>
                 <p>
                   If you have any questions or concerns, please get in touch a member of our
-                  executive team. You can use the <Link to="/about/contact">contact form</Link>, or
-                  you can email us directly at{' '}
+                  executive team. You can use the <Link to="/contact">contact form</Link>, or you
+                  can email us directly at{' '}
                   <a href="mailto:info@volunteeringpeel.org">info@volunteeringpeel.org</a>, and we
                   will get back to you as soon as possible.
                 </p>

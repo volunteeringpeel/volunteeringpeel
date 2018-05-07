@@ -116,7 +116,7 @@ jobs:
                 name: Fetch artifacts
                 command: |
                     export BUILD_NUM=$(cat build_num.txt)
-                    ssh -p 42069 -t build@retrocraft.ca -o StrictHostKeyChecking=no "bash /var/www/volunteeringpeel/scripts/deploy.sh $BUILD_NUM $CIRCLE_API_KEY"
+                    ssh -p 42069 -t build@beta.volunteeringpeel.org -o StrictHostKeyChecking=no "bash /var/www/volunteeringpeel/scripts/deploy.sh $BUILD_NUM $CIRCLE_API_KEY"
 
 workflows:
     version: 2

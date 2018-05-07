@@ -124,7 +124,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
             hours_override: userShift.hours_override,
             other_shifts: userShift.other_shifts,
             assigned_exec: +userShift.assigned_exec,
-            notes: userShift.notes,
+            add_info: userShift.add_info,
             shift: {
               shift_id: +userShift.shift_id,
               shift_num: +userShift.shift_num,
@@ -166,7 +166,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
               'end_override',
               'hours_override',
               'assigned_exec',
-              'notes',
+              'add_info',
             ],
             field,
           )
