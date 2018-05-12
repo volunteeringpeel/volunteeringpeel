@@ -1,0 +1,9 @@
+.ui.cards {
+  display: block;
+  columns: 300px auto;
+  column-gap: 2em;
+
+  & > .ui.card {
+    width: 100%;
+  }
+}
