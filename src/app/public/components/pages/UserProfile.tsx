@@ -116,7 +116,6 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
             <Form.Group widths="equal">
               <Form.Input
                 label="First Name"
-                data-tooltip="Please tell me know your own name"
                 name="first_name"
                 value={this.state.first_name}
                 onChange={this.handleChange}
@@ -124,7 +123,6 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
               />
               <Form.Input
                 label="Last Name"
-                data-tooltip="If you spell your own name wrong..."
                 name="last_name"
                 value={this.state.last_name}
                 onChange={this.handleChange}
@@ -150,7 +148,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
               />
               <Form.Input
                 label="Phone #2"
-                data-tooltip="Preferably a home phone we can contact your mom at."
+                data-tooltip="Preferably a home phone we can contact parents at."
                 name="phone_2"
                 placeholder="4165555555"
                 value={this.state.phone_2}
@@ -160,19 +158,21 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
             {this.props.user.user.user.role_id === 3 && (
               <>
                 <Form.Input
-                  label="Title"
+                  label="Executive Title"
                   data-tooltip="Please don't write anything stupid (or do)."
                   name="title"
                   value={this.state.title}
                   onChange={this.handleChange}
+                  placeholder="Chair, Vice Chair, etc."
                   required
                 />
                 <Form.TextArea
-                  label="Bio"
-                  data-tooltip="Keep it PG."
+                  label="Executive Bio"
+                  data-tooltip="Shows up on exec page, keep it PG."
                   name="bio"
                   value={this.state.bio}
                   onChange={this.handleChange}
+                  placeholder="Hi! I'm an exec! I do x y z, and like a b and c. Come out to volunteer blah blah blah"
                   required
                 />
               </>

@@ -146,7 +146,7 @@ export default class FormRequest extends React.Component<{}, FormRequestState> {
             onChange={this.handleChange}
             required
             value={cause}
-            placeholder="Stopping Donald Trump"
+            placeholder="Curing cancer"
           />
         </Form.Group>
         <Form.Group widths="equal">
@@ -158,7 +158,7 @@ export default class FormRequest extends React.Component<{}, FormRequestState> {
             onChange={this.handleChange}
             required
             value={date}
-            placeholder="2018-04-01"
+            placeholder="2019-04-01"
           />
           <Form.Input
             fluid
@@ -167,7 +167,7 @@ export default class FormRequest extends React.Component<{}, FormRequestState> {
             onChange={this.handleChange}
             required
             value={location}
-            placeholder="123 Sesame Street"
+            placeholder="2655 Erin Centre Blvd"
           />
           <Form.Select
             fluid
@@ -189,7 +189,7 @@ export default class FormRequest extends React.Component<{}, FormRequestState> {
             onChange={this.handleChange}
             required
             value={jobs}
-            placeholder="- Setup\n- Answering questions\n- Directing attendee flow"
+            placeholder={'- Setup\n- Answering questions\n- Directing attendee flow'}
           />
           <Form.TextArea
             label="What Volunteers Need to Bring"
@@ -197,7 +197,7 @@ export default class FormRequest extends React.Component<{}, FormRequestState> {
             onChange={this.handleChange}
             required
             value={stuff}
-            placeholder="- Water\n- Lunch money\n- Sunscreen"
+            placeholder={'- Water\n- Lunch money\n- Sunscreen'}
           />
         </Form.Group>
         <Form.Button type="submit" content="Submit" />

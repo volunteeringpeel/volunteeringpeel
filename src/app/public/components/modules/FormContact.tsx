@@ -42,7 +42,7 @@ export default class FormContact extends React.Component<{}, FormContactState> {
             name="name"
             autocomplete="name"
             value={name}
-            placeholder="Donald Trump"
+            placeholder="John Doe"
             onChange={this.handleChange}
             required
           />
@@ -52,7 +52,7 @@ export default class FormContact extends React.Component<{}, FormContactState> {
             name="email"
             autocomplete="email"
             value={email}
-            placeholder="potus@whitehouse.gov"
+            placeholder="john.doe@example.com"
             onChange={this.handleChange}
             required
           />
@@ -63,7 +63,7 @@ export default class FormContact extends React.Component<{}, FormContactState> {
             type="tel"
             autocomplete="tel"
             value={phone}
-            placeholder="202-456-1111"
+            placeholder="555-555-5555"
             onChange={this.handleChange}
           />
         </Form.Group>
@@ -71,7 +71,7 @@ export default class FormContact extends React.Component<{}, FormContactState> {
           label="Message"
           name="message"
           value={message}
-          placeholder="I have bigger hands than the rest of the world.\n\nAny advice?"
+          placeholder="Write your message here, and we'll get back to you as soon as we can!"
           onChange={this.handleChange}
           required
         />
