@@ -179,21 +179,23 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
             )}
             <Form.Group inline>
               <label>Sign up for mailing lists</label>
-              {_.map(this.state.mail_lists, (list, i) => (
-                <Form.Checkbox
-                  key={list.mail_list_id}
-                  label={list.display_name}
-                  checked={list.subscribed}
-                  data-tooltip={list.description}
-                  onChange={(e, { checked }) =>
-                    this.setState(
-                      immutabilityHelper(this.state, {
-                        mail_lists: { [i]: { subscribed: { $set: checked } } },
-                      }),
-                    )
-                  }
-                />
-              ))}
+              {this.state.mail_lists.length > 0
+                ? _.map(this.state.mail_lists, (list, i) => (
+                    <Form.Checkbox
+                      key={list.mail_list_id}
+                      label={list.display_name}
+                      checked={list.subscribed}
+                      data-tooltip={list.description}
+                      onChange={(e, { checked }) =>
+                        this.setState(
+                          immutabilityHelper(this.state, {
+                            mail_lists: { [i]: { subscribed: { $set: checked } } },
+                          }),
+                        )
+                      }
+                    />
+                  ))
+                : 'There are no mail lists available for signup at this time'}
             </Form.Group>
             <Form.Button type="submit" content="Submit" />
           </Form>
