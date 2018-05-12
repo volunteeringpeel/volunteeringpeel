@@ -14,8 +14,8 @@ export const eventQuery = (authorized: boolean) =>
     let err, events, query;
     // If logged in, grab admin data (active)
     query = authorized
-      ? 'SELECT event_id, name, address, transport, description, active, notes FROM event'
-      : 'SELECT event_id, name, address, transport, description, active, notes FROM event WHERE active = 1';
+      ? 'SELECT event_id, name, address, transport, description, active, add_info FROM event'
+      : 'SELECT event_id, name, address, transport, description, active, add_info FROM event WHERE active = 1';
     [err, events] = await to(req.db.query(query));
     if (err) return res.error(500, 'Error retrieving event data', err);
 
