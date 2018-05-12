@@ -9,7 +9,7 @@ import FormRequest from '@app/public/components/modules/FormRequest';
 export default class Contact extends React.Component {
   public render() {
     return (
-      <Container>
+      <Container style={{ padding: '4em 0em' }}>
         <Segment vertical>
           <Header as="h2">Contact Form</Header>
           <FormContact />
