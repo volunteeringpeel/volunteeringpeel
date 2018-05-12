@@ -1,0 +1,23 @@
+p,
+span,
+label {
+  a,
+  a:visited {
+    position: relative;
+
+    &:after {
+      content: '';
+      height: 1px;
+      position: absolute;
+      bottom: 1px;
+      left: 0;
+      width: 0%;
+      transition: 0.2s;
+    }
+
+    &:hover:after {
+      width: 100%;
+      background: @linkHoverColor;
+    }
+  }
+}
