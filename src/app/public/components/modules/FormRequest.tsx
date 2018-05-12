@@ -189,7 +189,7 @@ export default class FormRequest extends React.Component<{}, FormRequestState> {
             onChange={this.handleChange}
             required
             value={jobs}
-            placeholder={'- Setup\n- Answering questions\n- Directing attendee flow'}
+            placeholder={'e.g:\n- Setup\n- Answering questions\n- Directing attendee flow'}
           />
           <Form.TextArea
             label="What Volunteers Need to Bring"
@@ -197,7 +197,7 @@ export default class FormRequest extends React.Component<{}, FormRequestState> {
             onChange={this.handleChange}
             required
             value={stuff}
-            placeholder={'- Water\n- Lunch money\n- Sunscreen'}
+            placeholder={'e.g.\n- Water\n- Lunch money\n- Sunscreen'}
           />
         </Form.Group>
         <Form.Button type="submit" content="Submit" />

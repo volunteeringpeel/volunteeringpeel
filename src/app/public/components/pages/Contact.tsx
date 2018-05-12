@@ -15,7 +15,7 @@ export default class Contact extends React.Component {
           <FormContact />
         </Segment>
         <Segment vertical>
-          <Header as="h2">Volunteer Request Form</Header>
+          <Header as="h2">Event Volunteer Request Form</Header>
           <ul>
             <li>Does your event support a non-profit cause?</li>
             <li>Do you need volunteers aged 12-18?</li>
