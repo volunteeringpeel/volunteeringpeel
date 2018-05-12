@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
 import { Redirect } from 'react-router';
+import { Link } from 'react-router-dom';
 import {
   Button,
   Container,
@@ -103,9 +104,10 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
               />
             </Form>
           ) : (
-            <>
-              No events found 😢<br />Sign up for an event!
-            </>
+            <p>
+              No events found 😢<br />
+              <Link to="/events">Sign up for an event!</Link>
+            </p>
           )}
         </Segment>
       </Container>

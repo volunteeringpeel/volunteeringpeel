@@ -210,7 +210,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                         >
                           <Button.Content visible>{buttonText}</Button.Content>
                           <Button.Content hidden>
-                            {selected ? 'Deselect' : <Icon name="arrow right" />}
+                            {selected ? 'Deselect' : <Icon name="check" />}
                           </Button.Content>
                         </Button>
                       </Item.Extra>
