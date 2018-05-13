@@ -15,50 +15,32 @@ export interface CustomRouteConfig extends RouteConfig {
 const routes: CustomRouteConfig[] = [
   {
     path: '/admin/home',
-    component: reactLoadable({
-      loading: Loading,
-      loader: () => import('@app/admin/components/pages/Home'),
-    }),
+    component: require('@app/admin/components/pages/Home').default,
     title: 'Dashboard',
   },
   {
     path: '/admin/events',
-    component: reactLoadable({
-      loading: Loading,
-      loader: () => import('@app/admin/controllers/pages/Events'),
-    }),
+    component: require('@app/admin/controllers/pages/Events').default,
     title: 'Events',
   },
   {
     path: '/admin/users',
-    component: reactLoadable({
-      loading: Loading,
-      loader: () => import('@app/admin/controllers/pages/Users'),
-    }),
+    component: require('@app/admin/controllers/pages/Users').default,
     title: 'Users',
   },
   {
     path: '/admin/attendance',
-    component: reactLoadable({
-      loading: Loading,
-      loader: () => import('@app/admin/controllers/pages/Attendance'),
-    }),
+    component: require('@app/admin/controllers/pages/Attendance').default,
     title: 'Attendance + Management',
   },
   {
     path: '/admin/mailing-list',
-    component: reactLoadable({
-      loading: Loading,
-      loader: () => import('@app/admin/components/pages/MailingList'),
-    }),
+    component: require('@app/admin/components/pages/MailingList').default,
     title: 'Mailing List',
   },
   {
     path: '/admin/faq',
-    component: reactLoadable({
-      loading: Loading,
-      loader: () => import('@app/admin/components/pages/FAQ'),
-    }),
+    component: require('@app/admin/components/pages/FAQ').default,
     title: 'FAQs',
   },
 ];
