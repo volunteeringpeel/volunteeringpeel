@@ -40,7 +40,7 @@ const routes: CustomRouteConfig[] = [
   },
   {
     path: '/admin/faq',
-    component: require('@app/admin/components/pages/FAQ').default,
+    component: require('@app/admin/controllers/pages/FAQ').default,
     title: 'FAQs',
   },
 ];
