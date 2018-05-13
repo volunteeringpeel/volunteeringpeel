@@ -51,7 +51,7 @@ export const eventQuery = (authorized: boolean) =>
         return {
           ...event,
           active: !!event.active, // Convert to boolean
-          notes: !!event.notes,
+          add_info: !!event.add_info,
           shifts: shifts.map((shift: any) => ({
             ...shift,
             meals: shift.meals.split(','),
@@ -70,7 +70,7 @@ export const editEvent = Utilities.asyncMiddleware(async (req, res) => {
   const params: any = {};
   for (const param in req.body) params[param] = JSON.parse(req.body[param]);
 
-  const { name, description, transport, address, active, notes, shifts, deleteShifts } = params;
+  const { name, description, transport, address, active, add_info, shifts, deleteShifts } = params;
   let err,
     eventID = +req.params.id;
 
@@ -84,7 +84,7 @@ export const editEvent = Utilities.asyncMiddleware(async (req, res) => {
         transport,
         address,
         active,
-        notes,
+        add_info,
       }),
     );
     if (err) return res.error(500, 'Error creating new event', err);
@@ -92,7 +92,7 @@ export const editEvent = Utilities.asyncMiddleware(async (req, res) => {
     // Update event
     [err] = await to(
       req.db.query('UPDATE event SET ? WHERE event_id = ?', [
-        { name, description, transport, address, active, notes },
+        { name, description, transport, address, active, add_info },
         req.params.id,
       ]),
     );

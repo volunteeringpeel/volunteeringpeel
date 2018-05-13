@@ -87,7 +87,7 @@ interface VPEvent {
   transport: string;
   shifts: Shift[];
   active: boolean;
-  notes: boolean;
+  add_info: boolean;
 }
 
 type Meal = 'breakfast' | 'lunch' | 'dinner' | 'snack';

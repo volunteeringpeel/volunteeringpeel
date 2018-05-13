@@ -49,7 +49,7 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                       });
 
                       if (!page) {
-                        return <Redirect to="/admin/home" />;
+                        return <Redirect to="/admin/dashboard" />;
                       }
                       return (
                         <Header as="h1" size="huge">

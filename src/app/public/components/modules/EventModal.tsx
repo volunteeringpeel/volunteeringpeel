@@ -38,7 +38,7 @@ interface EventModalProps {
 interface EventModalState {
   modalOpen: boolean;
   selectedShifts: number[];
-  notes: string | number;
+  add_info: string | number;
   submitting: boolean;
   message: Message;
 }
@@ -50,7 +50,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
     this.state = {
       modalOpen: false,
       selectedShifts: [],
-      notes: '',
+      add_info: '',
       submitting: false,
       message: null,
     };
@@ -114,7 +114,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
     );
 
     const ableToRegister =
-      this.props.event.notes && this.state.notes === ''
+      this.props.event.add_info && this.state.add_info === ''
         ? 'Please fill in the additional information box with whatever is specified in the event description'
         : this.props.ableToRegister;
 
@@ -224,9 +224,9 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
             <Form>
               <Form.TextArea
                 label="Additional information (check event and shift descriptions to see if you need to specify anything)"
-                value={this.state.notes}
-                required={this.props.event.notes}
-                onChange={(e, { value }) => this.setState({ notes: value })}
+                value={this.state.add_info}
+                required={this.props.event.add_info}
+                onChange={(e, { value }) => this.setState({ add_info: value })}
               />
             </Form>
           </Segment>

@@ -117,7 +117,7 @@ export default class Events extends React.Component<
                               transport: '',
                               active: false,
                               shifts: [],
-                              notes: false,
+                              add_info: false,
                             }
                           : _.find(this.state.events, ['event_id', +match.params.id])
                       }
