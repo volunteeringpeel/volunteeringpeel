@@ -204,7 +204,7 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
         </Modal.Content>
         <Modal.Actions>
           <Button.Group>
-            <Button primary icon="save" content="Save" onClick={this.handleSubmit} />
+            <Button positive icon="save" content="Save" onClick={this.handleSubmit} />
             <Button basic icon="delete" content="Cancel" onClick={this.props.cancel} />
           </Button.Group>
         </Modal.Actions>
