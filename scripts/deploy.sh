@@ -20,7 +20,7 @@ curl -s https://circleci.com/api/v1.1/project/github/volunteeringpeel/volunteeri
 echo "Installing new packages..."
 cp .artifacts/package.json package.json
 cp .artifacts/yarn.lock yarn.lock
-yarn install
+yarn install --ignore-scripts --production
 
 # Stop site, copy new files, start site
 echo "Stopping site..."

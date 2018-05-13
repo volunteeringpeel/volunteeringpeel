@@ -43,6 +43,8 @@ export default class FAQPage extends React.Component<FAQProps, FAQState> {
               through the <Link to="/contact">contact form</Link>.
             </p>
             <Accordion
+              styled
+              fluid
               defaultActiveIndex={0}
               panels={_.map(this.state.faqs, question => ({
                 title: {
