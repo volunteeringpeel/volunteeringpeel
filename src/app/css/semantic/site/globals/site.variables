@@ -3,3 +3,4 @@
 @h1: 2.5em;
 
 @primaryColor: @red;
+@red: #d42222;
