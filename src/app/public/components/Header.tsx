@@ -63,16 +63,20 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
     }
     return (
       <>
-        <Segment inverted textAlign="center" vertical style={{ paddingBottom: '1em' }}>
-          <Menu inverted stackable size="large" widths={5}>
-            <Container textAlign="center">
-              <Route path="/" exact>
-                {({ match }) => (
-                  <Menu.Item active={!!match} onClick={() => this.props.push('/')}>
-                    Home
-                  </Menu.Item>
-                )}
-              </Route>
+        <Menu stackable size="large" style={{ marginBottom: 0 }}>
+          <Container>
+            <Route path="/" exact>
+              {({ match }) => (
+                <Menu.Item
+                  active={!!match}
+                  onClick={() => this.props.push('/')}
+                  style={{ minWidth: '200px' }}
+                >
+                  <img src="//volunteeringpeel.org/images/logo.png" style={{ width: '100%' }} />
+                </Menu.Item>
+              )}
+            </Route>
+            <Menu.Menu position="right">
               <Route path="/about">
                 {({ match }) => (
                   <Dropdown item text="About" className={match ? 'active' : ''}>
@@ -109,9 +113,10 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                 )}
               </Route>
               {userButton}
-            </Container>
-          </Menu>
-
+            </Menu.Menu>
+          </Container>
+        </Menu>
+        <Segment inverted textAlign="center" vertical style={{ paddingBottom: '1em' }}>
           <Route
             path="/:page?/:subpage?"
             render={({ match }) => {
