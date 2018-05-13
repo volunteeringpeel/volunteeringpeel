@@ -232,7 +232,10 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
           </Segment>
         </Modal.Content>
         <Dimmer.Dimmable as={Modal.Actions}>
-          <Dimmer active={ableToRegister !== true}>
+          <Dimmer
+            active={ableToRegister !== true}
+            style={{ backgroundColor: 'rgba(212, 34, 34, 0.85)' }}
+          >
             <Header as="h4" inverted>
               {ableToRegister}
             </Header>
