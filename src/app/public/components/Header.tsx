@@ -3,7 +3,7 @@ import { LocationDescriptor } from 'history';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Redirect } from 'react-router';
-import { Route, RouteComponentProps } from 'react-router-dom';
+import { Link, Route, RouteComponentProps } from 'react-router-dom';
 import { Container, Dropdown, Header, Icon, Menu, Message, Segment } from 'semantic-ui-react';
 
 // App Imports
@@ -41,8 +41,8 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                   Dashboard
                 </Dropdown.Item>
                 {this.props.user.user.user.role_id === 3 && (
-                  <Dropdown.Item>
-                    <a href="/admin">Admin</a>
+                  <Dropdown.Item as="a" href="/admin/dashboard">
+                    Admin
                   </Dropdown.Item>
                 )}
                 <Dropdown.Divider />
