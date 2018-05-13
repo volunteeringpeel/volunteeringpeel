@@ -27,7 +27,7 @@ interface EditEventState {
   address: string;
   transport: string;
   active: boolean;
-  notes: boolean;
+  add_info: boolean;
   shifts: Shift[];
   selectedShiftNum: number;
   deleteShifts: number[];
@@ -45,7 +45,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       transport: props.originalEvent.transport,
       active: props.originalEvent.active,
       shifts: props.originalEvent.shifts,
-      notes: props.originalEvent.notes,
+      add_info: props.originalEvent.add_info,
       selectedShiftNum: null,
       deleteShifts: [],
       letter: null,
@@ -61,7 +61,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
         transport: nextProps.originalEvent.transport,
         active: nextProps.originalEvent.active,
         shifts: nextProps.originalEvent.shifts,
-        notes: nextProps.originalEvent.notes,
+        add_info: nextProps.originalEvent.add_info,
         selectedShiftNum: null,
         deleteShifts: [],
       });
@@ -152,7 +152,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       address: this.state.address,
       transport: this.state.transport,
       active: this.state.active,
-      notes: this.state.notes,
+      add_info: this.state.add_info,
       deleteShifts: this.state.deleteShifts,
       shifts: _.map(this.state.shifts, shift => ({
         ...shift,
@@ -213,7 +213,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       address,
       transport,
       active,
-      notes,
+      add_info,
       shifts,
       selectedShiftNum,
     } = this.state;
@@ -238,8 +238,8 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
         />
         <Form.Checkbox
           label="Is the additional information box required? If checked, ensure that you mention what you want in the description"
-          name="notes"
-          checked={notes}
+          name="add_info"
+          checked={add_info}
           onChange={this.handleChange}
         />
         <Form.TextArea
@@ -375,7 +375,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
         </Segment>
         <Form.Group>
           <Button.Group fluid>
-            <Button type="submit" animated="fade" primary>
+            <Button type="submit" animated="fade" positive>
               <Button.Content hidden>Save</Button.Content>
               <Button.Content visible>
                 <Icon name="save" />

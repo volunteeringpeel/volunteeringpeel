@@ -36,7 +36,9 @@ const broadcastClients = () => {
 };
 export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
   // Utility functions
-  const send = (res: WebSocketData<any>) => ws.send(JSON.stringify(res));
+  const send = (res: WebSocketData<any>) => {
+    if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(res));
+  };
   const die = async (action: string, error: string, details: any) => {
     ws.release();
     send({ action, error, details, status: 'error' });

@@ -22,7 +22,7 @@ const routes: Route[] = [
       loader: () => import('@app/public/components/pages/Homepage'),
     }),
     title: 'Home',
-    display: 'Volunteering Peel',
+    display: 'Welcome!',
   },
   {
     path: '/events',

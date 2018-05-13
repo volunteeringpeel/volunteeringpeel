@@ -42,6 +42,7 @@ interface Page {
 }
 
 interface FAQ {
+  faq_id: number;
   question: string;
   answer: string;
 }
@@ -87,7 +88,7 @@ interface VPEvent {
   transport: string;
   shifts: Shift[];
   active: boolean;
-  notes: boolean;
+  add_info: boolean;
 }
 
 type Meal = 'breakfast' | 'lunch' | 'dinner' | 'snack';

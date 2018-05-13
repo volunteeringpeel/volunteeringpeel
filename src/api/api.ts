@@ -151,9 +151,29 @@ api.get(
   '/public/faq',
   Utilities.asyncMiddleware(async (req, res) => {
     let err, faqs;
-    [err, faqs] = await to(req.db.query('SELECT question, answer FROM faq ORDER BY priority'));
+    [err, faqs] = await to(
+      req.db.query('SELECT question, answer, faq_id FROM faq ORDER BY priority'),
+    );
     if (err) return res.error(500, 'Error retrieving FAQs', err);
     res.success(faqs, 200);
+  }),
+);
+api.post(
+  '/faq/:id',
+  Utilities.asyncMiddleware(async (req, res) => {
+    let err;
+    const { question, answer } = req.body;
+    const id = +req.params.id;
+    if (id > 0) {
+      [err] = await to(
+        req.db.query('UPDATE faq SET ? WHERE faq_id = ?', [{ question, answer }, req.params.id]),
+      );
+      if (err) return res.error(500, 'Error updating FAQ', err);
+    } else {
+      [err] = await to(req.db.query('INSERT INTO faq SET ?', [{ question, answer }]));
+      if (err) return res.error(500, 'Error creating FAQ', err);
+    }
+    return res.success('FAQ processed successfully', id > 0 ? 200 : 201);
   }),
 );
 

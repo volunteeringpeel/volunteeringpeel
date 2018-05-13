@@ -12,7 +12,17 @@ export default class Contact extends React.Component {
       <Container style={{ padding: '4em 0em' }}>
         <Segment vertical>
           <Header as="h2">Contact Form</Header>
-          <FormContact />
+          {/* <FormContact /> */}
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLSc6c976c9PKi-NPRokcEBkZvzfSOSMUdlpbH7wgiJCN29CCEA/viewform?embedded=true"
+            marginHeight={10}
+            marginWidth={0}
+            width="100%"
+            height="500"
+            frameBorder="0"
+          >
+            Loading...
+          </iframe>
         </Segment>
         <Segment vertical>
           <Header as="h2">Event Volunteer Request Form</Header>
@@ -25,7 +35,17 @@ export default class Contact extends React.Component {
             If you answered yes to all of the above questions, please fill in all the information
             below and submit your request. A representative will contact you shortly.
           </p>
-          <FormRequest />
+          {/* <FormRequest /> */}
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLSeOvV6gfAxov1oP4tjX-I32sr54lctFdTosvM6DL3paCjV--A/viewform?embedded=true"
+            marginHeight={10}
+            marginWidth={0}
+            width="100%"
+            height="500"
+            frameBorder="0"
+          >
+            Loading...
+          </iframe>
         </Segment>
       </Container>
     );

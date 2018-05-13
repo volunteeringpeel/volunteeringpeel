@@ -119,15 +119,14 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                               message: 'Signup successful',
                               more: (
                                 <>
-                                  Thank you for signing up for an event! Here are some next steps
-                                  you can think about:
+                                  Thanks for signing up! Here are some next steps.
                                   <ul>
                                     <li>
-                                      We will be sending a confirmation email, please make sure you
-                                      get it
+                                      You will receive a CONFIRMATION EMAIL with more information
+                                      regarding the event, please make sure to REPLY to confirm your
+                                      attendance.
                                     </li>
-                                    <li>You will receive a phone call prior to the event</li>
-                                    <li>Idk man do something</li>
+                                    <li>You will also receive a PHONE CALL prior to the event</li>
                                   </ul>
                                 </>
                               ),
