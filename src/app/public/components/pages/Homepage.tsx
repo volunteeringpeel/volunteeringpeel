@@ -25,7 +25,7 @@ export default class Homepage extends React.Component {
     return (
       <div className="large text">
         <HomepageMessage />
-        <Segment style={{ padding: '8em 0em' }} vertical>
+        <Segment style={{ padding: '8em 0em 4em' }} vertical>
           <Grid stackable container verticalAlign="middle">
             <Grid.Row>
               <Grid.Column width={8}>
@@ -68,14 +68,14 @@ export default class Homepage extends React.Component {
 
         <Segment vertical>
           <Container textAlign="center">
-            <Header as="h3">
+            <Header as="h2">
               Subscribe to our monthly news letter to get updates on the latest volunteering events!
             </Header>
             <SubscribeBox listID={1} />
           </Container>
         </Segment>
 
-        <Segment style={{ padding: '8em 0em' }} vertical>
+        <Segment style={{ padding: '4em 0em 8em' }} vertical>
           <Grid celled="internally" columns="equal" verticalAlign="middle" stackable container>
             <Grid.Row textAlign="center">
               <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
