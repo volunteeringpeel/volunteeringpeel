@@ -84,7 +84,7 @@ export default class AdminFAQ extends React.Component<FAQProps, FAQState> {
       <>
         <Segment vertical style={{ textAlign: 'center' }}>
           <Button onClick={this.refresh} basic color="grey" loading={this.state.loading}>
-            Refresh
+            Refresh/Reset
           </Button>
         </Segment>
         <Form>
@@ -135,6 +135,20 @@ export default class AdminFAQ extends React.Component<FAQProps, FAQState> {
                 key: `content-${question.faq_id}`,
               },
             }))}
+          />
+          <Form.Button
+            content="+ Add"
+            onClick={() => {
+              const minId = _.minBy(this.state.faqs, 'faq_id').faq_id;
+              const newId = minId < 0 ? minId - 1 : -1;
+              this.setState(
+                update(this.state, {
+                  faqs: {
+                    $push: [{ faq_id: newId, question: 'Question', answer: 'Answer' }],
+                  },
+                }),
+              );
+            }}
           />
         </Form>
       </>
