@@ -6239,9 +6239,9 @@ schema-utils@^0.4.2, schema-utils@^0.4.5:
     ajv "^6.1.0"
     ajv-keywords "^3.1.0"
 
-semantic-ui-less@^2.3.1:
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/semantic-ui-less/-/semantic-ui-less-2.3.1.tgz#64cc7f1d1e3b5a831cfcf7655d2e2ddedb5aad8a"
+semantic-ui-less@~2.2:
+  version "2.2.14"
+  resolved "https://registry.yarnpkg.com/semantic-ui-less/-/semantic-ui-less-2.2.14.tgz#d22de1297652b14b66d3c646ac5011a219aaea02"
   dependencies:
     jquery x.*
 
