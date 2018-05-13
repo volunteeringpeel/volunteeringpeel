@@ -53,6 +53,14 @@ const routes: CustomRouteConfig[] = [
     }),
     title: 'Mailing List',
   },
+  {
+    path: '/admin/faq',
+    component: reactLoadable({
+      loading: Loading,
+      loader: () => import('@app/admin/components/pages/FAQ'),
+    }),
+    title: 'FAQs',
+  },
 ];
 
 export default routes;
