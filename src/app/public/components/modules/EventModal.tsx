@@ -128,7 +128,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
             primary={!full}
             onClick={this.handleOpen}
           >
-            <Button.Content visible>{full ? 'FULL :(' : 'Shifts'}</Button.Content>
+            <Button.Content visible>{full ? 'FULL' : 'Shifts'}</Button.Content>
             <Button.Content hidden>
               <Icon name="arrow right" />
             </Button.Content>
@@ -171,7 +171,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                     </>
                   );
                 }
-                if (shiftFull) buttonText = 'FULL :(';
+                if (shiftFull) buttonText = 'FULL';
                 if (shift.signed_up) buttonText = 'Already signed up!';
                 return (
                   <Item key={shift.shift_id}>
@@ -188,7 +188,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                           : `${startDate.format('MMM D, YYYY')} - ${endDate.format('MMM D, YYYY')}`}
                       </Item.Meta>
                       <Item.Description>
-                        <p>{shift.notes}</p>
+                        <ReactMarkdown source={shift.notes} />
                         {_.map(shift.meals, meal => <Label key={meal}>{meal} provided</Label>)}
                       </Item.Description>
                       <Item.Extra>

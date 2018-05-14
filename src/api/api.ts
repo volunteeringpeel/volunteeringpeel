@@ -3,6 +3,7 @@ import to from '@lib/await-to-js';
 import * as Bluebird from 'bluebird';
 import * as Express from 'express';
 import * as jwt from 'express-jwt';
+import * as fs from 'fs';
 import * as jwksRsa from 'jwks-rsa';
 import * as _ from 'lodash';
 import * as multer from 'multer';
@@ -13,6 +14,7 @@ import * as Utilities from '@api/utilities';
 // Import sub-APIs
 import * as AttendanceAPI from '@api/attendance';
 import * as EventAPI from '@api/event';
+import * as HeaderAPI from '@api/header';
 import * as MailingListAPI from '@api/mailing-list';
 import * as UserAPI from '@api/user';
 import { wss } from '../index';
@@ -40,7 +42,7 @@ if (process.env.NODE_ENV !== 'production') {
 // this is important because later we'll need to access file path
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, global.appDir + '/upload');
+    cb(null, '/tmp');
   },
   filename(req, file, cb) {
     cb(null, `${file.fieldname}-${Date.now()}-${file.originalname}`);
@@ -204,6 +206,12 @@ api.get(
     res.success(sponsors, 200);
   }),
 );
+
+// Header Images
+api.get('/public/header-image', HeaderAPI.getHeaderImage);
+api.get('/header-image', HeaderAPI.listHeaderImages);
+api.post('/header-image', upload.single('header'), HeaderAPI.uploadHeaderImage);
+api.delete('/header-image/:filename', HeaderAPI.deleteHeaderImage);
 
 // Prived/authorized by JWT endpoint
 api.get('/event', EventAPI.eventQuery(true));

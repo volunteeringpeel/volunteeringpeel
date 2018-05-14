@@ -3,6 +3,7 @@ import to from '@lib/await-to-js';
 import * as Bluebird from 'bluebird';
 import * as Express from 'express';
 import * as _ from 'lodash';
+import * as mv from 'mv';
 import * as mysql from 'promise-mysql';
 
 // Import API core
@@ -200,6 +201,12 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
     // get parameters from request body
     const { email, role_id }: User = req.body;
     const pic = req.file ? req.file.filename : null;
+    if (pic) {
+      [err] = await to(
+        Bluebird.promisify(mv)(req.file.path, `${global.appDir}/upload/user/${req.file.filename}`),
+      );
+      if (err) return res.error(500, 'Failed to save uploaded file', err);
+    }
 
     const data = { first_name, last_name, email, phone_1, phone_2, role_id, bio, title, pic };
 

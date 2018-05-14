@@ -43,6 +43,11 @@ const routes: CustomRouteConfig[] = [
     component: require('@app/admin/controllers/pages/FAQ').default,
     title: 'FAQs',
   },
+  {
+    path: '/admin/images',
+    component: require('@app/admin/controllers/pages/Images').default,
+    title: 'Images',
+  },
 ];
 
 export default routes;
