@@ -16,6 +16,9 @@ import {
   Segment,
 } from 'semantic-ui-react';
 
+// App Imports
+import homepageJpg from '@app/images/homepage.jpg';
+
 // Component Imports
 import HomepageMessage from '@app/public/components/modules/HomepageMessage';
 import SubscribeBox from '@app/public/components/modules/SubscribeBox';
@@ -43,12 +46,7 @@ export default class Homepage extends React.Component {
                 </p>
               </Grid.Column>
               <Grid.Column floated="right" width={6}>
-                <Image
-                  bordered
-                  shape="rounded"
-                  size="large"
-                  src="http://volunteeringpeel.org/images/home-slider/7.JPG"
-                />
+                <Image bordered shape="rounded" size="large" src={homepageJpg} />
               </Grid.Column>
             </Grid.Row>
             <Grid.Row>
