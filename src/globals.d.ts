@@ -1,8 +1,4 @@
-declare module '*/passwords.json' {
-  const mysql: {
-    password: string;
-  };
-}
+declare module '*.png';
 
 type Renderable = JSX.Element | string;
 
