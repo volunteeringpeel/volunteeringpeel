@@ -98,7 +98,7 @@ export default class SponsorModal extends React.Component<SponsorModalProps, Spo
               type="url"
               onChange={this.handleChange}
             />
-            <Image src={`/upload/user/${this.props.sponsor.image}`} size="tiny" />
+            <Image src={`/upload/sponsor/${this.props.sponsor.image}`} size="tiny" />
             <Form.Input
               label="Picture"
               data-tooltip="Maximum size 1 MB, type PNG or JPG"

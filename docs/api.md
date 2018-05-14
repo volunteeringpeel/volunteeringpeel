@@ -10,7 +10,7 @@
     * [`GET /api/public/faq`](#get-apipublicfaq)
     * [`GET /api/public/event`](#get-apipublicevent)
     * [`GET /api/public/execs`](#get-apipublicexecs)
-    * [`GET /api/public/sponsors`](#get-apipublicsponsors)
+    * [`GET /api/public/sponsor`](#get-apipublicsponsors)
     * [`POST /api/public/mailing-list/:id`](#post-apipublicmailing-listid)
   * [`/api/event`: Event management endpoints](#apievent-event-management-endpoints)
     * [`GET /api/event`](#get-apievent)
@@ -134,7 +134,7 @@ None.
 }
 ```
 
-#### `GET /api/public/sponsors`
+#### `GET /api/public/sponsor`
 
 Get a list of sponsors.
 

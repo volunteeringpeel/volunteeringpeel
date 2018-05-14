@@ -25,7 +25,7 @@ export default class Sponsors extends React.Component<SponsorsProps, SponsorsSta
 
   public componentDidMount() {
     Promise.resolve(() => this.props.loading(true))
-      .then(() => axios.get('/api/public/sponsors'))
+      .then(() => axios.get('/api/public/sponsor'))
       .then(res => {
         this.props.loading(false);
         this.setState({ sponsors: res.data.data });

@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import * as jwksRsa from 'jwks-rsa';
 import * as _ from 'lodash';
 import * as multer from 'multer';
+import * as mv from 'mv';
 import * as mysql from 'promise-mysql';
 
 import * as Utilities from '@api/utilities';
@@ -196,7 +197,7 @@ api.get(
 
 // Sponsors
 api.get(
-  '/public/sponsors',
+  '/public/sponsor',
   Utilities.asyncMiddleware(async (req, res) => {
     let err, sponsors;
     [err, sponsors] = await to(
@@ -206,6 +207,47 @@ api.get(
     );
     if (err) return res.error(500, 'Error retrieving sponsor data', err);
     res.success(sponsors, 200);
+  }),
+);
+api.post(
+  '/sponsor/:id',
+  upload.single('pic'),
+  Utilities.asyncMiddleware(async (req, res) => {
+    if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+    const { name, website, priority } = req.body;
+    const data: any = { name, website, priority };
+    const id = +req.params.id;
+    let err;
+    if (req.file) {
+      [err] = await to(
+        Bluebird.promisify(mv)(
+          req.file.path,
+          `${global.appDir}/upload/sponsor/${req.file.filename}`,
+        ),
+      );
+      if (err) return res.error(500, 'Failed to save uploaded file', err);
+      data.image = req.file.filename;
+    }
+    if (id < 0) {
+      [err] = await to(req.db.query('INSERT INTO sponsor SET ?', [data]));
+    } else {
+      [err] = await to(
+        req.db.query('UPDATE sponsor SET ? WHERE sponsor_id = ?', [data, +req.params.id]),
+      );
+    }
+    if (err) return res.error(500, 'Failed to process sponsor data', err);
+    res.success('Sponsor processed successfully', id < 0 ? 201 : 200);
+  }),
+);
+api.delete(
+  '/sponsor/:id',
+  Utilities.asyncMiddleware(async (req, res) => {
+    if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
+    const [err, { affectedRows }] = await to(
+      req.db.query('DELETE FROM sponsor WHERE sponsor_id = ?', [+req.params.id]),
+    );
+    if (err || affectedRows < 1) return res.error(500, 'Failed to delete sponsor', err);
+    res.success('Sponsor deleted successfully', 202);
   }),
 );
 
