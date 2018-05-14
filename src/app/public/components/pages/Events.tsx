@@ -72,74 +72,78 @@ export default class Events extends React.Component<EventsProps, EventsState> {
               </Button>
             </div>
             <Item.Group divided>
-              {_.map(this.state.events, (event: VPEvent) => {
-                // Import dates into moment.js for easy comparison and formatting
-                const startDates = _.map(event.shifts, shift => moment(shift.start_time));
-                const endDates = _.map(event.shifts, shift => moment(shift.end_time));
-                // Smallest date is start and largest is end
-                const startDate = moment.min(...startDates);
-                const endDate = moment.max(...endDates);
-                // Change formatting (e.g. Oct 17, 2017)
-                const formatString = 'MMM D, YYYY';
-                // If start === end, one day event, otherwise range
-                const date = startDate.isSame(endDate, 'day')
-                  ? startDate.format(formatString)
-                  : `${startDate.format(formatString)} - ${endDate.format(formatString)}`;
+              {this.state.events.length > 0 ? (
+                _.map(this.state.events, (event: VPEvent) => {
+                  // Import dates into moment.js for easy comparison and formatting
+                  const startDates = _.map(event.shifts, shift => moment(shift.start_time));
+                  const endDates = _.map(event.shifts, shift => moment(shift.end_time));
+                  // Smallest date is start and largest is end
+                  const startDate = moment.min(...startDates);
+                  const endDate = moment.max(...endDates);
+                  // Change formatting (e.g. Oct 17, 2017)
+                  const formatString = 'MMM D, YYYY';
+                  // If start === end, one day event, otherwise range
+                  const date = startDate.isSame(endDate, 'day')
+                    ? startDate.format(formatString)
+                    : `${startDate.format(formatString)} - ${endDate.format(formatString)}`;
 
-                // Calculate if event is full based on spots (sum up shift spots)
-                const maxSpots = _.sumBy(event.shifts, 'max_spots');
-                const spotsTaken = _.sumBy(event.shifts, 'spots_taken');
-                const spotsLeft = maxSpots - spotsTaken;
-                // Event is full if spotsLeft === 0
-                const full = spotsLeft === 0;
-                return (
-                  <Item key={event.event_id}>
-                    <Item.Content>
-                      <Item.Header>
-                        {event.name} <small>{date}</small>
-                      </Item.Header>
-                      <Item.Meta>{event.address}</Item.Meta>
-                      <Item.Description>
-                        <ReactMarkdown source={event.description} />
-                      </Item.Description>
-                      <Item.Extra>
-                        {`${event.shifts.length} ${event.shifts.length > 1 ? 'shifts' : 'shift'}`}
-                        <ProgressColor
-                          value={maxSpots - spotsTaken}
-                          total={maxSpots}
-                          label={`${spotsLeft} of ${maxSpots} spots left`}
-                          size="small"
-                        />
-                        <br />
-                        <EventModal
-                          event={event}
-                          refresh={this.refresh}
-                          onSuccess={() => {
-                            this.props.addMessage({
-                              message: 'Signup successful',
-                              more: (
-                                <>
-                                  Thanks for signing up! Here are some next steps.
-                                  <ul>
-                                    <li>
-                                      You will receive a CONFIRMATION EMAIL with more information
-                                      regarding the event, please make sure to REPLY to confirm your
-                                      attendance.
-                                    </li>
-                                    <li>You will also receive a PHONE CALL prior to the event</li>
-                                  </ul>
-                                </>
-                              ),
-                              severity: 'positive',
-                            });
-                            window.scrollTo(0, 0);
-                          }}
-                        />
-                      </Item.Extra>
-                    </Item.Content>
-                  </Item>
-                );
-              })}
+                  // Calculate if event is full based on spots (sum up shift spots)
+                  const maxSpots = _.sumBy(event.shifts, 'max_spots');
+                  const spotsTaken = _.sumBy(event.shifts, 'spots_taken');
+                  const spotsLeft = maxSpots - spotsTaken;
+                  // Event is full if spotsLeft === 0
+                  const full = spotsLeft === 0;
+                  return (
+                    <Item key={event.event_id}>
+                      <Item.Content>
+                        <Item.Header>
+                          {event.name} <small>{date}</small>
+                        </Item.Header>
+                        <Item.Meta>{event.address}</Item.Meta>
+                        <Item.Description>
+                          <ReactMarkdown source={event.description} />
+                        </Item.Description>
+                        <Item.Extra>
+                          {`${event.shifts.length} ${event.shifts.length > 1 ? 'shifts' : 'shift'}`}
+                          <ProgressColor
+                            value={maxSpots - spotsTaken}
+                            total={maxSpots}
+                            label={`${spotsLeft} of ${maxSpots} spots left`}
+                            size="small"
+                          />
+                          <br />
+                          <EventModal
+                            event={event}
+                            refresh={this.refresh}
+                            onSuccess={() => {
+                              this.props.addMessage({
+                                message: 'Signup successful',
+                                more: (
+                                  <>
+                                    Thanks for signing up! Here are some next steps.
+                                    <ul>
+                                      <li>
+                                        You will receive a CONFIRMATION EMAIL with more information
+                                        regarding the event, please make sure to REPLY to confirm
+                                        your attendance.
+                                      </li>
+                                      <li>You will also receive a PHONE CALL prior to the event</li>
+                                    </ul>
+                                  </>
+                                ),
+                                severity: 'positive',
+                              });
+                              window.scrollTo(0, 0);
+                            }}
+                          />
+                        </Item.Extra>
+                      </Item.Content>
+                    </Item>
+                  );
+                })
+              ) : (
+                <p>Uh-oh! There are no upcoming events in our records at the moment.</p>
+              )}
             </Item.Group>
           </Container>
         </Segment>
