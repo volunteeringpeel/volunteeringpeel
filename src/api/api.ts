@@ -3,6 +3,7 @@ import to from '@lib/await-to-js';
 import * as Bluebird from 'bluebird';
 import * as Express from 'express';
 import * as jwt from 'express-jwt';
+import * as fs from 'fs';
 import * as jwksRsa from 'jwks-rsa';
 import * as _ from 'lodash';
 import * as multer from 'multer';
@@ -202,6 +203,20 @@ api.get(
     );
     if (err) return res.error(500, 'Error retrieving sponsor data', err);
     res.success(sponsors, 200);
+  }),
+);
+
+// Header Images
+api.get(
+  '/public/header-image',
+  Utilities.asyncMiddleware(async (req, res) => {
+    // Get list of images inside of header folder
+    const [err, images] = await to(
+      Bluebird.promisify(fs.readdir)(global.appDir + '/upload/header'),
+    );
+    if (err) res.error(500, 'Error picking a header image', err);
+    const randomImage = Math.floor(Math.random() * images.length);
+    res.status(200).sendFile(global.appDir + '/upload/header/' + images[randomImage]);
   }),
 );
 

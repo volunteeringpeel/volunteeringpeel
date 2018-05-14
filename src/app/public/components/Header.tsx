@@ -116,7 +116,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
             </Menu.Menu>
           </Container>
         </Menu>
-        <Segment inverted textAlign="center" vertical style={{ paddingBottom: '1em' }}>
+        <Segment inverted textAlign="center" vertical className="main-header">
           <Route
             path="/:page?/:subpage?"
             render={({ match }) => {
@@ -126,14 +126,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
               }
               return (
                 <Container text>
-                  <Header
-                    as="h1"
-                    inverted
-                    style={{
-                      fontWeight: 'normal',
-                      margin: '3em 0',
-                    }}
-                  >
+                  <Header as="h1" inverted>
                     {page.display ? page.display : page.title}
                   </Header>
                 </Container>

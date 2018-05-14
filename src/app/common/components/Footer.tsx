@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Container, Divider, Icon, Menu, Segment } from 'semantic-ui-react';
 
 export default () => (
-  <Segment inverted vertical style={{ padding: '5em 0em' }}>
+  <Segment inverted vertical className="main-footer">
     <Container textAlign="center">
       <Divider horizontal fitted inverted>
         <Menu text inverted size="massive">
