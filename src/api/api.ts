@@ -41,7 +41,7 @@ if (process.env.NODE_ENV !== 'production') {
 // this is important because later we'll need to access file path
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, global.appDir + '/upload');
+    cb(null, '/tmp');
   },
   filename(req, file, cb) {
     cb(null, `${file.fieldname}-${Date.now()}-${file.originalname}`);

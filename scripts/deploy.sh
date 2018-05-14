@@ -28,7 +28,8 @@ HOME=/var/www pm2 stop volunteeringpeel
 echo "Installing new site..."
 rm -rf dist
 cp -rf .artifacts/dist ./
-mkdir -p dist/app/upload
+mkdir -p dist/app/upload/user
+mkdir -p dist/app/upload/header
 # Reset SQL database
 # cat .artifacts/sql/*.sql | mysql -u "$DB_USER" -p"$DB_PASS" volunteeringpeel -v
 

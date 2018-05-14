@@ -41,7 +41,7 @@ export default class Team extends React.Component<TeamProps, TeamState> {
             columns={3}
             cards={_.map(this.state.execs, exec => (
               <Card fluid key={exec.user_id}>
-                {exec.pic && <Image src={`/upload/${exec.pic}`} />}
+                {exec.pic && <Image src={`/upload/user/${exec.pic}`} />}
                 <Card.Content>
                   <Card.Header>
                     {exec.first_name} {exec.last_name}

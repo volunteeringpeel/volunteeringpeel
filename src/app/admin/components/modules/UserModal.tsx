@@ -171,7 +171,7 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
                   onChange={this.handleChange}
                   required
                 />
-                <Image src={`/upload/${(this.props.user as Exec).pic}`} size="tiny" />
+                <Image src={`/upload/user/${(this.props.user as Exec).pic}`} size="tiny" />
                 <Form.Input
                   label="Picture"
                   data-tooltip="Maximum size 1 MB, type PNG or JPG"
