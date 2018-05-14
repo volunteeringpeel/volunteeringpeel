@@ -26,10 +26,14 @@ yarn install --ignore-scripts --production
 echo "Stopping site..."
 HOME=/var/www pm2 stop volunteeringpeel
 echo "Installing new site..."
-rm -rf dist
-cp -rf .artifacts/dist ./
 mkdir -p dist/app/upload/user
 mkdir -p dist/app/upload/header
+mkdir -p dist/app/upload/letter
+rm -rf /tmp/upload
+cp -rf dist/app/upload /tmp/
+rm -rf dist
+cp -rf .artifacts/dist ./
+cp -rf /tmp/upload ./dist/app/
 # Reset SQL database
 # cat .artifacts/sql/*.sql | mysql -u "$DB_USER" -p"$DB_PASS" volunteeringpeel -v
 
