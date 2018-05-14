@@ -1,3 +1,4 @@
+declare module '*.jpg';
 declare module '*.png';
 
 type Renderable = JSX.Element | string;
