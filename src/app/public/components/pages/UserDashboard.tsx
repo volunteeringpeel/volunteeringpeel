@@ -93,7 +93,7 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
                       ? {
                           key: 'letter',
                           content: (
-                            <a href={`/upload/${userShift.letter}`} target="_blank">
+                            <a href={`/upload/letter/${userShift.letter}`} target="_blank">
                               Download
                             </a>
                           ),
