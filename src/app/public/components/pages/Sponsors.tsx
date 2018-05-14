@@ -5,6 +5,9 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Card, Container, Image, Segment } from 'semantic-ui-react';
 
+// Component Imports
+import CardColumns from '@app/public/components/blocks/CardColumns';
+
 interface SponsorsProps {
   loading: (status: boolean) => any;
 }
@@ -33,10 +36,15 @@ export default class Sponsors extends React.Component<SponsorsProps, SponsorsSta
     return (
       <Segment style={{ padding: '4em 0em' }} vertical>
         <Container>
-          <Card.Group>
-            {_.map(_.sortBy(this.state.sponsors, ['priority']), sponsor => (
-              <Card key={sponsor.name}>
-                <Image src={`http://volunteeringpeel.org/${sponsor.image}`} />
+          <CardColumns
+            columns={3}
+            cards={_.map(_.sortBy(this.state.sponsors, ['priority']), sponsor => (
+              <Card fluid key={sponsor.name}>
+                <Image
+                  src={`http://volunteeringpeel.org/${sponsor.image}`}
+                  height="auto"
+                  width="100%"
+                />
                 <Card.Content>
                   <Card.Header>{sponsor.name}</Card.Header>
                 </Card.Content>
@@ -47,7 +55,7 @@ export default class Sponsors extends React.Component<SponsorsProps, SponsorsSta
                 </Card.Content>
               </Card>
             ))}
-          </Card.Group>
+          />
         </Container>
       </Segment>
     );

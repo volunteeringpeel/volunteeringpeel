@@ -6,6 +6,9 @@ import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Card, Container, Image, Segment } from 'semantic-ui-react';
 
+// Component Imports
+import CardColumns from '@app/public/components/blocks/CardColumns';
+
 interface TeamProps {
   loading: (status: boolean) => any;
 }
@@ -34,9 +37,10 @@ export default class Team extends React.Component<TeamProps, TeamState> {
     return (
       <Segment style={{ padding: '4em 0em' }} vertical>
         <Container>
-          <Card.Group>
-            {_.map(this.state.execs, exec => (
-              <Card key={exec.user_id}>
+          <CardColumns
+            columns={3}
+            cards={_.map(this.state.execs, exec => (
+              <Card fluid key={exec.user_id}>
                 {exec.pic && <Image src={`/upload/${exec.pic}`} />}
                 <Card.Content>
                   <Card.Header>
@@ -51,7 +55,7 @@ export default class Team extends React.Component<TeamProps, TeamState> {
                 </Card.Content>
               </Card>
             ))}
-          </Card.Group>
+          />
         </Container>
       </Segment>
     );
