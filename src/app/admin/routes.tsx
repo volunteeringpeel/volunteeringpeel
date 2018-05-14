@@ -44,6 +44,11 @@ const routes: CustomRouteConfig[] = [
     title: 'FAQs',
   },
   {
+    path: '/admin/sponsors',
+    component: require('@app/admin/controllers/pages/Sponsors').default,
+    title: 'Sponsors',
+  },
+  {
     path: '/admin/images',
     component: require('@app/admin/controllers/pages/Images').default,
     title: 'Images',

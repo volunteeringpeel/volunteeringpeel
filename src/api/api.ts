@@ -200,7 +200,9 @@ api.get(
   Utilities.asyncMiddleware(async (req, res) => {
     let err, sponsors;
     [err, sponsors] = await to(
-      req.db.query('SELECT name, image, website FROM sponsor ORDER BY priority'),
+      req.db.query(
+        'SELECT sponsor_id, name, image, website, priority FROM sponsor ORDER BY priority',
+      ),
     );
     if (err) return res.error(500, 'Error retrieving sponsor data', err);
     res.success(sponsors, 200);

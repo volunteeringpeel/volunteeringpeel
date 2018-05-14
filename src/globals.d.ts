@@ -72,6 +72,7 @@ interface MailList {
 }
 
 interface Sponsor {
+  sponsor_id?: number;
   name: string;
   website?: string;
   image: string;
