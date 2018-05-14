@@ -40,11 +40,7 @@ export default class Sponsors extends React.Component<SponsorsProps, SponsorsSta
             columns={3}
             cards={_.map(_.sortBy(this.state.sponsors, ['priority']), sponsor => (
               <Card fluid key={sponsor.name}>
-                <Image
-                  src={`http://volunteeringpeel.org/${sponsor.image}`}
-                  height="auto"
-                  width="100%"
-                />
+                <Image src={`/upload/sponsor/${sponsor.image}`} height="auto" width="100%" />
                 <Card.Content>
                   <Card.Header>{sponsor.name}</Card.Header>
                 </Card.Content>
