@@ -31,6 +31,7 @@ jobs:
                 root: ./
                 paths:
                     - node_modules
+                    - scripts
     
     build_server:
         <<: *defaults
