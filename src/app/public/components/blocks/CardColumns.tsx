@@ -16,7 +16,7 @@ export default class CardColumns extends React.Component<CardColumnsProps> {
             const start = Math.floor(i * this.props.cards.length / this.props.columns);
             const end = Math.floor((i + 1) * this.props.cards.length / this.props.columns);
             return (
-              <Grid.Column>
+              <Grid.Column key={i}>
                 <Card.Group children={this.props.cards.slice(start, end)} />
               </Grid.Column>
             );
