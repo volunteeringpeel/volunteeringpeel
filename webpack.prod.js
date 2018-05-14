@@ -66,11 +66,7 @@ module.exports = merge(common, {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: [
-            { loader: 'cache-loader' },
-            { loader: 'style-loader' },
-            { loader: 'css-loader', options: { minimize: true } },
-          ],
+          use: [{ loader: 'cache-loader' }, { loader: 'css-loader', options: { minimize: true } }],
         }),
       },
     ],
