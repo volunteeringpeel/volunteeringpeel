@@ -2,11 +2,13 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import { Route } from 'react-router-dom';
 import { ConnectedRouter } from 'react-router-redux';
 
 // App Imports
 import { history, store } from '@app/common/utilities';
 import '@app/css/style.less';
+import withTracker from '@app/public/withTracker';
 
 // Controller Imports
 import PublicSite from '@app/public/controllers/PublicSite';
@@ -16,7 +18,7 @@ class PublicApp extends React.Component {
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
-          <PublicSite />
+          <Route component={withTracker(PublicSite)} />
         </ConnectedRouter>
       </Provider>
     );

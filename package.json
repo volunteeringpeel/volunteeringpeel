@@ -105,6 +105,7 @@
     "promise-mysql": "^3.2.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
+    "react-ga": "https://github.com/react-ga/react-ga#6c14fda43799e3bfa6379b0e9288d432369e85ae",
     "react-loadable": "^5.3.1",
     "react-markdown": "^3.3.0",
     "react-redux": "^5.0.7",
