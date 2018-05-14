@@ -188,7 +188,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                           : `${startDate.format('MMM D, YYYY')} - ${endDate.format('MMM D, YYYY')}`}
                       </Item.Meta>
                       <Item.Description>
-                        <p>{shift.notes}</p>
+                        <ReactMarkdown source={shift.notes} />
                         {_.map(shift.meals, meal => <Label key={meal}>{meal} provided</Label>)}
                       </Item.Description>
                       <Item.Extra>

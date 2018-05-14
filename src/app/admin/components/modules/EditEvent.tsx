@@ -5,6 +5,7 @@ import update, { Query } from 'immutability-helper'; // tslint:disable-line:impo
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
+import * as ReactMarkdown from 'react-markdown';
 import 'react-widgets/dist/css/react-widgets.css';
 import * as DateTimePicker from 'react-widgets/lib/DateTimePicker';
 import { Button, Form, Icon, Menu, Segment } from 'semantic-ui-react';
@@ -250,6 +251,9 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
           onChange={this.handleChange}
           required
         />
+        <Segment>
+          <ReactMarkdown source={description} />
+        </Segment>
         <Form.Group widths="equal">
           <Form.Input
             fluid
@@ -362,6 +366,9 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
                 required
                 onChange={this.handleShiftChange}
               />
+              <Segment>
+                <ReactMarkdown source={selectedShift.notes} />
+              </Segment>
               <Button negative size="tiny" fluid animated="fade" onClick={this.handleShiftDelete}>
                 <Button.Content visible>Delete Shift</Button.Content>
                 <Button.Content hidden>
