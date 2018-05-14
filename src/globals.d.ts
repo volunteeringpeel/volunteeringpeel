@@ -64,6 +64,7 @@ interface Exec extends User {
   bio: string;
   title: string;
   pic: string;
+  show_exec: boolean;
 }
 
 interface MailList {

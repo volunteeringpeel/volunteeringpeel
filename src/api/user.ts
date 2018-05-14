@@ -12,13 +12,13 @@ import * as Utilities from '@api/utilities';
 export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
-  let err, users: User[];
+  let err, users: Exec[];
   [err, users] = await to(
     req.db.query(`SELECT
       user_id, role_id,
       first_name, last_name,
       email, phone_1, phone_2,
-      title, bio, pic
+      title, bio, pic, show_exec
     FROM user`),
   );
   if (err) return res.error(500, 'Error getting user data', err);
@@ -28,7 +28,7 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
     Bluebird.all(
       users.map(async user => {
         const mailLists = await Bluebird.resolve(getUserMailLists(user.user_id, req.db));
-        return { ...user, mail_lists: mailLists };
+        return { ...user, show_exec: !!user.show_exec, mail_lists: mailLists };
       }),
     ),
   );
@@ -55,7 +55,7 @@ export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
           user_id,
           first_name, last_name, email,
           phone_1, phone_2, role_id,
-          bio, title, pic
+          bio, title, pic, show_exec
         FROM user WHERE email = ?`,
         [req.user.email],
       )
@@ -149,7 +149,16 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
   let err;
 
   // get parameters from request body
-  const { first_name, last_name, phone_1, phone_2, mail_lists, bio, title }: Exec = req.body;
+  const {
+    first_name,
+    last_name,
+    phone_1,
+    phone_2,
+    mail_lists,
+    bio,
+    title,
+    show_exec,
+  }: Exec = req.body;
 
   // updating own user
   if (req.params.id === 'current') {
@@ -208,7 +217,18 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
       if (err) return res.error(500, 'Failed to save uploaded file', err);
     }
 
-    const data = { first_name, last_name, email, phone_1, phone_2, role_id, bio, title, pic };
+    const data = {
+      first_name,
+      last_name,
+      email,
+      phone_1,
+      phone_2,
+      role_id,
+      bio,
+      title,
+      pic,
+      show_exec: +show_exec,
+    };
 
     if (+req.params.id === -1) {
       [err] = await to(req.db.query('INSERT INTO user SET ?', data));

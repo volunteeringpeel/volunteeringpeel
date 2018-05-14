@@ -167,6 +167,7 @@ export default class Users extends React.Component<
                         phone_2: '',
                         role_id: 1,
                         mail_lists: [],
+                        show_exec: true,
                       }
                     : _.find(this.state.users, ['user_id', +match.params.id])
                 }

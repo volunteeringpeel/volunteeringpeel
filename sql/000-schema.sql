@@ -55,6 +55,7 @@ create table if not exists user (
   title       varchar(32)                                       comment 'For execs, title',
   bio         text                                              comment 'For execs, bio for about page',
   pic         varchar(256)                                      comment 'For execs, pic path',
+  show_exec   boolean       not null default 1                  comment 'For execs, show on team page?',
   foreign key fk_user_role (role_id) references role(role_id)
 );
 

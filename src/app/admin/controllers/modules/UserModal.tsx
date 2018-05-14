@@ -18,7 +18,6 @@ const mapStateToProps = (state: State) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   addMessage: (message: Message) => dispatch(addMessage(message)),
-  loading: (status: boolean) => dispatch(loading(status)),
 });
 
 const connectedUserModal = connect(mapStateToProps, mapDispatchToProps)(UserModal);

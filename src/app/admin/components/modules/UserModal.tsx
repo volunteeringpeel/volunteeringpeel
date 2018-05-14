@@ -11,7 +11,6 @@ import MessageBox from '@app/common/controllers/MessageBox';
 
 interface UserModalProps {
   addMessage: (message: Message) => any;
-  loading: (status: boolean) => any;
   cancel: () => void;
   refresh: () => void;
   mailListTemplate: MailList[];
@@ -52,6 +51,7 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
         mail_lists: nextProps.user.mail_lists || this.props.mailListTemplate,
         title: nextProps.user.role_id === 3 ? (nextProps.user as Exec).title : null,
         bio: nextProps.user.role_id === 3 ? (nextProps.user as Exec).bio : null,
+        show_exec: nextProps.user.role_id === 3 ? (nextProps.user as Exec).show_exec : null,
         pic: null,
       });
     }
@@ -64,14 +64,13 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
       let param: string | Blob = value.toString() || null;
       if (key === 'mail_lists') param = JSON.stringify(value);
       if (key === 'pic') param = (value || null) as File;
+      if (key === 'show_exec') param = (+value).toString();
       if (param) data.append(key, param);
     });
-    Promise.resolve(this.props.loading(true))
-      .then(() =>
-        axios.post(`/api/user/${this.props.user.user_id}`, data, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
-        }),
-      )
+    axios
+      .post(`/api/user/${this.props.user.user_id}`, data, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+      })
       .then(res => {
         this.props.addMessage({ message: res.data.data, severity: 'positive' });
         this.props.refresh();
@@ -83,8 +82,7 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
           more: error.response.data.details || error.message,
           severity: 'negative',
         });
-      })
-      .finally(() => this.props.loading(false));
+      });
   }
 
   public handleChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
@@ -168,6 +166,13 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
                   data-tooltip="Keep it PG."
                   name="bio"
                   value={(this.state as Exec).bio}
+                  onChange={this.handleChange}
+                  required
+                />
+                <Form.Checkbox
+                  label="Should exec be shown on Team page?"
+                  name="show_exec"
+                  checked={(this.state as Exec).show_exec}
                   onChange={this.handleChange}
                   required
                 />

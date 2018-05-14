@@ -186,7 +186,7 @@ api.get(
     let err, execs;
     [err, execs] = await to(
       req.db.query(
-        'SELECT user_id, first_name, last_name, title, bio, pic FROM user WHERE role_id = 3',
+        'SELECT user_id, first_name, last_name, title, bio, pic FROM user WHERE role_id = 3 AND show_exec = 1',
       ),
     );
     if (err) return res.error(500, 'Error retrieving executive data', err);
