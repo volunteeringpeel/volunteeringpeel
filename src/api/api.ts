@@ -14,6 +14,7 @@ import * as Utilities from '@api/utilities';
 // Import sub-APIs
 import * as AttendanceAPI from '@api/attendance';
 import * as EventAPI from '@api/event';
+import * as HeaderAPI from '@api/header';
 import * as MailingListAPI from '@api/mailing-list';
 import * as UserAPI from '@api/user';
 import { wss } from '../index';
@@ -207,18 +208,10 @@ api.get(
 );
 
 // Header Images
-api.get(
-  '/public/header-image',
-  Utilities.asyncMiddleware(async (req, res) => {
-    // Get list of images inside of header folder
-    const [err, images] = await to(
-      Bluebird.promisify(fs.readdir)(global.appDir + '/upload/header'),
-    );
-    if (err) res.error(500, 'Error picking a header image', err);
-    const randomImage = Math.floor(Math.random() * images.length);
-    res.status(200).sendFile(global.appDir + '/upload/header/' + images[randomImage]);
-  }),
-);
+api.get('/public/header-image', HeaderAPI.getHeaderImage);
+api.get('/header-image', HeaderAPI.listHeaderImages);
+api.post('/header-image', upload.single('header'), HeaderAPI.uploadHeaderImage);
+api.delete('/header-image/:filename', HeaderAPI.deleteHeaderImage);
 
 // Prived/authorized by JWT endpoint
 api.get('/event', EventAPI.eventQuery(true));
