@@ -28,7 +28,7 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
     Bluebird.all(
       users.map(async user => {
         const mailLists = await Bluebird.resolve(getUserMailLists(user.user_id, req.db));
-        return { ...user, show_exec: !!user.show_exec, mail_lists: mailLists };
+        return { ...user, show_exec: !!+user.show_exec, mail_lists: mailLists };
       }),
     ),
   );
