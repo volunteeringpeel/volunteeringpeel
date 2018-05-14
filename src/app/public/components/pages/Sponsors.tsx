@@ -25,7 +25,7 @@ export default class Sponsors extends React.Component<SponsorsProps, SponsorsSta
 
   public componentDidMount() {
     Promise.resolve(() => this.props.loading(true))
-      .then(() => axios.get('/api/public/sponsors'))
+      .then(() => axios.get('/api/public/sponsor'))
       .then(res => {
         this.props.loading(false);
         this.setState({ sponsors: res.data.data });
@@ -50,7 +50,9 @@ export default class Sponsors extends React.Component<SponsorsProps, SponsorsSta
                 </Card.Content>
                 <Card.Content extra>
                   <Card.Meta>
-                    <a href={sponsor.website}>Website</a>
+                    <a href={sponsor.website} target="_blank">
+                      Website
+                    </a>
                   </Card.Meta>
                 </Card.Content>
               </Card>

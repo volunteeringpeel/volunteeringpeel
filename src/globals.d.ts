@@ -1,8 +1,5 @@
-declare module '*/passwords.json' {
-  const mysql: {
-    password: string;
-  };
-}
+declare module '*.jpg';
+declare module '*.png';
 
 type Renderable = JSX.Element | string;
 
@@ -75,6 +72,7 @@ interface MailList {
 }
 
 interface Sponsor {
+  sponsor_id?: number;
   name: string;
   website?: string;
   image: string;

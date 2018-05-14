@@ -24,8 +24,9 @@ export default () => (
           </Menu.Item>
         </Menu>
       </Divider>
-      &copy; 2017-{new Date().getFullYear()} Volunteering Peel. All rights reserved. Made with{' '}
-      <Icon name="heart" as="i" />.
+      &copy; 2017-{new Date().getFullYear()} Volunteering Peel. All rights reserved.<br />
+      Made with <Icon name="heart" as="i" /> by{' '}
+      <a href="https://github.com/retrocraft">James Ah Yong</a>
       <br />
       <Link to="/about/legal">
         <small>Legal</small>

@@ -29,6 +29,7 @@ echo "Installing new site..."
 mkdir -p dist/app/upload/user
 mkdir -p dist/app/upload/header
 mkdir -p dist/app/upload/letter
+mkdir -p dist/app/upload/sponsor
 rm -rf /tmp/upload
 cp -rf dist/app/upload /tmp/
 rm -rf dist

@@ -3,6 +3,9 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Grid, Header, Icon, Segment } from 'semantic-ui-react';
 
+// App Imports
+import aboutJpg from '@app/images/about.jpg';
+
 export default () => (
   <div className="large text">
     <Segment style={{ padding: '4em 0em' }} vertical>
@@ -16,6 +19,7 @@ export default () => (
       >
         <Grid.Row>
           <Grid.Column style={{ paddingBottom: '5em', paddingTop: '5em' }}>
+            <img src={aboutJpg} style={{ maxHeight: '40vh' }} />
             <Header as="h3">Who We Are</Header>
             <p>
               Volunteering Peel is a group of students who organize volunteer events. Our main goal

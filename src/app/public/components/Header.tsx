@@ -7,6 +7,7 @@ import { Link, Route, RouteComponentProps } from 'react-router-dom';
 import { Container, Dropdown, Header, Icon, Menu, Message, Segment } from 'semantic-ui-react';
 
 // App Imports
+import logoPng from '@app/images/logo.png';
 import Auth from '@app/public/Auth';
 import routes from '@app/public/routes';
 
@@ -72,7 +73,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                   onClick={() => this.props.push('/')}
                   style={{ minWidth: '200px' }}
                 >
-                  <img src="//volunteeringpeel.org/images/logo.png" style={{ width: '100%' }} />
+                  <img src={logoPng} style={{ width: '100%' }} />
                 </Menu.Item>
               )}
             </Route>
