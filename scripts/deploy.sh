@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # DEPLOYMENT SCRIPT
-# Pass in $1 = CircleCI build number and $2 = CircleCI API Token
+# Ensure env vars BUILD_NUM and CIRCLE_API_KEY are set
 
 cd /var/www/volunteeringpeel
 # Get environment variables (database password)
@@ -11,7 +11,7 @@ export $(cat .env | grep -v ^\# | xargs)
 echo "Clearing artifacts directory..."
 rm -rf .artifacts
 echo "Downloading new artifacts..."
-curl -s https://circleci.com/api/v1.1/project/github/volunteeringpeel/volunteeringpeel/$1/artifacts?circle-token=$2 \
+curl -s https://circleci.com/api/v1.1/project/github/volunteeringpeel/volunteeringpeel/$BUILD_NUM/artifacts?circle-token=$CIRCLE_API_KEY \
   | grep -o 'https://[^"]*' \
   | sed -En 's/^(.*volunteeringpeel\/)(.*)/"\.artifacts\/\2" "\1\2"/p' \
   | awk '{system("echo \"" $2 " -> " $1 "\"; curl --create-dirs -sSo " $1 " " $2)}';
