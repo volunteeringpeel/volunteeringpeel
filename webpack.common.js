@@ -41,6 +41,19 @@ module.exports = {
           },
         ],
       },
+
+      {
+        // sitemap, robots, copy normally
+        test: /sitemap\.xml|robots\.txt/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: './[name].[ext]',
+            },
+          },
+        ],
+      },
     ],
   },
 
