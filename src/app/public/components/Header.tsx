@@ -35,10 +35,10 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                     this.props.user.user.user.last_name
                   }`}
                 />
-                <Dropdown.Item onClick={() => this.props.push('/user/profile')}>
+                <Dropdown.Item as="a" onClick={() => this.props.push('/user/profile')}>
                   Profile
                 </Dropdown.Item>
-                <Dropdown.Item onClick={() => this.props.push('/user/dashboard')}>
+                <Dropdown.Item as="a" onClick={() => this.props.push('/user/dashboard')}>
                   Dashboard
                 </Dropdown.Item>
                 {this.props.user.user.user.role_id === 3 && (
@@ -47,14 +47,20 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                   </Dropdown.Item>
                 )}
                 <Dropdown.Divider />
-                <Dropdown.Item onClick={Auth.logout}>Logout</Dropdown.Item>
+                <Dropdown.Item as="a" onClick={Auth.logout}>
+                  Logout
+                </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           )}
         </Route>
       );
     } else if (this.props.user.status === 'out') {
-      userButton = <Menu.Item onClick={Auth.login}>Login</Menu.Item>;
+      userButton = (
+        <Menu.Item as="a" onClick={Auth.login}>
+          Login
+        </Menu.Item>
+      );
     } else {
       userButton = (
         <Menu.Item>
@@ -82,17 +88,19 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                 {({ match }) => (
                   <Dropdown item text="About" className={match ? 'active' : ''}>
                     <Dropdown.Menu>
-                      <Dropdown.Item onClick={() => this.props.push('/about')}>About</Dropdown.Item>
-                      <Dropdown.Item onClick={() => this.props.push('/about/team')}>
+                      <Dropdown.Item as="a" onClick={() => this.props.push('/about')}>
+                        About
+                      </Dropdown.Item>
+                      <Dropdown.Item as="a" onClick={() => this.props.push('/about/team')}>
                         Meet the Team
                       </Dropdown.Item>
-                      <Dropdown.Item onClick={() => this.props.push('/about/faq')}>
+                      <Dropdown.Item as="a" onClick={() => this.props.push('/about/faq')}>
                         FAQ
                       </Dropdown.Item>
-                      <Dropdown.Item onClick={() => this.props.push('/about/sponsors')}>
+                      <Dropdown.Item as="a" onClick={() => this.props.push('/about/sponsors')}>
                         Sponsors
                       </Dropdown.Item>
-                      <Dropdown.Item onClick={() => this.props.push('/about/legal')}>
+                      <Dropdown.Item as="a" onClick={() => this.props.push('/about/legal')}>
                         Legal
                       </Dropdown.Item>
                     </Dropdown.Menu>
