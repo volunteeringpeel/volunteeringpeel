@@ -30,14 +30,15 @@ export const pool = mysql.createPool({
   password: process.env.DB_PASS,
   database: 'volunteeringpeel',
   charset: 'utf8mb4',
+  timezone: '-04:00',
 });
 
-if (process.env.NODE_ENV !== 'production') {
-  api.use((req, res, next) => {
-    console.log(`Request: ${req.originalUrl} (${req.method})`);
-    next();
-  });
-}
+// if (process.env.NODE_ENV !== 'production') {
+api.use((req, res, next) => {
+  console.log(`Request: ${req.originalUrl} (${req.method})`);
+  next();
+});
+// }
 
 // configuring Multer to use files directory for storing files
 // this is important because later we'll need to access file path
@@ -60,6 +61,7 @@ api.use((req, res, next) => {
       // await req.db.rollback();
       req.db.release();
     }
+    console.log('error: ' + error);
     res
       .status(status)
       .json({ error, details: details || 'No further information', status: 'error' });
@@ -71,6 +73,7 @@ api.use((req, res, next) => {
       // if (err) return res.error(500, 'Error saving changes', err);
       req.db.release();
     }
+    console.log('success: ' + data);
     if (data) res.status(status).json({ data, status: 'success' });
     else res.status(status).json({ status: 'success' });
   };
