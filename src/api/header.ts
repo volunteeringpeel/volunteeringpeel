@@ -11,6 +11,7 @@ const readdir = Bluebird.promisify(fs.readdir);
 const unlink = Bluebird.promisify(fs.unlink);
 
 export const getHeaderImage = Utilities.asyncMiddleware(async (req, res) => {
+  req.db.release();
   // Get list of images inside of header folder
   const [err, images] = await to(readdir(global.appDir + '/upload/header'));
   if (err) res.error(500, 'Error picking a header image', err);
