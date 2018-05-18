@@ -99,7 +99,13 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                         <Item.Header>
                           {event.name} <small>{date}</small>
                         </Item.Header>
-                        <Item.Meta>{event.address}</Item.Meta>
+                        <Item.Meta>
+                          {event.address}
+                          <br />
+                          {event.transport
+                            ? `Transportation provided from ${event.transport}`
+                            : 'No transportation provided'}
+                        </Item.Meta>
                         <Item.Description>
                           <ReactMarkdown source={event.description} />
                         </Item.Description>
