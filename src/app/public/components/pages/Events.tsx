@@ -12,6 +12,7 @@ import ProgressColor from '@app/public/components/blocks/ProgressColor';
 import SubscribeBox from '@app/public/components/modules/SubscribeBox';
 
 // Controller Imports
+import { pluralize } from '@app/common/utilities';
 import EventModal from '@app/public/controllers/modules/EventModal';
 
 interface EventsProps {
@@ -85,7 +86,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                   // If start === end, one day event, otherwise range
                   const date = startDate.isSame(endDate, 'day')
                     ? startDate.format(formatString)
-                    : `${startDate.format(formatString)} - ${endDate.format(formatString)}`;
+                    : `${startDate.format(formatString)} – ${endDate.format(formatString)}`;
 
                   // Calculate if event is full based on spots (sum up shift spots)
                   const maxSpots = _.sumBy(event.shifts, 'max_spots');
@@ -93,6 +94,15 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                   const spotsLeft = maxSpots - spotsTaken;
                   // Event is full if spotsLeft === 0
                   const full = spotsLeft === 0;
+
+                  // list of shifts as HH:MM-HH:MM
+                  const shifts = _.map(
+                    event.shifts,
+                    shift =>
+                      `${moment(shift.start_time).format('hh:mm a')} – ${moment(
+                        shift.end_time,
+                      ).format('hh:mm a')}`,
+                  ).join(', ');
                   return (
                     <Item key={event.event_id}>
                       <Item.Content>
@@ -110,7 +120,10 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                           <ReactMarkdown source={event.description} />
                         </Item.Description>
                         <Item.Extra>
-                          {`${event.shifts.length} ${event.shifts.length > 1 ? 'shifts' : 'shift'}`}
+                          {`${event.shifts.length} ${pluralize(
+                            'shift',
+                            event.shifts.length,
+                          )}: ${shifts}`}
                           <ProgressColor
                             value={maxSpots - spotsTaken}
                             total={maxSpots}
