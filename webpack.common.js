@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const Jarvis = require('webpack-jarvis');
 
@@ -88,6 +89,7 @@ module.exports = {
       filename: 'admin.html',
       template: 'index.ejs',
     }),
+    new CopyWebpackPlugin(['root']),
     // delete some excess shit (see https://github.com/moment/moment/issues/2517)
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en/),
     // fancy dashboard at http://localhost:1337
