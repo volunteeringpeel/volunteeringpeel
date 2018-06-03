@@ -235,8 +235,8 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
 setInterval(() => {
   API.attendanceWss.clients.forEach((ws: AttendanceWebSocket) => {
     if (!ws.isAlive) {
-      ws.terminate();
       ws.release();
+      ws.terminate();
       broadcastClients();
       return;
     }

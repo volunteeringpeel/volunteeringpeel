@@ -31,11 +31,12 @@ export const pool = mysql.createPool({
   database: 'volunteeringpeel',
   charset: 'utf8mb4',
   timezone: '-04:00',
+  connectionLimit: 100,
 });
 
 // if (process.env.NODE_ENV !== 'production') {
 api.use((req, res, next) => {
-  console.log(`Request: ${req.originalUrl} (${req.method})`);
+  console.log(`[${new Date().toISOString()}] request ${req.originalUrl} (${req.method})`);
   next();
 });
 // }
@@ -61,7 +62,8 @@ api.use((req, res, next) => {
       // await req.db.rollback();
       req.db.release();
     }
-    console.log('error: ' + error);
+    console.error(`[${new Date().toISOString()}] error ${error}`);
+    console.error(details);
     res
       .status(status)
       .json({ error, details: details || 'No further information', status: 'error' });
@@ -73,7 +75,7 @@ api.use((req, res, next) => {
       // if (err) return res.error(500, 'Error saving changes', err);
       req.db.release();
     }
-    console.log('success: ' + data);
+    console.log(`[${new Date().toISOString()}] success ${data}`);
     if (data) res.status(status).json({ data, status: 'success' });
     else res.status(status).json({ status: 'success' });
   };
@@ -301,6 +303,13 @@ api.post(
 api.get('*', (req, res, next) => {
   if (req.headers.upgrade === 'websocket') res.end();
   res.error(404, 'Unknown endpoint');
+});
+
+// error handling
+api.use((err: Error, req: Express.Request, res: Express.Response) => {
+  console.error(`[${new Date().toISOString()}] uncaught error ${err}`);
+  console.error(err.stack);
+  res.status(500).send({ status: 'error', error: err });
 });
 
 export default api;
