@@ -334,16 +334,16 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     }));
 
     const columns = [
-      'Status',
-      'First Name',
-      'Last Name',
-      'Phone Numbers',
-      'Email',
-      'Start and End',
-      'Hours',
-      'Other Shifts',
-      'Assigned Exec',
-      'Notes',
+      { name: 'Status', key: 'confirm_level_id.value' },
+      { name: 'First Name', key: 'user.first_name' },
+      { name: 'Last Name', key: 'user.last_name' },
+      { name: 'Phone Numbers', key: 'user.phone_1' },
+      { name: 'Email', key: 'user.email' },
+      { name: 'Start and End', key: 'start_time.value' },
+      { name: 'Hours', key: 'end_time.value' },
+      { name: 'Other Shifts', key: 'other_shifts' },
+      { name: 'Assigned', key: 'assigned_exec' },
+      { name: 'Notes', key: 'add_info' },
     ];
 
     const getLock = (row: number, field: string): TableCellProps => {
