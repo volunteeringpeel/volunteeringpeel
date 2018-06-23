@@ -52,6 +52,7 @@ create table if not exists user (
   last_name   varchar(32)                                       comment 'Last name',
   phone_1     varchar(15)                                       comment 'Phone contact #1 (for volunteers/organizers)',
   phone_2     varchar(15)                                       comment 'Phone contact #2 (for volunteers)',
+  school      varchar(64)                                       comment 'School (for volunteers)',
   title       varchar(32)                                       comment 'For execs, title',
   bio         text                                              comment 'For execs, bio for about page',
   pic         varchar(256)                                      comment 'For execs, pic path',
