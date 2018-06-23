@@ -13,14 +13,14 @@ import {
 interface FancyTableProps<T> {
   filters: { name: string; description: string; filter: ((input: T) => boolean) }[];
   tableData: T[];
-  headerRow: Renderable[];
+  headerRow: (string | { name: Renderable; key: string })[];
   renderBodyRow: (data: T, i: number) => TableRowProps;
 }
 
 interface FancyTableState<T> {
   filters: { [name: string]: number };
   hidden: Set<number>;
-  sortCol: number;
+  sortCol: string;
   sortDir: 'ascending' | 'descending';
 }
 
@@ -39,7 +39,7 @@ export default class FancyTable<T> extends React.Component<
     };
   }
 
-  public handleSort = (i: number) => () => {
+  public handleSort = (i: string) => () => {
     const { sortCol, sortDir } = this.state;
 
     if (i !== sortCol) {
@@ -87,9 +87,7 @@ export default class FancyTable<T> extends React.Component<
       _.reduce(activeFilters, (acc, filter) => _.filter(acc, filter.filter), this.props.tableData),
     );
 
-    const sortedData = _.sortBy(filteredData, [
-      _.snakeCase(this.props.headerRow[this.state.sortCol] as string),
-    ]);
+    const sortedData = _.sortBy(filteredData, [this.state.sortCol]);
 
     const processedData = this.state.sortDir === 'descending' ? sortedData.reverse() : sortedData;
 
@@ -98,11 +96,11 @@ export default class FancyTable<T> extends React.Component<
         <Form.Field inline>
           <label>Columns:</label>
           <Button.Group
-            buttons={_.map(this.props.headerRow, (column, i) => {
+            buttons={_.map(this.props.headerRow, (header, i) => {
               const hidden = this.state.hidden.has(i);
               return {
                 key: i,
-                content: column,
+                content: typeof header === 'string' ? header : header.name,
                 positive: !hidden,
                 onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
                   e.preventDefault();
@@ -139,14 +137,17 @@ export default class FancyTable<T> extends React.Component<
           sortable
           headerRow={_.map(
             _.filter(this.props.headerRow, (__, i) => !this.state.hidden.has(i)),
-            (header, i) => (
-              <Table.HeaderCell
-                key={i}
-                content={header}
-                sorted={this.state.sortCol === i ? this.state.sortDir : null}
-                onClick={this.handleSort(i)}
-              />
-            ),
+            (header, i) => {
+              const sortKey = typeof header === 'string' ? _.snakeCase(header) : header.key;
+              return (
+                <Table.HeaderCell
+                  key={i}
+                  content={typeof header === 'string' ? header : header.name}
+                  sorted={this.state.sortCol === sortKey ? this.state.sortDir : null}
+                  onClick={this.handleSort(sortKey)}
+                />
+              );
+            },
           )}
           renderBodyRow={(data, i) => {
             const row = this.props.renderBodyRow(data, i);

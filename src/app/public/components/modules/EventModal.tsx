@@ -71,6 +71,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
               this.state.selectedShifts,
               num => _.find(this.props.event.shifts, ['shift_num', num]).shift_id,
             ),
+            add_info: this.state.add_info,
           },
           {
             headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },

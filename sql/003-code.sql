@@ -5,13 +5,13 @@ create trigger user_shift_bi before insert
   on user_shift
     for each row begin
 		if new.assigned_exec is null then
-      select count(*) into @execs from user where role_id = 3;
+      select count(*) into @execs from user where role_id = 3 and show_exec = 1;
       set @exec = floor(1 + (rand() * @execs));
       select e.user_id into @assigned_exec from (
         select 
           (@row_number := @row_number + 1) as num, user_id
           from user u, (select @row_number := 0) as t
-          where role_id = 3
+          where role_id = 3 and show_exec = 1
       ) as e
       where e.num = @exec;
       set new.assigned_exec = @assigned_exec;

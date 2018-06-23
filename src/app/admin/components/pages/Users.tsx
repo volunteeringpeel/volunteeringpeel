@@ -83,7 +83,16 @@ export default class Users extends React.Component<
   }
 
   public render() {
-    const headerRow = ['Role', 'First Name', 'Last Name', 'Email', 'Phone 1', 'Phone 2', 'Actions'];
+    const headerRow = [
+      'Role',
+      'First Name',
+      'Last Name',
+      'School',
+      'Email',
+      'Phone 1',
+      'Phone 2',
+      'Actions',
+    ];
     const footerRow = [
       <th colSpan={headerRow.length} key="footer">
         <Button
@@ -109,6 +118,12 @@ export default class Users extends React.Component<
           icon: 'attention',
           content: 'Missing',
           warning: true,
+        },
+        {
+          key: 'school',
+          icon: user.school ? null : 'attention',
+          content: user.school || 'Missing',
+          warning: !user.school,
         },
         user.email,
         {
@@ -165,6 +180,7 @@ export default class Users extends React.Component<
                         email: '',
                         phone_1: '',
                         phone_2: '',
+                        school: '',
                         role_id: 1,
                         mail_lists: [],
                         show_exec: true,

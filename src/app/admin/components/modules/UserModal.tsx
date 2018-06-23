@@ -29,11 +29,12 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
       email: props.user.email || '',
       phone_1: props.user.phone_1 || '',
       phone_2: props.user.phone_2 || '',
+      school: props.user.school || '',
       role_id: props.user.role_id || 1,
       mail_lists: props.user.mail_lists || props.mailListTemplate,
       title: (props.user as Exec).title || null,
       bio: (props.user as Exec).bio || null,
-      show_exec: props.user.role_id === 3 ? (props.user as Exec).show_exec : null,
+      show_exec: props.user.role_id === 3 ? (props.user as Exec).show_exec : 0,
       pic: null,
     };
 
@@ -48,6 +49,7 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
         email: nextProps.user.email || '',
         phone_1: nextProps.user.phone_1 || '',
         phone_2: nextProps.user.phone_2 || '',
+        school: nextProps.user.school || '',
         role_id: nextProps.user.role_id || 1,
         mail_lists: nextProps.user.mail_lists || this.props.mailListTemplate,
         title: nextProps.user.role_id === 3 ? (nextProps.user as Exec).title : null,
@@ -120,6 +122,12 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
               name="email"
               value={this.state.email}
               type="email"
+              onChange={this.handleChange}
+            />
+            <Form.Input
+              label="School"
+              name="school"
+              value={this.state.school}
               onChange={this.handleChange}
             />
             <Form.Group widths="equal">
