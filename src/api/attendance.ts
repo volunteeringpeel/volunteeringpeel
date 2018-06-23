@@ -253,7 +253,7 @@ export const exportToCSV: Express.RequestHandler = async (req, res) => {
   [err, data] = await to(
     req.db.query(
       `SELECT 
-        first_name, last_name, phone_1, phone_2, notes
+        first_name, last_name, phone_1, phone_2, add_info
         FROM user_shift us
         JOIN user u ON u.user_id = us.user_id
         WHERE us.shift_id = ?`,
