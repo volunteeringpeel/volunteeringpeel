@@ -21,10 +21,16 @@ export const userAbleToRegister = createSelector([getUser], user => {
       </>
     );
   }
-  if (!user.user.user.first_name || !user.user.user.last_name || !user.user.user.phone_1) {
+  if (
+    !user.user.user.first_name ||
+    !user.user.user.last_name ||
+    !user.user.user.phone_1 ||
+    !user.user.user.school
+  ) {
     return (
       <>
-        Please <Link to="/user/profile">fill out your profile</Link> (name and phone #) to register
+        Please <Link to="/user/profile">fill out your profile</Link> (name, school, and phone #) to
+        register
       </>
     );
   }

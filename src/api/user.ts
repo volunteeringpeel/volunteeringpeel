@@ -164,7 +164,7 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
   // updating own user
   if (req.params.id === 'current') {
     // ensure that all parameters exist
-    if (!first_name || !last_name || !phone_1) {
+    if (!first_name || !last_name || !phone_1 || !school) {
       return res.error(
         400,
         'Missing required field!',
@@ -184,7 +184,7 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
     [err, result] = await to(
       req.db.query('UPDATE user SET ? WHERE ?', [
         // fields to update
-        { first_name, last_name, phone_1, phone_2, bio, title },
+        { first_name, last_name, phone_1, phone_2, school, bio, title },
         // find the user with this email
         { user_id: id },
       ]),

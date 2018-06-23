@@ -119,13 +119,13 @@ export default class Users extends React.Component<
           content: 'Missing',
           warning: true,
         },
-        user.email,
         {
           key: 'school',
           icon: user.school ? null : 'attention',
           content: user.school || 'Missing',
           warning: !user.school,
         },
+        user.email,
         {
           key: 'phone_1',
           icon: user.phone_1 ? null : 'attention',
