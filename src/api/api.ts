@@ -285,11 +285,15 @@ api.post(
       return res.error(500, 'Error retrieving user information', err);
     }
 
-    const values = (req.body.shifts as number[]).map(shift => [users[0].user_id, shift]);
+    const values = (req.body.shifts as number[]).map(shift => [
+      users[0].user_id,
+      shift,
+      req.body.add_info,
+    ]);
 
     let affectedRows;
     [err, { affectedRows }] = await to(
-      req.db.query('INSERT INTO user_shift (user_id, shift_id) VALUES ?', [values]),
+      req.db.query('INSERT INTO user_shift (user_id, shift_id, add_info) VALUES ?', [values]),
     );
     if (err || affectedRows !== req.body.shifts.length) {
       return res.error(500, 'Error signing up', err);
