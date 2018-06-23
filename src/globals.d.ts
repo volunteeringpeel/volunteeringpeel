@@ -51,6 +51,7 @@ interface User {
   last_name: string;
   phone_1: string;
   phone_2: string;
+  school: string;
   role_id: number;
   mail_lists?: MailList[];
   new?: boolean;

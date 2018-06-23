@@ -5,8 +5,7 @@ import immutabilityHelper from 'immutability-helper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Redirect } from 'react-router';
-import { RouterAction } from 'react-router-redux';
-import { Container, Form, InputOnChangeData, Label, Segment } from 'semantic-ui-react';
+import { Container, Form, Segment } from 'semantic-ui-react';
 
 interface UserProfileProps {
   user: UserState;
@@ -20,6 +19,7 @@ interface UserProfileState {
   last_name: string;
   phone_1: string;
   phone_2: string;
+  school: string;
   mail_lists: MailList[];
   title: string;
   bio: string;
@@ -34,6 +34,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       last_name: '',
       phone_1: '',
       phone_2: '',
+      school: '',
       mail_lists: [],
       title: null,
       bio: null,
@@ -51,6 +52,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
         last_name: user.last_name || '',
         phone_1: user.phone_1 || '',
         phone_2: user.phone_2 || '',
+        school: user.school || '',
         mail_lists: user.mail_lists || [],
         title: user.role_id === 3 ? (user as Exec).title : null,
         bio: user.role_id === 3 ? (user as Exec).bio : null,
@@ -66,6 +68,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
         last_name: user.last_name || '',
         phone_1: user.phone_1 || '',
         phone_2: user.phone_2 || '',
+        school: user.school || '',
         mail_lists: user.mail_lists || [],
         title: user.role_id === 3 ? (user as Exec).title : null,
         bio: user.role_id === 3 ? (user as Exec).bio : null,
@@ -83,6 +86,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       last_name: this.state.last_name,
       phone_1: this.state.phone_1,
       phone_2: this.state.phone_2,
+      school: this.state.school,
       mail_lists: this.state.mail_lists,
       title: this.state.title,
       bio: this.state.bio,
@@ -134,6 +138,13 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
               readOnly
               data-tooltip="Can't change this yet...if you must shoot us an email."
               value={this.props.user.user.user.email}
+            />
+            <Form.Input
+              label="School"
+              name="school"
+              value={this.state.school}
+              onChange={this.handleChange}
+              required
             />
             <Form.Group widths="equal">
               <Form.Input

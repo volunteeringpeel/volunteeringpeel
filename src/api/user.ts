@@ -17,7 +17,7 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
     req.db.query(`SELECT
       user_id, role_id,
       first_name, last_name,
-      email, phone_1, phone_2,
+      email, phone_1, phone_2, school,
       title, bio, pic, show_exec
     FROM user`),
   );
@@ -53,7 +53,7 @@ export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
       .query(
         `SELECT
           user_id,
-          first_name, last_name, email,
+          first_name, last_name, email, school,
           phone_1, phone_2, role_id,
           bio, title, pic, show_exec
         FROM user WHERE email = ?`,
@@ -81,7 +81,7 @@ export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
     [err, result] = await to(req.db.query('INSERT INTO user SET ?', [newUser]));
     if (err) return res.error(500, 'Error creating user', err);
 
-    out.user = { ...newUser, phone_1: null, phone_2: null };
+    out.user = { ...newUser, phone_1: null, phone_2: null, school: null };
     out.user.user_id = result.insertId;
     out.new = true;
   } else {
@@ -154,6 +154,7 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
     last_name,
     phone_1,
     phone_2,
+    school,
     mail_lists,
     bio,
     title,
@@ -223,6 +224,7 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
       email,
       phone_1,
       phone_2,
+      school,
       role_id,
       bio,
       title,
