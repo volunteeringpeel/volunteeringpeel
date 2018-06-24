@@ -13,7 +13,7 @@ import {
 interface FancyTableProps<T> {
   filters: { name: string; description: string; filter: ((input: T) => boolean) }[];
   tableData: T[];
-  headerRow: (string | { name: Renderable; key: string })[];
+  headerRow: (string | { name: Renderable; key: string; function?: (row: T) => any })[];
   renderBodyRow: (data: T, i: number) => TableRowProps;
 }
 
@@ -87,9 +87,21 @@ export default class FancyTable<T> extends React.Component<
       _.reduce(activeFilters, (acc, filter) => _.filter(acc, filter.filter), this.props.tableData),
     );
 
-    const sortedData = _.sortBy(filteredData, [this.state.sortCol]);
+    const sortCol = _.find(
+      this.props.headerRow,
+      row => this.state.sortCol === (typeof row === 'string' ? row : row.key),
+    );
+    const sortPredicate = [];
+    if (typeof sortCol === 'string') {
+      sortPredicate.push(_.snakeCase(this.state.sortCol));
+    } else if (sortCol) {
+      sortPredicate.push(sortCol.function ? sortCol.function : sortCol.key);
+    }
 
-    const processedData = this.state.sortDir === 'descending' ? sortedData.reverse() : sortedData;
+    // ascending -> asc, descending -> desc
+    const sortDir = this.state.sortDir.substr(0, this.state.sortDir.indexOf('c') + 1);
+
+    const processedData = _.orderBy(filteredData, sortPredicate, [sortDir]);
 
     return (
       <>
@@ -138,13 +150,13 @@ export default class FancyTable<T> extends React.Component<
           headerRow={_.map(
             _.filter(this.props.headerRow, (__, i) => !this.state.hidden.has(i)),
             (header, i) => {
-              const sortKey = typeof header === 'string' ? _.snakeCase(header) : header.key;
+              const sortColumn = typeof header === 'string' ? header : header.key;
               return (
                 <Table.HeaderCell
                   key={i}
                   content={typeof header === 'string' ? header : header.name}
-                  sorted={this.state.sortCol === sortKey ? this.state.sortDir : null}
-                  onClick={this.handleSort(sortKey)}
+                  sorted={this.state.sortCol === sortColumn ? this.state.sortDir : null}
+                  onClick={this.handleSort(sortColumn)}
                 />
               );
             },

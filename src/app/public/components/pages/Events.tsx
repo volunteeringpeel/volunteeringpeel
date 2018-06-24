@@ -50,7 +50,9 @@ export default class Events extends React.Component<EventsProps, EventsState> {
       })
       .then(res => {
         // Only show events that are marked as active in admin console
-        this.setState({ events: _.filter(res.data.data, ['active', true]), loading: false });
+        const filteredEvents = _.filter(res.data.data, ['active', true]);
+        const sortedEvents = _.orderBy(filteredEvents, ['shifts[0].start_time'], 'asc');
+        this.setState({ events: sortedEvents, loading: false });
         this.props.loadUser();
       });
   }
@@ -96,13 +98,15 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                   const full = spotsLeft === 0;
 
                   // list of shifts as HH:MM-HH:MM
-                  const shifts = _.map(
-                    event.shifts,
-                    shift =>
-                      `${moment(shift.start_time).format('hh:mm a')} – ${moment(
-                        shift.end_time,
-                      ).format('hh:mm a')}`,
-                  ).join(', ');
+                  const shifts = _
+                    .map(
+                      event.shifts,
+                      shift =>
+                        `${moment(shift.start_time).format('hh:mm a')} – ${moment(
+                          shift.end_time,
+                        ).format('hh:mm a')}`,
+                    )
+                    .join(', ');
                   return (
                     <Item key={event.event_id}>
                       <Item.Content>

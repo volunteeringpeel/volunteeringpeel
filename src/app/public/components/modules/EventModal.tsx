@@ -196,7 +196,9 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                         <ProgressColor
                           value={shift.max_spots - shift.spots_taken}
                           total={shift.max_spots}
-                          label="Spots"
+                          label={`${shift.max_spots - shift.spots_taken} of ${
+                            shift.max_spots
+                          } spots left`}
                           size="small"
                         />
                         <br />

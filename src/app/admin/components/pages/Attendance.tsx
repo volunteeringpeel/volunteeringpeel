@@ -317,14 +317,19 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     if (this.ws.readyState !== this.ws.OPEN) {
       return <Message header="Connection lost" />;
     }
-    const shifts = _.map(
-      // filtered[0] will be the first one in each shift
-      _.groupBy(this.state.attendance, 'shift.shift_id'),
-      filtered => ({
-        key: filtered[0].shift.shift_id,
-        value: filtered[0].shift.shift_id,
-        text: `${filtered[0].parentEvent.name} | Shift ${filtered[0].shift.shift_num}`,
+    const shifts = _.orderBy(
+      _.map(_.groupBy(this.state.attendance, 'shift.shift_id'), filtered => {
+        // filtered[0] will be the first one in each shift
+        const shift = filtered[0].shift;
+        const start = moment(filtered[0].start_time.value).format('YYYY-MM-DD');
+        return {
+          key: shift.shift_id,
+          value: shift.shift_id,
+          text: `${start} | ${filtered[0].parentEvent.name} | Shift ${shift.shift_num}`,
+        };
       }),
+      ['text'],
+      'desc',
     );
 
     const statuses = _.map(this.state.confirmLevels, level => ({
@@ -335,15 +340,32 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
 
     const columns = [
       { name: 'Status', key: 'confirm_level_id.value' },
-      { name: 'First Name', key: 'user.first_name' },
-      { name: 'Last Name', key: 'user.last_name' },
+      {
+        name: 'First Name',
+        key: 'user.first_name',
+        function: (row: AttendanceEntry) => _.lowerCase(row.user.first_name),
+      },
+      {
+        name: 'Last Name',
+        key: 'user.last_name',
+        function: (row: AttendanceEntry) => _.lowerCase(row.user.last_name),
+      },
       { name: 'Phone Numbers', key: 'user.phone_1' },
-      { name: 'Email', key: 'user.email' },
+      {
+        name: 'Email',
+        key: 'user.email',
+
+        function: (row: AttendanceEntry) => _.lowerCase(row.user.email),
+      },
       { name: 'Start and End', key: 'start_time.value' },
       { name: 'Hours', key: 'end_time.value' },
       { name: 'Other Shifts', key: 'other_shifts' },
       { name: 'Assigned', key: 'assigned_exec' },
-      { name: 'Notes', key: 'add_info' },
+      {
+        name: 'Notes',
+        key: 'add_info.value',
+        function: (row: AttendanceEntry) => _.lowerCase(row.add_info.value),
+      },
     ];
 
     const getLock = (row: number, field: string): TableCellProps => {
@@ -413,9 +435,16 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                 <Button
                   content="Print (PDF)"
                   onClick={() => {
+                    // use sample row to get shift/event data
+                    const sampleRow = this.state.activeData[0];
                     const pdf: pdfMake.TDocumentDefinitions = {
                       pageSize: 'LETTER',
-                      header: { text: '\nDiwalicious - Shift 1', alignment: 'center' },
+                      header: {
+                        text: `\n${sampleRow.parentEvent.name} | Shift ${
+                          sampleRow.shift.shift_num
+                        }`,
+                        alignment: 'center',
+                      },
                       footer: (currentPage: number, pageCount: number) => ({
                         text: currentPage + ' of ' + pageCount,
                         alignment: 'center',
@@ -453,7 +482,11 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         },
                       },
                     };
-                    pdfMake.createPdf(pdf).download(`attendance-${this.state.activeEntry}.pdf`);
+                    // attendance Event Name # -> attendance-event-name-#
+                    const filename = _.kebabCase(
+                      `attendance ${sampleRow.parentEvent.name} ${sampleRow.shift.shift_num}`,
+                    );
+                    pdfMake.createPdf(pdf).download(`${filename}.pdf`);
                   }}
                 />
                 <Button
