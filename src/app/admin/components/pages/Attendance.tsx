@@ -430,9 +430,16 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                 <Button
                   content="Print (PDF)"
                   onClick={() => {
+                    // use sample row to get shift/event data
+                    const sampleRow = this.state.activeData[0];
                     const pdf: pdfMake.TDocumentDefinitions = {
                       pageSize: 'LETTER',
-                      header: { text: '\nDiwalicious - Shift 1', alignment: 'center' },
+                      header: {
+                        text: `\n${sampleRow.parentEvent.name} | Shift ${
+                          sampleRow.shift.shift_num
+                        }`,
+                        alignment: 'center',
+                      },
                       footer: (currentPage: number, pageCount: number) => ({
                         text: currentPage + ' of ' + pageCount,
                         alignment: 'center',
@@ -470,7 +477,11 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         },
                       },
                     };
-                    pdfMake.createPdf(pdf).download(`attendance-${this.state.activeEntry}.pdf`);
+                    // attendance Event Name # -> attendance-event-name-#
+                    const filename = _.kebabCase(
+                      `attendance ${sampleRow.parentEvent.name} ${sampleRow.shift.shift_num}`,
+                    );
+                    pdfMake.createPdf(pdf).download(`${filename}.pdf`);
                   }}
                 />
                 <Button
