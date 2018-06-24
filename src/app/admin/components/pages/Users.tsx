@@ -20,7 +20,8 @@ interface UsersProps {
 }
 
 interface UsersState {
-  users: User[];
+  users: ((User | Exec) & { shiftHistory: { [confirmLevel: number]: number } })[];
+  confirmLevels: ConfirmLevel[];
 }
 
 export default class Users extends React.Component<
@@ -32,6 +33,7 @@ export default class Users extends React.Component<
 
     this.state = {
       users: [],
+      confirmLevels: [],
     };
   }
 
@@ -70,7 +72,7 @@ export default class Users extends React.Component<
         });
       })
       .then(res => {
-        this.setState({ users: res.data.data });
+        this.setState(res.data.data);
         this.props.loading(false);
       })
       .catch((error: AxiosError) => {
@@ -166,33 +168,36 @@ export default class Users extends React.Component<
           footerRow={footerRow}
           filters={[{ name: 'exec', description: 'Execs', filter: user => user.role_id === 3 }]}
         />
-        {this.state.users.length && (
-          <Route
-            path="/admin/users/:id"
-            component={({ match }: RouteComponentProps<any>) => (
-              <UserModal
-                user={
-                  +match.params.id < 0
-                    ? {
-                        user_id: -1,
-                        first_name: '',
-                        last_name: '',
-                        email: '',
-                        phone_1: '',
-                        phone_2: '',
-                        school: '',
-                        role_id: 1,
-                        mail_lists: [],
-                        show_exec: true,
-                      }
-                    : _.find(this.state.users, ['user_id', +match.params.id])
-                }
-                cancel={() => this.props.push('/admin/users')}
-                refresh={() => this.refresh()}
-              />
-            )}
-          />
-        )}
+        {this.state.users.length &&
+          this.state.confirmLevels.length && (
+            <Route
+              path="/admin/users/:id"
+              component={({ match }: RouteComponentProps<any>) => (
+                <UserModal
+                  user={
+                    +match.params.id < 0
+                      ? {
+                          user_id: -1,
+                          first_name: '',
+                          last_name: '',
+                          email: '',
+                          phone_1: '',
+                          phone_2: '',
+                          school: '',
+                          role_id: 1,
+                          mail_lists: [],
+                          show_exec: true,
+                          shiftHistory: {},
+                        }
+                      : _.find(this.state.users, ['user_id', +match.params.id])
+                  }
+                  confirmLevels={this.state.confirmLevels}
+                  cancel={() => this.props.push('/admin/users')}
+                  refresh={() => this.refresh()}
+                />
+              )}
+            />
+          )}
       </Form>
     );
   }

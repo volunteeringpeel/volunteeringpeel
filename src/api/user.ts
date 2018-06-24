@@ -23,18 +23,26 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
   );
   if (err) return res.error(500, 'Error getting user data', err);
 
-  // get mailing list data
   [err, users] = await to(
     Bluebird.all(
       users.map(async user => {
+        // get mailing list data
         const mailLists = await Bluebird.resolve(getUserMailLists(user.user_id, req.db));
-        return { ...user, show_exec: !!+user.show_exec, mail_lists: mailLists };
+        const shifts = await Bluebird.resolve(getUserShifts(user.user_id, req.db));
+        const shiftHistory = _.countBy(shifts, 'confirmLevel.id');
+        return { ...user, shiftHistory, show_exec: !!+user.show_exec, mail_lists: mailLists };
       }),
     ),
   );
   if (err) return res.error(500, 'Error getting mail list data', err);
 
-  res.success(users, 200);
+  let confirmLevels: ConfirmLevel[];
+  [err, confirmLevels] = await to(
+    req.db.query('SELECT confirm_level_id as id, name, description FROM confirm_level'),
+  );
+  if (err) return res.error(500, 'Error retrieving attendance statuses', err);
+
+  res.success({ users, confirmLevels }, 200);
 });
 
 export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
@@ -89,42 +97,8 @@ export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
   }
 
   // Get shifts
-  let userShifts: any[];
-  [err, userShifts] = await to(
-    req.db.query(
-      `SELECT
-        user_shift_id, user_id,
-        confirm_level_id, confirm_level, confirm_description,
-        shift_id, shift_num,
-        start_time, end_time, hours, meals, notes
-        event_id, name, address, transport, description, letter
-      FROM vw_user_shift WHERE user_id = ?`,
-      [out.user.user_id],
-    ),
-  );
+  [err, out.userShifts] = await to(Bluebird.resolve(getUserShifts(out.user.user_id, req.db)));
   if (err) return res.error(500, 'Error finding user shifts', err);
-  out.userShifts = _.map(userShifts, userShift => ({
-    user_shift_id: +userShift.user_shift_id,
-    confirmLevel: {
-      id: +userShift.confirm_level_id,
-      name: userShift.confirm_level,
-      description: userShift.confirm_description,
-    },
-    hours: userShift.hours,
-    letter: userShift.letter,
-    shift: {
-      shift_id: +userShift.shift_id,
-      shift_num: +userShift.shift_num,
-      start_time: userShift.start_time,
-      end_time: userShift.end_time,
-      meals: userShift.meals,
-      notes: userShift.notes,
-    },
-    parentEvent: {
-      event_id: +userShift.event_id,
-      name: userShift.name,
-    },
-  }));
 
   // Mail lists
   [err, out.user.mail_lists] = await to(
@@ -257,6 +231,43 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
     res.success(`User ${req.params.id === -1 ? 'added' : 'updated'} successfully`, 200);
   }
 });
+
+export async function getUserShifts(id: number, db: mysql.PoolConnection): Promise<any[]> {
+  return _.map(
+    await db.query(
+      `SELECT
+        user_shift_id, user_id,
+        confirm_level_id, confirm_level, confirm_description,
+        shift_id, shift_num,
+        start_time, end_time, hours, meals, notes
+        event_id, name, address, transport, description, letter
+      FROM vw_user_shift WHERE user_id = ?`,
+      [id],
+    ),
+    userShift => ({
+      user_shift_id: +userShift.user_shift_id,
+      confirmLevel: {
+        id: +userShift.confirm_level_id,
+        name: userShift.confirm_level,
+        description: userShift.confirm_description,
+      },
+      hours: userShift.hours,
+      letter: userShift.letter,
+      shift: {
+        shift_id: +userShift.shift_id,
+        shift_num: +userShift.shift_num,
+        start_time: userShift.start_time,
+        end_time: userShift.end_time,
+        meals: userShift.meals,
+        notes: userShift.notes,
+      },
+      parentEvent: {
+        event_id: +userShift.event_id,
+        name: userShift.name,
+      },
+    }),
+  );
+}
 
 export async function getUserMailLists(id: number, db: mysql.PoolConnection): Promise<MailList[]> {
   return _.map(
