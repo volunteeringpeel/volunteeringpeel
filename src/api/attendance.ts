@@ -208,6 +208,17 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
         if (err) return die(action, 'Cannot insert record', err);
         return success(action, 'Added record successfully');
       }
+      case 'delete': {
+        // ex delete/1|1524957214
+        [err] = await to(
+          ws.db.query('DELETE FROM user_shift WHERE user_id = ? AND shift_id = ?', [
+            data.data,
+            command[1],
+          ]),
+        );
+        if (err) return die(action, 'Cannot delete record', err);
+        return success(action, 'Record deleted successfully');
+      }
       default: {
         return die(action, 'Unknown command', '');
       }

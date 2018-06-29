@@ -366,6 +366,10 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         key: 'add_info.value',
         function: (row: AttendanceEntry) => _.lowerCase(row.add_info.value),
       },
+      {
+        name: 'Actions',
+        key: '',
+      },
     ];
 
     const getLock = (row: number, field: string): TableCellProps => {
@@ -712,6 +716,37 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                       ),
                       className: `cell-${entry.user_shift_id}-add_info`,
                       ...getLock(i, 'add_info'),
+                    },
+                    {
+                      key: 'actions',
+                      content: (
+                        <Button
+                          negative
+                          size="tiny"
+                          icon="delete"
+                          onClick={() =>
+                            this.sendMessage(
+                              {
+                                action: `delete/${this.state.activeEntry}|${new Date().getTime()}`,
+                                key: localStorage.getItem('id_token'),
+                                data: entry.user.user_id,
+                              },
+                              data => {
+                                if (data.status === 'success') {
+                                  this.refresh();
+                                } else {
+                                  this.setState({ addState: 'negative' });
+                                  this.props.addMessage({
+                                    message: data.error,
+                                    more: data.details,
+                                    severity: 'negative',
+                                  });
+                                }
+                              },
+                            )
+                          }
+                        />
+                      ),
                     },
                   ],
                 };
