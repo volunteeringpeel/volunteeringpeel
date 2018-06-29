@@ -41,17 +41,15 @@ export default class MailingList extends React.Component<{}, MailingListState> {
   }
 
   public formatList = (members: MailListMember[]): string => {
-    const formatted = _.map(members, item =>
-      // join by spaces ([John, Doe, johndoe@example.com] => John Doe <johndoe@example.com>)
-      _.join(
-        // remove null values (i.e. if name isn't set)
-        _.remove([item.first_name, item.last_name, `<${item.email}>`]),
-        ' ',
-      ),
+    const formatted = _.map(
+      members,
+      item =>
+        // join by tabs ([John, Doe, johndoe@example.com] => John\tDoe\tjohndoe@example.com)
+        `${item.first_name || ''}\t${item.last_name || ''}\t${item.email}`,
     );
 
     // join together each user
-    const joined = _.join(formatted, ', ');
+    const joined = _.join(formatted, '\n');
 
     // check null against lists (i.e. list is empty)
     if (joined === '<null>') {
@@ -175,10 +173,11 @@ export default class MailingList extends React.Component<{}, MailingListState> {
           {this.state.active && (
             <>
               <p>
-                Copy paste the text below and paste into the <em>Bcc:</em> section of your favourite
-                email client. Sending emails from this page is a WIP.
+                No damn clue what QiLin wants with this, but apparently he wants this format.
+                MailChimp integration will come soon. Probably in August once I'm back from
+                vacation.
               </p>
-              <TextArea disabled value={this.formatList(activeList.members)} />
+              <TextArea value={this.formatList(activeList.members)} />
               <Header content="Mailing List Properties" />
               <Form.Group inline>
                 <Form.Input

@@ -92,7 +92,7 @@ module.exports = merge(common, {
         NODE_ENV: JSON.stringify('production'), // make sure that we think we're in prod
       },
     }),
-    // new MinifyPlugin(),
+    new MinifyPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(), // merge chunks
   ],
 });
