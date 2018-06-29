@@ -317,19 +317,34 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     if (this.ws.readyState !== this.ws.OPEN) {
       return <Message header="Connection lost" />;
     }
+    const unsortedShifts = _.map(_.groupBy(this.state.attendance, 'shift.shift_id'), filtered => {
+      // filtered[0] will be the first one in each shift
+      const shift = filtered[0].shift;
+      const start = moment(filtered[0].start_time.value).format('YYYY-MM-DD');
+      return {
+        key: shift.shift_id,
+        value: shift.shift_id,
+        text: `${start} | ${filtered[0].parentEvent.name} | Shift ${shift.shift_num}`,
+        data: filtered[0],
+      };
+    });
+
     const shifts = _.orderBy(
-      _.map(_.groupBy(this.state.attendance, 'shift.shift_id'), filtered => {
-        // filtered[0] will be the first one in each shift
-        const shift = filtered[0].shift;
-        const start = moment(filtered[0].start_time.value).format('YYYY-MM-DD');
-        return {
-          key: shift.shift_id,
-          value: shift.shift_id,
-          text: `${start} | ${filtered[0].parentEvent.name} | Shift ${shift.shift_num}`,
-        };
-      }),
-      ['text'],
-      'desc',
+      unsortedShifts,
+      [
+        shift => {
+          const earliestShift = _.minBy(
+            _.filter(this.state.attendance, [
+              'parentEvent.event_id',
+              shift.data.parentEvent.event_id,
+            ]),
+            'shift.shift_num',
+          );
+          return earliestShift.start_time.value;
+        },
+        'data.shift.shift_num',
+      ],
+      ['desc', 'asc'],
     );
 
     const statuses = _.map(this.state.confirmLevels, level => ({
