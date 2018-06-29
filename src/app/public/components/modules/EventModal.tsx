@@ -122,13 +122,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
     return (
       <Modal
         trigger={
-          <Button
-            animated
-            disabled={full}
-            floated="right"
-            primary={!full}
-            onClick={this.handleOpen}
-          >
+          <Button animated floated="right" primary={!full} onClick={this.handleOpen}>
             <Button.Content visible>{full ? 'FULL' : 'Shifts'}</Button.Content>
             <Button.Content hidden>
               <Icon name="arrow right" />
