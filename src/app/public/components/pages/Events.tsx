@@ -93,7 +93,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                   // Calculate if event is full based on spots (sum up shift spots)
                   const maxSpots = _.sumBy(event.shifts, 'max_spots');
                   const spotsTaken = _.sumBy(event.shifts, 'spots_taken');
-                  const spotsLeft = maxSpots - spotsTaken;
+                  const spotsLeft = spotsTaken > maxSpots ? 0 : maxSpots - spotsTaken;
                   // Event is full if spotsLeft === 0
                   const full = spotsLeft === 0;
 
