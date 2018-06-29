@@ -100,7 +100,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
           ws.db.query(`SELECT
             shift_id, shift_num, name, start_time, event_id
             FROM vw_user_shift
-            GROUP BY shift_id
+            GROUP BY shift_id, shift_num, name, start_time, event_id
           `),
         );
         if (err) return die(action, 'Error retrieving shift list', err);
