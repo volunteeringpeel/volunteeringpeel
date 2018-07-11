@@ -17,9 +17,11 @@ import {
   Form,
   Label,
   Message,
+  Modal,
   Segment,
   Table,
   TableCellProps,
+  TextArea,
 } from 'semantic-ui-react';
 import 'web-animations-js';
 
@@ -519,6 +521,27 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         link.dispatchEvent(new MouseEvent('click'));
                         link.remove();
                       })
+                  }
+                />
+                <Modal
+                  trigger={<Button>View Emails</Button>}
+                  basic
+                  closeIcon
+                  header="Mailing List"
+                  content={
+                    <Form>
+                      <TextArea
+                        value={_.join(
+                          this.state.attendance.map(
+                            entry =>
+                              `${entry.user.first_name} ${entry.user.last_name} <${
+                                entry.user.email
+                              }>`,
+                          ),
+                          ', ',
+                        )}
+                      />
+                    </Form>
                   }
                 />
               </Button.Group>
