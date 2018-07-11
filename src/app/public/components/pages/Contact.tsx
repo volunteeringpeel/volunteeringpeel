@@ -11,18 +11,13 @@ export default class Contact extends React.Component {
     return (
       <Container style={{ padding: '4em 0em' }}>
         <Segment vertical>
-          <Header as="h2">Contact Form</Header>
+          <Header as="h2">General Contact</Header>
           {/* <FormContact /> */}
-          <iframe
-            src="https://docs.google.com/forms/d/e/1FAIpQLSc6c976c9PKi-NPRokcEBkZvzfSOSMUdlpbH7wgiJCN29CCEA/viewform?embedded=true"
-            marginHeight={10}
-            marginWidth={0}
-            width="100%"
-            height="500"
-            frameBorder="0"
-          >
-            Loading...
-          </iframe>
+          <p>
+            Please email us at{' '}
+            <a href="mailto:info@volunteeringpeel.org">info@volunteeringpeel.org</a> with any
+            questions, comments, or concerns.
+          </p>
         </Segment>
         <Segment vertical>
           <Header as="h2">Event Volunteer Request Form</Header>
