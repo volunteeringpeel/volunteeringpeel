@@ -18,6 +18,7 @@ import {
 
 // Component Imports
 import FancyTable from '@app/common/components/FancyTable';
+import LoadingDimmer from '@app/common/components/LoadingDimmer';
 
 // Controller Imports
 import UserModal from '@app/admin/controllers/modules/UserModal';
@@ -25,7 +26,6 @@ import * as _ from 'lodash';
 
 interface UsersProps {
   addMessage: (message: Message) => any;
-  loading: (status: boolean) => any;
   push: (location: LocationDescriptor) => any;
 }
 
@@ -35,6 +35,7 @@ interface UsersState {
   page: number;
   pageSize: number;
   lastPage: number;
+  loading: boolean;
 }
 
 export default class Users extends React.Component<
@@ -50,6 +51,7 @@ export default class Users extends React.Component<
       lastPage: 1,
       page: 1,
       pageSize: 20,
+      loading: true,
     };
   }
 
@@ -58,7 +60,7 @@ export default class Users extends React.Component<
   }
 
   public handleDelete = (id: number) => {
-    Promise.resolve(this.props.loading(true))
+    Promise.resolve(this.setState({ loading: true }))
       .then(() =>
         axios.delete(`/api/user/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
@@ -81,7 +83,7 @@ export default class Users extends React.Component<
   };
 
   public refresh() {
-    return Promise.resolve(this.props.loading(true))
+    return Promise.resolve(this.setState({ loading: true }))
       .then(() => {
         return axios.get(`/api/user?page=${this.state.page}&page_size=${this.state.pageSize}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
@@ -90,7 +92,7 @@ export default class Users extends React.Component<
       .then(res => {
         // data includes state.users, state.confirmLevels, state.lastPage
         this.setState(res.data.data);
-        this.props.loading(false);
+        this.setState({ loading: false });
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
@@ -188,6 +190,7 @@ export default class Users extends React.Component<
     });
     return (
       <Form>
+        <LoadingDimmer loading={this.state.loading} page={false} />
         <FancyTable
           headerRow={headerRow}
           renderBodyRow={renderBodyRow}

@@ -12,13 +12,15 @@ import Users from '@app/admin/components/pages/Users';
 import { loadUser } from '@app/common/utilities';
 
 const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
-  loading: (status: boolean) => dispatch(loading(status)),
   push: (path: LocationDescriptor) => {
     dispatch(push(path));
   },
 });
 
-const connectedUsers = connect(null, mapDispatchToProps)(Users);
+const connectedUsers = connect(
+  null,
+  mapDispatchToProps,
+)(Users);
 const routerUsers = withRouter(connectedUsers);
 
 export default routerUsers;
