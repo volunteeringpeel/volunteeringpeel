@@ -4,7 +4,17 @@ import * as Promise from 'bluebird';
 import { LocationDescriptor } from 'history';
 import * as React from 'react';
 import { Route, RouteComponentProps } from 'react-router';
-import { Button, Dropdown, Form, Header, Label, Menu, Segment, Table } from 'semantic-ui-react';
+import {
+  Button,
+  Dropdown,
+  Form,
+  Header,
+  Label,
+  Menu,
+  Pagination,
+  Segment,
+  Table,
+} from 'semantic-ui-react';
 
 // Component Imports
 import FancyTable from '@app/common/components/FancyTable';
@@ -22,6 +32,9 @@ interface UsersProps {
 interface UsersState {
   users: ((User | Exec) & { shiftHistory: { [confirmLevel: number]: number } })[];
   confirmLevels: ConfirmLevel[];
+  page: number;
+  pageSize: number;
+  lastPage: number;
 }
 
 export default class Users extends React.Component<
@@ -34,6 +47,9 @@ export default class Users extends React.Component<
     this.state = {
       users: [],
       confirmLevels: [],
+      lastPage: 1,
+      page: 1,
+      pageSize: 20,
     };
   }
 
@@ -67,11 +83,12 @@ export default class Users extends React.Component<
   public refresh() {
     return Promise.resolve(this.props.loading(true))
       .then(() => {
-        return axios.get('/api/user', {
+        return axios.get(`/api/user?page=${this.state.page}&page_size=${this.state.pageSize}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
         });
       })
       .then(res => {
+        // data includes state.users, state.confirmLevels, state.lastPage
         this.setState(res.data.data);
         this.props.loading(false);
       })
@@ -85,6 +102,8 @@ export default class Users extends React.Component<
   }
 
   public render() {
+    // exit if there's no users in cache
+    if (!this.state.users) return null;
     const headerRow = [
       'Role',
       'First Name',
@@ -102,6 +121,14 @@ export default class Users extends React.Component<
           content="Add"
           icon="add"
           onClick={() => this.props.push('/admin/users/-1')}
+        />
+        <Pagination
+          activePage={this.state.page}
+          totalPages={this.state.lastPage}
+          onPageChange={(e, { activePage }) => {
+            this.setState({ page: +activePage });
+            this.refresh();
+          }}
         />
       </th>,
     ];
