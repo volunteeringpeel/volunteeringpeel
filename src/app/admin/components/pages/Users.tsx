@@ -9,6 +9,7 @@ import {
   Dropdown,
   Form,
   Header,
+  Icon,
   Label,
   Menu,
   Pagination,
@@ -118,12 +119,6 @@ export default class Users extends React.Component<
     ];
     const footerRow = [
       <th colSpan={headerRow.length} key="footer">
-        <Button
-          size="mini"
-          content="Add"
-          icon="add"
-          onClick={() => this.props.push('/admin/users/-1')}
-        />
         <Pagination
           activePage={this.state.page}
           totalPages={this.state.lastPage}
@@ -131,6 +126,13 @@ export default class Users extends React.Component<
             this.setState({ page: +activePage });
             this.refresh();
           }}
+          inverted
+          color="green"
+          ellipsisItem={{ content: <Icon name="ellipsis horizontal" />, icon: true }}
+          firstItem={{ content: <Icon name="angle double left" />, icon: true }}
+          lastItem={{ content: <Icon name="angle double right" />, icon: true }}
+          prevItem={{ content: <Icon name="angle left" />, icon: true }}
+          nextItem={{ content: <Icon name="angle right" />, icon: true }}
         />
       </th>,
     ];
@@ -191,6 +193,12 @@ export default class Users extends React.Component<
     return (
       <Form>
         <LoadingDimmer loading={this.state.loading} page={false} />
+        <Form.Field inline>
+          <label>Actions: </label>
+          <Button.Group>
+            <Button content="Add" icon="add" onClick={() => this.props.push('/admin/users/-1')} />
+          </Button.Group>
+        </Form.Field>
         <FancyTable
           headerRow={headerRow}
           renderBodyRow={renderBodyRow}
