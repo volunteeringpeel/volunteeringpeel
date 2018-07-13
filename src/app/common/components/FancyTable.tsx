@@ -99,21 +99,24 @@ export default class FancyTable<T> extends React.Component<
       _.reduce(activeFilters, (acc, filter) => _.filter(acc, filter.filter), this.props.tableData),
     );
 
-    const sortCol = _.find(
-      this.props.headerRow,
-      row => this.state.sortCol === (typeof row === 'string' ? row : row.key),
-    );
-    const sortPredicate = [];
-    if (typeof sortCol === 'string') {
-      sortPredicate.push(_.snakeCase(this.state.sortCol));
-    } else if (sortCol) {
-      sortPredicate.push(sortCol.function ? sortCol.function : sortCol.key);
+    let processedData = filteredData;
+    if (!this.props.sortCallback) {
+      const sortCol = _.find(
+        this.props.headerRow,
+        row => this.state.sortCol === (typeof row === 'string' ? row : row.key),
+      );
+      const sortPredicate = [];
+      if (typeof sortCol === 'string') {
+        sortPredicate.push(_.snakeCase(this.state.sortCol));
+      } else if (sortCol) {
+        sortPredicate.push(sortCol.function ? sortCol.function : sortCol.key);
+      }
+
+      // ascending -> asc, descending -> desc
+      const sortDir = this.state.sortDir.substr(0, this.state.sortDir.indexOf('c') + 1);
+
+      processedData = _.orderBy(filteredData, sortPredicate, [sortDir]);
     }
-
-    // ascending -> asc, descending -> desc
-    const sortDir = this.state.sortDir.substr(0, this.state.sortDir.indexOf('c') + 1);
-
-    const processedData = _.orderBy(filteredData, sortPredicate, [sortDir]);
 
     return (
       <>
