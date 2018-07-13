@@ -4,10 +4,22 @@ import * as Promise from 'bluebird';
 import { LocationDescriptor } from 'history';
 import * as React from 'react';
 import { Route, RouteComponentProps } from 'react-router';
-import { Button, Dropdown, Form, Header, Label, Menu, Segment, Table } from 'semantic-ui-react';
+import {
+  Button,
+  Dropdown,
+  Form,
+  Header,
+  Icon,
+  Label,
+  Menu,
+  Pagination,
+  Segment,
+  Table,
+} from 'semantic-ui-react';
 
 // Component Imports
 import FancyTable from '@app/common/components/FancyTable';
+import LoadingDimmer from '@app/common/components/LoadingDimmer';
 
 // Controller Imports
 import UserModal from '@app/admin/controllers/modules/UserModal';
@@ -15,13 +27,19 @@ import * as _ from 'lodash';
 
 interface UsersProps {
   addMessage: (message: Message) => any;
-  loading: (status: boolean) => any;
   push: (location: LocationDescriptor) => any;
 }
 
 interface UsersState {
   users: ((User | Exec) & { shiftHistory: { [confirmLevel: number]: number } })[];
   confirmLevels: ConfirmLevel[];
+  loading: boolean;
+  // pagination: should be extracted
+  page: number;
+  pageSize: number;
+  lastPage: number;
+  sortKey: string;
+  sortDir: 'ascending' | 'descending';
 }
 
 export default class Users extends React.Component<
@@ -34,7 +52,15 @@ export default class Users extends React.Component<
     this.state = {
       users: [],
       confirmLevels: [],
+      lastPage: 1,
+      page: 1,
+      pageSize: 20,
+      loading: true,
+      sortKey: 'user_id',
+      sortDir: 'ascending',
     };
+
+    this.refresh = this.refresh.bind(this);
   }
 
   public componentDidMount() {
@@ -42,7 +68,7 @@ export default class Users extends React.Component<
   }
 
   public handleDelete = (id: number) => {
-    Promise.resolve(this.props.loading(true))
+    Promise.resolve(this.setState({ loading: true }))
       .then(() =>
         axios.delete(`/api/user/${id}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
@@ -60,20 +86,23 @@ export default class Users extends React.Component<
       })
       .finally(() => {
         this.refresh();
-        // refresh will call loading(false)
+        // refresh will unset loading
       });
   };
-
   public refresh() {
-    return Promise.resolve(this.props.loading(true))
+    return Promise.resolve(this.setState({ loading: true }))
       .then(() => {
-        return axios.get('/api/user', {
+        const query = `/api/user?page=${this.state.page}&page_size=${this.state.pageSize}&sort=${
+          this.state.sortKey
+        }&sort_dir=${this.state.sortDir}`;
+        return axios.get(query, {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
         });
       })
       .then(res => {
+        // data includes state.users, state.confirmLevels, state.lastPage
         this.setState(res.data.data);
-        this.props.loading(false);
+        this.setState({ loading: false });
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
@@ -85,23 +114,34 @@ export default class Users extends React.Component<
   }
 
   public render() {
+    // exit if there's no users in cache
+    if (!this.state.users) return null;
     const headerRow = [
-      'Role',
+      { name: 'Role', key: 'role_id' },
       'First Name',
       'Last Name',
       'School',
       'Email',
       'Phone 1',
       'Phone 2',
-      'Actions',
+      { name: 'Actions', key: null },
     ];
     const footerRow = [
       <th colSpan={headerRow.length} key="footer">
-        <Button
-          size="mini"
-          content="Add"
-          icon="add"
-          onClick={() => this.props.push('/admin/users/-1')}
+        <Pagination
+          activePage={this.state.page}
+          totalPages={this.state.lastPage}
+          onPageChange={(e, { activePage }) => {
+            this.setState({ page: +activePage });
+            this.refresh();
+          }}
+          inverted
+          color="green"
+          ellipsisItem={{ content: <Icon name="ellipsis horizontal" />, icon: true }}
+          firstItem={{ content: <Icon name="angle double left" />, icon: true }}
+          lastItem={{ content: <Icon name="angle double right" />, icon: true }}
+          prevItem={{ content: <Icon name="angle left" />, icon: true }}
+          nextItem={{ content: <Icon name="angle right" />, icon: true }}
         />
       </th>,
     ];
@@ -161,12 +201,28 @@ export default class Users extends React.Component<
     });
     return (
       <Form>
+        <LoadingDimmer loading={this.state.loading} page={false} />
+        <Form.Field inline>
+          <label>Actions: </label>
+          <Button.Group>
+            <Button content="Add" icon="add" onClick={() => this.props.push('/admin/users/-1')} />
+          </Button.Group>
+        </Form.Field>
         <FancyTable
           headerRow={headerRow}
           renderBodyRow={renderBodyRow}
           tableData={this.state.users}
           footerRow={footerRow}
           filters={[{ name: 'exec', description: 'Execs', filter: user => user.role_id === 3 }]}
+          sortCallback={(key, dir) => {
+            this.setState({
+              // reset page to 1 if sort changes
+              page: 1,
+              sortKey: key,
+              sortDir: dir,
+            });
+            this.refresh();
+          }}
         />
         {this.state.users.length &&
           this.state.confirmLevels.length && (

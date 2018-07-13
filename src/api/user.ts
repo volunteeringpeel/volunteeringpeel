@@ -12,14 +12,30 @@ import * as Utilities from '@api/utilities';
 export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
+  // default parameters just in case something stupid happens
+  const page = +req.query.page || 1;
+  const pageSize = +req.query.page_size || 20;
+  const sortCol = req.query.sort || 'user_id';
+  const sortDir = req.query.sort_dir || 'ascending';
+
+  // convert to sql ASC/DESC
+  // not escaped since it can only be ASC or DESC
+  let sortDirSql = 'ASC';
+  if (sortDir === 'descending') sortDirSql = 'DESC';
+
   let err, users: Exec[];
   [err, users] = await to(
-    req.db.query(`SELECT
-      user_id, role_id,
-      first_name, last_name,
-      email, phone_1, phone_2, school,
-      title, bio, pic, show_exec
-    FROM user`),
+    req.db.query(
+      `SELECT
+        user_id, role_id,
+        first_name, last_name,
+        email, phone_1, phone_2, school,
+        title, bio, pic, show_exec
+      FROM user
+      ORDER BY ?? ${sortDirSql}
+      LIMIT ? OFFSET ?`,
+      [sortCol, pageSize, pageSize * (page - 1)],
+    ),
   );
   if (err) return res.error(500, 'Error getting user data', err);
 
@@ -36,13 +52,20 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
   );
   if (err) return res.error(500, 'Error getting mail list data', err);
 
+  // get human-readable confirm levels
   let confirmLevels: ConfirmLevel[];
   [err, confirmLevels] = await to(
     req.db.query('SELECT confirm_level_id as id, name, description FROM confirm_level'),
   );
   if (err) return res.error(500, 'Error retrieving attendance statuses', err);
 
-  res.success({ users, confirmLevels }, 200);
+  // get number of pages (for pagination)
+  let userCount: any[];
+  [err, userCount] = await to(req.db.query('SELECT COUNT(*) FROM user'));
+  if (err) return res.error(500, 'Error counting users', err);
+  const lastPage = Math.ceil(userCount[0]['COUNT(*)'] / pageSize);
+
+  res.success({ users, confirmLevels, lastPage }, 200);
 });
 
 export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
