@@ -15,6 +15,13 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
   // default parameters just in case something stupid happens
   const page = +req.query.page || 1;
   const pageSize = +req.query.page_size || 20;
+  const sortCol = req.query.sort || 'user_id';
+  const sortDir = req.query.sort_dir || 'ascending';
+
+  // convert to sql ASC/DESC
+  // not escaped since it can only be ASC or DESC
+  let sortDirSql = 'ASC';
+  if (sortDir === 'descending') sortDirSql = 'DESC';
 
   let err, users: Exec[];
   [err, users] = await to(
@@ -25,8 +32,9 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
         email, phone_1, phone_2, school,
         title, bio, pic, show_exec
       FROM user
+      ORDER BY ?? ${sortDirSql}
       LIMIT ? OFFSET ?`,
-      [pageSize, pageSize * (page - 1)],
+      [sortCol, pageSize, pageSize * (page - 1)],
     ),
   );
   if (err) return res.error(500, 'Error getting user data', err);

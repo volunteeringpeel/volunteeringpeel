@@ -33,10 +33,13 @@ interface UsersProps {
 interface UsersState {
   users: ((User | Exec) & { shiftHistory: { [confirmLevel: number]: number } })[];
   confirmLevels: ConfirmLevel[];
+  loading: boolean;
+  // pagination: should be extracted
   page: number;
   pageSize: number;
   lastPage: number;
-  loading: boolean;
+  sortKey: string;
+  sortDir: 'ascending' | 'descending';
 }
 
 export default class Users extends React.Component<
@@ -53,7 +56,11 @@ export default class Users extends React.Component<
       page: 1,
       pageSize: 20,
       loading: true,
+      sortKey: 'user_id',
+      sortDir: 'ascending',
     };
+
+    this.refresh = this.refresh.bind(this);
   }
 
   public componentDidMount() {
@@ -79,14 +86,16 @@ export default class Users extends React.Component<
       })
       .finally(() => {
         this.refresh();
-        // refresh will call loading(false)
+        // refresh will unset loading
       });
   };
-
   public refresh() {
     return Promise.resolve(this.setState({ loading: true }))
       .then(() => {
-        return axios.get(`/api/user?page=${this.state.page}&page_size=${this.state.pageSize}`, {
+        const query = `/api/user?page=${this.state.page}&page_size=${this.state.pageSize}&sort=${
+          this.state.sortKey
+        }&sort_dir=${this.state.sortDir}`;
+        return axios.get(query, {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
         });
       })
@@ -108,14 +117,14 @@ export default class Users extends React.Component<
     // exit if there's no users in cache
     if (!this.state.users) return null;
     const headerRow = [
-      'Role',
+      { name: 'Role', key: 'role_id' },
       'First Name',
       'Last Name',
       'School',
       'Email',
       'Phone 1',
       'Phone 2',
-      'Actions',
+      { name: 'Actions', key: null },
     ];
     const footerRow = [
       <th colSpan={headerRow.length} key="footer">
@@ -205,6 +214,15 @@ export default class Users extends React.Component<
           tableData={this.state.users}
           footerRow={footerRow}
           filters={[{ name: 'exec', description: 'Execs', filter: user => user.role_id === 3 }]}
+          sortCallback={(key, dir) => {
+            this.setState({
+              // reset page to 1 if sort changes
+              page: 1,
+              sortKey: key,
+              sortDir: dir,
+            });
+            this.refresh();
+          }}
         />
         {this.state.users.length &&
           this.state.confirmLevels.length && (
