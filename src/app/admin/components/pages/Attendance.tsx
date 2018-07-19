@@ -355,7 +355,14 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       { name: 'Start and End', key: 'start_time.value' },
       { name: 'Hours', key: 'end_time.value' },
       { name: 'Other Shifts', key: 'other_shifts' },
-      { name: 'Assigned', key: 'assigned_exec' },
+      {
+        name: 'Assigned',
+        key: 'assigned_exec',
+        function: (row: AttendanceEntry) => {
+          const exec = _.find(this.state.execList, ['value', row.assigned_exec.value]);
+          return exec.text;
+        },
+      },
       {
         name: 'Notes',
         key: 'add_info.value',
