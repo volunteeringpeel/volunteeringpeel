@@ -190,12 +190,20 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
         // ex. users|1524957214
         let users;
         // todo: filter out already signed up users
-        [err, users] = await to(ws.db.query('SELECT user_id, first_name, last_name FROM user'));
+        [err, users] = await to(
+          ws.db.query('SELECT user_id, email, first_name, last_name FROM user'),
+        );
         if (err) return die(action, 'Cannot find users', err);
 
         return success(
           action,
-          _.map(users, u => ({ text: `${u.first_name} ${u.last_name}`, value: +u.user_id })),
+          _.map(users, u => {
+            // round 1 of formatting: if any one part of the name is null, omit
+            let text = `${u.first_name || ''} ${u.last_name || ''} (${u.email})`;
+            // round 2: if both parts of name are null, omit + remove brackets around email
+            if (!u.first_name && !u.last_name) text = u.email;
+            return { text, value: +u.user_id };
+          }),
         );
       }
       case 'add': {
