@@ -8,13 +8,15 @@ import { Button, Form, Image, Modal } from 'semantic-ui-react';
 
 // Controller Imports
 import MessageBox from '@app/common/controllers/MessageBox';
+import ProgressColor from '@app/public/components/blocks/ProgressColor';
 
 interface UserModalProps {
   addMessage: (message: Message) => any;
   cancel: () => void;
   refresh: () => void;
   mailListTemplate: MailList[];
-  user: User | Exec;
+  user: (User | Exec) & { shiftHistory: { [confirmLevel: number]: number } };
+  confirmLevels: ConfirmLevel[];
 }
 
 type UserModalState = (User | Exec) & { pic: File };
@@ -215,6 +217,30 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
               ))}
             </Form.Group>
           </Form>
+          <strong />
+          <ProgressColor
+            value={_.sumBy(
+              _.filter(_.toPairs(this.props.user.shiftHistory), i => +i[0] >= 100),
+              '[1]',
+            )}
+            total={_.sumBy(
+              _.filter(_.toPairs(this.props.user.shiftHistory), i => +i[0] < 0 || +i[0] >= 100),
+              '[1]',
+            )}
+            label={
+              <div className="label">
+                Karma Bar: attended vs. missed<br />
+                <small>
+                  {_.join(
+                    _.map(_.toPairs(this.props.user.shiftHistory), ([id, count]) => {
+                      return `${_.find(this.props.confirmLevels, ['id', +id]).name}: ${count}`;
+                    }),
+                    ', ',
+                  )}
+                </small>
+              </div>
+            }
+          />
         </Modal.Content>
         <Modal.Actions>
           <Button.Group>

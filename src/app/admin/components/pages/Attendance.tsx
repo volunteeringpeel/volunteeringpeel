@@ -17,9 +17,11 @@ import {
   Form,
   Label,
   Message,
+  Modal,
   Segment,
   Table,
   TableCellProps,
+  TextArea,
 } from 'semantic-ui-react';
 import 'web-animations-js';
 
@@ -41,14 +43,26 @@ interface AttendanceProps {
 
 interface AttendanceState {
   attendance: AttendanceEntry[];
-  activeData: AttendanceEntry[];
-  activeEntry: number;
+  activeShift: {
+    shift_id: number;
+    shift_num: number;
+    name: string;
+    start_time: string;
+    event_id: number;
+  };
+  shifts: {
+    shift_id: number;
+    shift_num: number;
+    name: string;
+    start_time: string;
+    event_id: number;
+  }[];
   execList: DropdownItemProps[];
   confirmLevels: ConfirmLevel[];
   clients: string[];
   addEntry: boolean;
   addUser: number;
-  addState: 'positive' | 'negative' | 'warning' | 'primary';
+  addState: 'positive' | 'negative' | 'warning';
   users: { text: string; value: number }[];
 }
 
@@ -61,14 +75,6 @@ interface AttendanceEntry {
   other_shifts: string;
   assigned_exec: AttendanceField<number>;
   add_info: AttendanceField<string>;
-  shift: {
-    shift_id: number;
-    shift_num: number;
-  };
-  parentEvent: {
-    event_id: number;
-    name: string;
-  };
   user: {
     user_id: number;
     first_name: string;
@@ -91,11 +97,11 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     super(props);
 
     this.state = {
-      attendance: [],
+      attendance: null,
       confirmLevels: [],
       execList: [],
-      activeData: [],
-      activeEntry: null,
+      activeShift: null,
+      shifts: [],
       clients: [],
       users: [],
       addEntry: false,
@@ -111,7 +117,25 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     const host = window.location.host;
     this.ws = new WebSocket(`${protocol}://${host}/api/attendance/ws`);
     this.ws.onopen = () => {
-      this.refresh();
+      this.sendMessage(
+        {
+          action: `shifts|${new Date().getTime()}`,
+          key: localStorage.getItem('id_token'),
+        },
+        data => {
+          if (data.status === 'success') {
+            this.setState({
+              shifts: data.data,
+            });
+          } else {
+            this.props.addMessage({
+              message: data.error,
+              more: data.details,
+              severity: 'negative',
+            });
+          }
+        },
+      );
     };
     this.ws.onmessage = (e: MessageEvent) => {
       let data: WebSocketData<any>;
@@ -159,12 +183,12 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       const command = actionParts[0].split('/');
       if (command[0] === 'update') {
         // command in form update/id/field
-        const ix = _.findIndex(this.state.activeData, ['user_shift_id', +command[1]]);
+        const ix = _.findIndex(this.state.attendance, ['user_shift_id', +command[1]]);
         if (ix < 0) return;
 
         this.setState(
           update(this.state, {
-            activeData: {
+            attendance: {
               [ix]: {
                 [command[2]]: {
                   value: {
@@ -217,10 +241,10 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     });
   }
 
-  public refresh() {
+  public refresh(id: number) {
     this.sendMessage(
       {
-        action: `refresh|${new Date().getTime()}`,
+        action: `refresh/${id}|${new Date().getTime()}`,
         key: localStorage.getItem('id_token'),
       },
       data => {
@@ -231,9 +255,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
               // set empty maps by default
               __ => ({
                 user_shift_id: __.user_shift_id,
-                shift: __.shift,
                 other_shifts: __.other_shifts,
-                parentEvent: __.parentEvent,
                 user: __.user,
                 confirm_level_id: { value: __.confirm_level_id, lock: null },
                 start_time: { value: __.start_time, lock: null },
@@ -247,14 +269,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
             confirmLevels: data.data.levels,
             execList: data.data.execList,
           });
-          if (this.state.activeEntry) {
-            this.setState({
-              activeData: _.filter(this.state.attendance, [
-                'shift.shift_id',
-                +this.state.activeEntry,
-              ]),
-            });
-          }
         } else {
           this.props.addMessage({ message: data.error, more: data.details, severity: 'negative' });
         }
@@ -264,8 +278,8 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
 
   public handleUpdate(entry: number, field: string, value: any) {
     const valid = field === 'hours_override' ? /^-?\d+:\d{2}?(:\d{2})?$/.test(value) : true;
-    const ix = _.findIndex(this.state.activeData, ['user_shift_id', entry]);
-    const id = this.state.activeData[ix].user_shift_id;
+    const ix = _.findIndex(this.state.attendance, ['user_shift_id', entry]);
+    const id = this.state.attendance[ix].user_shift_id;
     const action = `update/${id}/${field}|${new Date().getTime()}`;
     if (valid) {
       this.sendMessage(
@@ -275,10 +289,10 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
           data: value,
         },
         data => {
-          if ((this.state.activeData[ix] as any)[field].lock) {
+          if ((this.state.attendance[ix] as any)[field].lock) {
             this.setState(
               update(this.state, {
-                activeData: { [ix]: { [field]: { lock: { status: { $set: data.status } } } } },
+                attendance: { [ix]: { [field]: { lock: { status: { $set: data.status } } } } },
               }),
             );
           }
@@ -294,7 +308,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     }
     this.setState(
       update(this.state, {
-        activeData: {
+        attendance: {
           [ix]: {
             [field]: {
               value: {
@@ -317,15 +331,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     if (this.ws.readyState !== this.ws.OPEN) {
       return <Message header="Connection lost" />;
     }
-    const shifts = _.map(
-      // filtered[0] will be the first one in each shift
-      _.groupBy(this.state.attendance, 'shift.shift_id'),
-      filtered => ({
-        key: filtered[0].shift.shift_id,
-        value: filtered[0].shift.shift_id,
-        text: `${filtered[0].parentEvent.name} | Shift ${filtered[0].shift.shift_num}`,
-      }),
-    );
 
     const statuses = _.map(this.state.confirmLevels, level => ({
       key: level.id,
@@ -368,10 +373,14 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         key: 'add_info.value',
         function: (row: AttendanceEntry) => _.lowerCase(row.add_info.value),
       },
+      {
+        name: 'Actions',
+        key: '',
+      },
     ];
 
     const getLock = (row: number, field: string): TableCellProps => {
-      const data: any = this.state.activeData[row];
+      const data: any = this.state.attendance[row];
       const lock = (data[field] as AttendanceField<any>).lock;
       if (!lock) return {};
       if (lock.status === 'success') return { positive: true };
@@ -391,17 +400,24 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
             fluid
             search
             selection
-            options={shifts}
-            value={this.state.activeEntry ? this.state.activeEntry : null}
-            onChange={(e, { value }) =>
+            options={this.state.shifts.map(shift => {
+              const start = moment(shift.start_time).format('YYYY-MM-DD');
+              return {
+                key: shift.shift_id,
+                text: `${shift.name} | Shift ${shift.shift_num} | ${start}`,
+                value: shift.shift_id,
+              };
+            })}
+            value={this.state.activeShift ? this.state.activeShift.shift_id : null}
+            onChange={(e, { value }) => {
               this.setState({
-                activeEntry: +value,
-                activeData: _.filter(this.state.attendance, ['shift.shift_id', +value]),
-              })
-            }
+                activeShift: _.find(this.state.shifts, ['shift_id', +value]),
+              });
+              this.refresh(+value);
+            }}
           />
         </Form.Field>
-        {this.state.activeEntry && (
+        {this.state.attendance && (
           <>
             <Form.Field inline>
               <label>Actions: </label>
@@ -411,7 +427,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   onClick={() => {
                     this.setState({
                       addEntry: !this.state.addEntry,
-                      addState: this.state.addEntry ? null : 'primary',
+                      addState: this.state.addEntry ? null : 'positive',
                     });
                     this.sendMessage(
                       {
@@ -438,12 +454,11 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   content="Print (PDF)"
                   onClick={() => {
                     // use sample row to get shift/event data
-                    const sampleRow = this.state.activeData[0];
                     const pdf: pdfMake.TDocumentDefinitions = {
                       pageSize: 'LETTER',
                       header: {
-                        text: `\n${sampleRow.parentEvent.name} | Shift ${
-                          sampleRow.shift.shift_num
+                        text: `\n${this.state.activeShift.name} | Shift ${
+                          this.state.activeShift.shift_num
                         }`,
                         alignment: 'center',
                       },
@@ -472,7 +487,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                               noWrap: true,
                             })),
                             // body rows
-                            ..._.map(_.sortBy(this.state.activeData, 'user.first_name'), entry => [
+                            ..._.map(_.sortBy(this.state.attendance, 'user.first_name'), entry => [
                               entry.user.first_name,
                               entry.user.last_name,
                               entry.user.phone_1 || '',
@@ -486,7 +501,9 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                     };
                     // attendance Event Name # -> attendance-event-name-#
                     const filename = _.kebabCase(
-                      `attendance ${sampleRow.parentEvent.name} ${sampleRow.shift.shift_num}`,
+                      `attendance ${this.state.activeShift.name} ${
+                        this.state.activeShift.shift_num
+                      }`,
                     );
                     pdfMake.createPdf(pdf).download(`${filename}.pdf`);
                   }}
@@ -495,16 +512,43 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   content="Export (CSV)"
                   onClick={() =>
                     axios
-                      .get(`/api/attendance/csv/${this.state.activeEntry}`, {
+                      .get(`/api/attendance/csv/${this.state.activeShift.shift_id}`, {
                         headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
                       })
                       .then(res => {
                         const link = document.createElement('a');
-                        link.download = `attendance-${this.state.activeEntry}.csv`;
+                        // attendance Event Name # -> attendance-event-name-#
+                        const filename = _.kebabCase(
+                          `attendance ${this.state.activeShift.name} ${
+                            this.state.activeShift.shift_num
+                          }`,
+                        );
+                        link.download = `${filename}.csv`;
                         link.href = `data:text/csv;charset=UTF-8,${encodeURIComponent(res.data)}`;
                         link.dispatchEvent(new MouseEvent('click'));
                         link.remove();
                       })
+                  }
+                />
+                <Modal
+                  trigger={<Button>View Emails</Button>}
+                  basic
+                  closeIcon
+                  header="Mailing List"
+                  content={
+                    <Form>
+                      <TextArea
+                        value={_.join(
+                          this.state.attendance.map(
+                            entry =>
+                              `${entry.user.first_name} ${entry.user.last_name} <${
+                                entry.user.email
+                              }>`,
+                          ),
+                          ', ',
+                        )}
+                      />
+                    </Form>
                   }
                 />
               </Button.Group>
@@ -532,14 +576,14 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   onClick={() =>
                     this.sendMessage(
                       {
-                        action: `add/${this.state.activeEntry}|${new Date().getTime()}`,
+                        action: `add/${this.state.activeShift.shift_id}|${new Date().getTime()}`,
                         key: localStorage.getItem('id_token'),
                         data: this.state.addUser,
                       },
                       data => {
                         if (data.status === 'success') {
                           this.setState({ addUser: null, addState: 'positive' });
-                          this.refresh();
+                          this.refresh(this.state.activeShift.shift_id);
                         } else {
                           this.setState({ addState: 'negative' });
                           this.props.addMessage({
@@ -568,7 +612,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                 },
               ]}
               headerRow={columns}
-              tableData={this.state.activeData}
+              tableData={this.state.attendance}
               renderBodyRow={(entry: AttendanceEntry, i: number) => {
                 const assignedExec = _.find(this.state.execList, ['user_id', entry.assigned_exec]);
                 return {
@@ -705,7 +749,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                       content: (
                         <Form.TextArea
                           inline
-                          fluid
                           value={entry.add_info.value || ''}
                           onChange={(e, { value }) =>
                             this.handleUpdate(entry.user_shift_id, 'add_info', value)
@@ -714,6 +757,39 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                       ),
                       className: `cell-${entry.user_shift_id}-add_info`,
                       ...getLock(i, 'add_info'),
+                    },
+                    {
+                      key: 'actions',
+                      content: (
+                        <Button
+                          negative
+                          size="tiny"
+                          icon="delete"
+                          onClick={() =>
+                            this.sendMessage(
+                              {
+                                action: `delete/${
+                                  this.state.activeShift.shift_id
+                                }|${new Date().getTime()}`,
+                                key: localStorage.getItem('id_token'),
+                                data: entry.user.user_id,
+                              },
+                              data => {
+                                if (data.status === 'success') {
+                                  this.refresh(this.state.activeShift.shift_id);
+                                } else {
+                                  this.setState({ addState: 'negative' });
+                                  this.props.addMessage({
+                                    message: data.error,
+                                    more: data.details,
+                                    severity: 'negative',
+                                  });
+                                }
+                              },
+                            )
+                          }
+                        />
+                      ),
                     },
                   ],
                 };

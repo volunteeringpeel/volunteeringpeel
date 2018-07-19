@@ -15,6 +15,7 @@ interface FancyTableProps<T> {
   tableData: T[];
   headerRow: (string | { name: Renderable; key: string; function?: (row: T) => any })[];
   renderBodyRow: (data: T, i: number) => TableRowProps;
+  sortCallback?: (key: string, dir: 'ascending' | 'descending') => any;
 }
 
 interface FancyTableState<T> {
@@ -37,23 +38,34 @@ export default class FancyTable<T> extends React.Component<
       sortCol: null,
       sortDir: 'ascending',
     };
+
+    this.handleSort = this.handleSort.bind(this);
   }
 
-  public handleSort = (i: string) => () => {
+  public handleSort = (key: string) => {
+    // ignore if null key
+    if (key === null) return;
+
+    // update state
     const { sortCol, sortDir } = this.state;
-
-    if (i !== sortCol) {
-      this.setState({
-        sortCol: i,
-        sortDir: 'ascending',
-      });
-
-      return;
+    let nextDir: 'ascending' | 'descending' = 'ascending';
+    if (key === sortCol) {
+      nextDir = sortDir === 'ascending' ? 'descending' : 'ascending';
     }
+    this.setState({ sortCol: key, sortDir: nextDir });
 
-    this.setState({
-      sortDir: sortDir === 'ascending' ? 'descending' : 'ascending',
-    });
+    // handle callback
+    if (this.props.sortCallback) {
+      // find header entry
+      const header = _.find(
+        this.props.headerRow,
+        row => key === (typeof row === 'string' ? row : row.key),
+      );
+      // parse header entry
+      const callbackKey = typeof header === 'string' ? _.snakeCase(header) : header.key;
+
+      this.props.sortCallback(callbackKey, nextDir);
+    }
   };
 
   public render() {
@@ -87,21 +99,24 @@ export default class FancyTable<T> extends React.Component<
       _.reduce(activeFilters, (acc, filter) => _.filter(acc, filter.filter), this.props.tableData),
     );
 
-    const sortCol = _.find(
-      this.props.headerRow,
-      row => this.state.sortCol === (typeof row === 'string' ? row : row.key),
-    );
-    const sortPredicate = [];
-    if (typeof sortCol === 'string') {
-      sortPredicate.push(_.snakeCase(this.state.sortCol));
-    } else if (sortCol) {
-      sortPredicate.push(sortCol.function ? sortCol.function : sortCol.key);
+    let processedData = filteredData;
+    if (!this.props.sortCallback) {
+      const sortCol = _.find(
+        this.props.headerRow,
+        row => this.state.sortCol === (typeof row === 'string' ? row : row.key),
+      );
+      const sortPredicate = [];
+      if (typeof sortCol === 'string') {
+        sortPredicate.push(_.snakeCase(this.state.sortCol));
+      } else if (sortCol) {
+        sortPredicate.push(sortCol.function ? sortCol.function : sortCol.key);
+      }
+
+      // ascending -> asc, descending -> desc
+      const sortDir = this.state.sortDir.substr(0, this.state.sortDir.indexOf('c') + 1);
+
+      processedData = _.orderBy(filteredData, sortPredicate, [sortDir]);
     }
-
-    // ascending -> asc, descending -> desc
-    const sortDir = this.state.sortDir.substr(0, this.state.sortDir.indexOf('c') + 1);
-
-    const processedData = _.orderBy(filteredData, sortPredicate, [sortDir]);
 
     return (
       <>
@@ -156,7 +171,7 @@ export default class FancyTable<T> extends React.Component<
                   key={i}
                   content={typeof header === 'string' ? header : header.name}
                   sorted={this.state.sortCol === sortColumn ? this.state.sortDir : null}
-                  onClick={this.handleSort(sortColumn)}
+                  onClick={() => this.handleSort(sortColumn)}
                 />
               );
             },

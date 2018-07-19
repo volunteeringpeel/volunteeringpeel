@@ -47,7 +47,7 @@ export default class Events extends React.Component<
       })
       .then(res => {
         this.setState({
-          events: res.data.data,
+          events: _.orderBy(res.data.data, 'shifts[0].start_time', 'desc'),
           // reset active event with new data and/or nothing if event was deleted
           activeEvent: _.find(res.data.data, [
             'event_id',

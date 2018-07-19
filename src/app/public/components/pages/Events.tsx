@@ -50,7 +50,9 @@ export default class Events extends React.Component<EventsProps, EventsState> {
       })
       .then(res => {
         // Only show events that are marked as active in admin console
-        this.setState({ events: _.filter(res.data.data, ['active', true]), loading: false });
+        const filteredEvents = _.filter(res.data.data, ['active', true]);
+        const sortedEvents = _.orderBy(filteredEvents, ['shifts[0].start_time'], 'asc');
+        this.setState({ events: sortedEvents, loading: false });
         this.props.loadUser();
       });
   }
@@ -91,18 +93,20 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                   // Calculate if event is full based on spots (sum up shift spots)
                   const maxSpots = _.sumBy(event.shifts, 'max_spots');
                   const spotsTaken = _.sumBy(event.shifts, 'spots_taken');
-                  const spotsLeft = maxSpots - spotsTaken;
+                  const spotsLeft = spotsTaken > maxSpots ? 0 : maxSpots - spotsTaken;
                   // Event is full if spotsLeft === 0
                   const full = spotsLeft === 0;
 
                   // list of shifts as HH:MM-HH:MM
-                  const shifts = _.map(
-                    event.shifts,
-                    shift =>
-                      `${moment(shift.start_time).format('hh:mm a')} – ${moment(
-                        shift.end_time,
-                      ).format('hh:mm a')}`,
-                  ).join(', ');
+                  const shifts = _
+                    .map(
+                      event.shifts,
+                      shift =>
+                        `${moment(shift.start_time).format('hh:mm a')} – ${moment(
+                          shift.end_time,
+                        ).format('hh:mm a')}`,
+                    )
+                    .join(', ');
                   return (
                     <Item key={event.event_id}>
                       <Item.Content>

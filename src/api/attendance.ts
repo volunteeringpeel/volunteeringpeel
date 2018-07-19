@@ -94,17 +94,53 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
     if (ws.user.role_id < 3) return die(action, 'Unauthorized', 'Token has no admin perms');
 
     switch (command[0]) {
+      case 'shifts': {
+        let shifts: any[];
+        [err, shifts] = await to(
+          ws.db.query(`SELECT
+            shift_id, shift_num, name, start_time, event_id
+            FROM vw_user_shift
+            GROUP BY shift_id, shift_num, name, start_time, event_id
+          `),
+        );
+        if (err) return die(action, 'Error retrieving shift list', err);
+
+        // order by parent event's earliest shift
+        return success(
+          action,
+          _.orderBy(
+            shifts,
+            [
+              shift => {
+                const earliestShift = _.minBy(
+                  _.filter(shifts, ['event_id', shift.event_id]),
+                  'shift_num',
+                );
+                return earliestShift.start_time;
+              },
+              'shift_num',
+            ],
+            ['desc', 'asc'],
+          ),
+        );
+      }
       case 'refresh': {
-        // ex. refresh|1524957214
+        // ex. refresh/1|1524957214
         // grab user's first and last name as well as vw_user_shift
         let userShifts: any[]; // update typings at a later date
         [err, userShifts] = await to(
-          ws.db.query(`
-            SELECT us.*, u.first_name, u.last_name,
-            u.phone_1, u.phone_2, u.email
+          ws.db.query(
+            `SELECT
+              us.user_shift_id, us.confirm_level_id,
+              us.start_time, us.end_time, us.hours_override,
+              us.assigned_exec, us.other_shifts, us.add_info,
+              u.user_id, u.first_name, u.last_name,
+              u.phone_1, u.phone_2, u.email
             FROM vw_user_shift us
             JOIN user u ON u.user_id = us.user_id
-          `),
+            WHERE us.shift_id = ?`,
+            [command[1]],
+          ),
         );
         if (err) return die(action, 'Error retreiving attendance', err);
 
@@ -127,14 +163,6 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
             other_shifts: userShift.other_shifts,
             assigned_exec: +userShift.assigned_exec,
             add_info: userShift.add_info,
-            shift: {
-              shift_id: +userShift.shift_id,
-              shift_num: +userShift.shift_num,
-            },
-            parentEvent: {
-              event_id: +userShift.event_id,
-              name: userShift.name,
-            },
             user: {
               user_id: +userShift.user_id,
               first_name: userShift.first_name,
@@ -215,6 +243,17 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
         );
         if (err) return die(action, 'Cannot insert record', err);
         return success(action, 'Added record successfully');
+      }
+      case 'delete': {
+        // ex delete/1|1524957214
+        [err] = await to(
+          ws.db.query('DELETE FROM user_shift WHERE user_id = ? AND shift_id = ?', [
+            data.data,
+            command[1],
+          ]),
+        );
+        if (err) return die(action, 'Cannot delete record', err);
+        return success(action, 'Record deleted successfully');
       }
       default: {
         return die(action, 'Unknown command', '');

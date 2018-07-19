@@ -97,7 +97,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
   public render() {
     // Event is full if no shifts have spots
     const full =
-      _.sumBy(this.props.event.shifts, 'max_spots') ===
+      _.sumBy(this.props.event.shifts, 'max_spots') <=
       _.sumBy(this.props.event.shifts, 'spots_taken');
 
     // Text for confirm modal on submit (sort shift numbers first)
@@ -122,13 +122,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
     return (
       <Modal
         trigger={
-          <Button
-            animated
-            disabled={full}
-            floated="right"
-            primary={!full}
-            onClick={this.handleOpen}
-          >
+          <Button animated floated="right" primary={!full} onClick={this.handleOpen}>
             <Button.Content visible>{full ? 'FULL' : 'Shifts'}</Button.Content>
             <Button.Content hidden>
               <Icon name="arrow right" />
@@ -155,7 +149,8 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
             <Item.Group>
               {_.map(this.props.event.shifts, (shift: Shift) => {
                 // Calculate if event is full based on spots (sum up shift spots)
-                const spotsLeft = shift.max_spots - shift.spots_taken;
+                const spotsLeft =
+                  shift.spots_taken > shift.max_spots ? 0 : shift.max_spots - shift.spots_taken;
                 const shiftFull = spotsLeft === 0;
                 // Parse dates
                 const startDate = moment(`${shift.start_time}`);
@@ -196,7 +191,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                         <ProgressColor
                           value={shift.max_spots - shift.spots_taken}
                           total={shift.max_spots}
-                          label="Spots"
+                          label={`${spotsLeft} of ${shift.max_spots} spots left`}
                           size="small"
                         />
                         <br />
