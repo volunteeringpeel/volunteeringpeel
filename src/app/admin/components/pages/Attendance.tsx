@@ -356,10 +356,11 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         key: 'user.email',
 
         function: (row: AttendanceEntry) => _.lowerCase(row.user.email),
+        hide: true,
       },
-      { name: 'Start and End', key: 'start_time.value' },
-      { name: 'Hours', key: 'end_time.value' },
-      { name: 'Other Shifts', key: 'other_shifts' },
+      { name: 'Start and End', key: 'start_time.value', hide: true },
+      { name: 'Hours', key: 'end_time.value', hide: true },
+      { name: 'Other Shifts', key: 'other_shifts', hide: true },
       {
         name: 'Assigned',
         key: 'assigned_exec',
@@ -376,6 +377,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       {
         name: 'Actions',
         key: '',
+        hide: true,
       },
     ];
 

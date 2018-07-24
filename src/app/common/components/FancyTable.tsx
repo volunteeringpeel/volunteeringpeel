@@ -13,9 +13,17 @@ import {
 interface FancyTableProps<T> {
   filters: { name: string; description: string; filter: ((input: T) => boolean) }[];
   tableData: T[];
-  headerRow: (string | { name: Renderable; key: string; function?: (row: T) => any })[];
+  headerRow: (string | ColumnDefinition<T>)[];
   renderBodyRow: (data: T, i: number) => TableRowProps;
   sortCallback?: (key: string, dir: 'ascending' | 'descending') => any;
+}
+
+// Schema-defining column
+interface ColumnDefinition<T> {
+  name: Renderable;
+  key: string; // sorting key
+  function?: (row: T) => any; // sorting function
+  hide?: boolean; // hide column by default
 }
 
 interface FancyTableState<T> {
@@ -26,6 +34,7 @@ interface FancyTableState<T> {
 }
 
 export default class FancyTable<T> extends React.Component<
+  // allow table props to get passed through
   FancyTableProps<T> & TableProps,
   FancyTableState<T>
 > {
@@ -40,6 +49,10 @@ export default class FancyTable<T> extends React.Component<
     };
 
     this.handleSort = this.handleSort.bind(this);
+
+    _.map(this.props.headerRow, (header, i) => {
+      if (header.hide) this.state.hidden.add(i);
+    });
   }
 
   public handleSort = (key: string) => {
