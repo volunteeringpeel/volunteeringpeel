@@ -12,6 +12,9 @@ const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
   addMessage: (message: Message) => dispatch(addMessage(message)),
 });
 
-const connectedSponsorModal = connect(null, mapDispatchToProps)(SponsorModal);
+const connectedSponsorModal = connect(
+  null,
+  mapDispatchToProps,
+)(SponsorModal);
 
 export default connectedSponsorModal;

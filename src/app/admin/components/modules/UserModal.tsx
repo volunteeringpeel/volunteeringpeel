@@ -92,7 +92,7 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
 
   public handleChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
     if (name === 'pic') this.setState({ pic: (e.target as HTMLInputElement).files[0] });
-    else this.setState({ [name]: value || checked });
+    else this.setState({ [name]: typeof value === 'undefined' ? checked : value });
   };
 
   public render() {
@@ -229,7 +229,8 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
             )}
             label={
               <div className="label">
-                Karma Bar: attended vs. missed<br />
+                Karma Bar: attended vs. missed
+                <br />
                 <small>
                   {_.join(
                     _.map(_.toPairs(this.props.user.shiftHistory), ([id, count]) => {

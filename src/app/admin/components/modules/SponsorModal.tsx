@@ -15,13 +15,10 @@ interface SponsorModalProps {
   refresh: () => void;
   sponsor: Sponsor;
 }
-
 type SponsorModalState = Sponsor & { pic: File };
-
 export default class SponsorModal extends React.Component<SponsorModalProps, SponsorModalState> {
   constructor(props: SponsorModalProps) {
     super(props);
-
     this.state = {
       name: props.sponsor.name || '',
       website: props.sponsor.website || '',
@@ -29,10 +26,8 @@ export default class SponsorModal extends React.Component<SponsorModalProps, Spo
       image: props.sponsor.image || '',
       pic: null,
     };
-
     this.handleSubmit = this.handleSubmit.bind(this);
   }
-
   public componentWillReceiveProps(nextProps: SponsorModalProps) {
     if (!_.isEqual(this.props.sponsor, nextProps.sponsor)) {
       this.setState({
@@ -44,7 +39,6 @@ export default class SponsorModal extends React.Component<SponsorModalProps, Spo
       });
     }
   }
-
   public handleSubmit() {
     const data = new FormData();
     _.forOwn(this.state, (value, key) => {
@@ -70,12 +64,10 @@ export default class SponsorModal extends React.Component<SponsorModalProps, Spo
         });
       });
   }
-
   public handleChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
     if (name === 'pic') this.setState({ pic: (e.target as HTMLInputElement).files[0] });
     else this.setState({ [name]: value || checked });
   };
-
   public render() {
     return (
       <Modal open closeIcon onClose={this.props.cancel}>

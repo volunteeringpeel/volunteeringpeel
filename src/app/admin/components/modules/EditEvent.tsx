@@ -71,7 +71,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
 
   public handleChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
     if (name === 'letter') this.setState({ letter: (e.target as HTMLInputElement).files[0] });
-    else this.setState({ [name]: value || checked });
+    else this.setState({ [name]: typeof value === 'undefined' ? checked : value });
   };
 
   public handleAddShift = () => {
