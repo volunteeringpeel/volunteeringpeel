@@ -17,6 +17,7 @@ import {
   Item,
   Label,
   Message,
+  Modal,
   Segment,
 } from 'semantic-ui-react';
 
@@ -24,7 +25,6 @@ import {
 import { listify, pluralize } from '@app/common/utilities';
 
 // Component Imports
-import Modal from '@app/public/components/blocks/Modal';
 import ProgressColor from '@app/public/components/blocks/ProgressColor';
 import ConfirmModal from '@app/public/components/modules/ConfirmModal';
 
@@ -185,7 +185,9 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                       </Item.Meta>
                       <Item.Description>
                         <ReactMarkdown source={shift.notes} />
-                        {_.map(shift.meals, meal => <Label key={meal}>{meal} provided</Label>)}
+                        {_.map(shift.meals, meal => (
+                          <Label key={meal}>{meal} provided</Label>
+                        ))}
                       </Item.Description>
                       <Item.Extra>
                         <ProgressColor
