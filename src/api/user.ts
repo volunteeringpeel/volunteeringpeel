@@ -17,6 +17,11 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
   const pageSize = +req.query.page_size || 20;
   const sortCol = req.query.sort || 'user_id';
   const sortDir = req.query.sort_dir || 'ascending';
+  const search = req.query.search || '';
+
+  // list of searchable columns
+  const searchable = ['first_name', 'last_name', 'email', 'phone_1', 'phone_2'];
+  const searchQuery = `WHERE ${searchable.map(col => `${col} LIKE "%${search}%"`).join(' OR ')}`;
 
   // convert to sql ASC/DESC
   // not escaped since it can only be ASC or DESC
@@ -32,6 +37,7 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
         email, phone_1, phone_2, school,
         title, bio, pic, show_exec
       FROM user
+      ${search ? searchQuery : ''}
       ORDER BY ?? ${sortDirSql}
       LIMIT ? OFFSET ?`,
       [sortCol, pageSize, pageSize * (page - 1)],
@@ -61,7 +67,9 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
 
   // get number of pages (for pagination)
   let userCount: any[];
-  [err, userCount] = await to(req.db.query('SELECT COUNT(*) FROM user'));
+  [err, userCount] = await to(
+    req.db.query(`SELECT COUNT(*) FROM user ${search ? searchQuery : ''}`),
+  );
   if (err) return res.error(500, 'Error counting users', err);
   const lastPage = Math.ceil(userCount[0]['COUNT(*)'] / pageSize);
 

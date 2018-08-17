@@ -6,6 +6,7 @@ import * as React from 'react';
 import { Route, RouteComponentProps } from 'react-router';
 import {
   Button,
+  Dimmer,
   Dropdown,
   Form,
   Header,
@@ -34,6 +35,8 @@ interface UsersState {
   users: ((User | Exec) & { shiftHistory: { [confirmLevel: number]: number } })[];
   confirmLevels: ConfirmLevel[];
   loading: boolean;
+  search: string;
+  latestData: number;
   // pagination: should be extracted
   page: number;
   pageSize: number;
@@ -52,6 +55,8 @@ export default class Users extends React.Component<
     this.state = {
       users: [],
       confirmLevels: [],
+      search: '',
+      latestData: 0,
       lastPage: 1,
       page: 1,
       pageSize: 20,
@@ -90,19 +95,23 @@ export default class Users extends React.Component<
       });
   };
   public refresh() {
+    const requestTime = Date.now();
     return Promise.resolve(this.setState({ loading: true }))
       .then(() => {
         const query = `/api/user?page=${this.state.page}&page_size=${this.state.pageSize}&sort=${
           this.state.sortKey
-        }&sort_dir=${this.state.sortDir}`;
+        }&sort_dir=${this.state.sortDir}&search=${encodeURIComponent(this.state.search)}`;
         return axios.get(query, {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
         });
       })
       .then(res => {
-        // data includes state.users, state.confirmLevels, state.lastPage
-        this.setState(res.data.data);
-        this.setState({ loading: false });
+        // account for quick succession of requests when searching
+        if (requestTime > this.state.latestData) {
+          // data includes state.users, state.confirmLevels, state.lastPage
+          this.setState(res.data.data);
+          this.setState({ loading: false, latestData: requestTime });
+        }
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
@@ -201,29 +210,41 @@ export default class Users extends React.Component<
     });
     return (
       <Form>
-        <LoadingDimmer loading={this.state.loading} page={false} />
         <Form.Field inline>
           <label>Actions: </label>
           <Button.Group>
             <Button content="Add" icon="add" onClick={() => this.props.push('/admin/users/-1')} />
           </Button.Group>
         </Form.Field>
-        <FancyTable
-          headerRow={headerRow}
-          renderBodyRow={renderBodyRow}
-          tableData={this.state.users}
-          footerRow={footerRow}
-          filters={[{ name: 'exec', description: 'Execs', filter: user => user.role_id === 3 }]}
-          sortCallback={(key, dir) => {
-            this.setState({
-              // reset page to 1 if sort changes
-              page: 1,
-              sortKey: key,
-              sortDir: dir,
-            });
+        <Form.Input
+          inline
+          label="Search:"
+          placeholder="first, last, phone, or email"
+          value={this.state.search}
+          onChange={(e, { value }) => {
+            this.setState({ search: value });
             this.refresh();
           }}
         />
+        <Dimmer.Dimmable>
+          <LoadingDimmer loading={this.state.loading} page={false} />
+          <FancyTable
+            headerRow={headerRow}
+            renderBodyRow={renderBodyRow}
+            tableData={this.state.users}
+            footerRow={footerRow}
+            filters={[{ name: 'exec', description: 'Execs', filter: user => user.role_id === 3 }]}
+            sortCallback={(key, dir) => {
+              this.setState({
+                // reset page to 1 if sort changes
+                page: 1,
+                sortKey: key,
+                sortDir: dir,
+              });
+              this.refresh();
+            }}
+          />
+        </Dimmer.Dimmable>
         {this.state.users.length &&
           this.state.confirmLevels.length && (
             <Route
