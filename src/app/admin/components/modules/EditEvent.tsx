@@ -3,7 +3,6 @@ import axios, { AxiosError } from 'axios';
 import * as Bluebird from 'bluebird';
 import update, { Query } from 'immutability-helper'; // tslint:disable-line:import-name
 import * as _ from 'lodash';
-import * as moment from 'moment';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import 'react-widgets/dist/css/react-widgets.css';
@@ -71,7 +70,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
 
   public handleChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
     if (name === 'letter') this.setState({ letter: (e.target as HTMLInputElement).files[0] });
-    else this.setState({ [name]: typeof value === 'undefined' ? checked : value });
+    else this.setState({ [name]: typeof value === 'undefined' ? checked : value } as any);
   };
 
   public handleAddShift = () => {

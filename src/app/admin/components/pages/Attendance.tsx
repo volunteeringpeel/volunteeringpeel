@@ -1,6 +1,5 @@
 // Library Imports
-import axios, { AxiosError } from 'axios';
-import * as Bluebird from 'bluebird';
+import axios from 'axios';
 import { LocationDescriptor } from 'history';
 import update from 'immutability-helper'; // tslint:disable-line:import-name
 import * as _ from 'lodash';
@@ -19,7 +18,6 @@ import {
   Message,
   Modal,
   Segment,
-  Table,
   TableCellProps,
   TextArea,
 } from 'semantic-ui-react';
@@ -29,7 +27,7 @@ import 'web-animations-js';
 (pdfMake as any).vfs = vfsFonts.pdfMake.vfs;
 
 // App Imports
-import { formatDateForMySQL, timeFormat } from '@app/common/utilities';
+import { timeFormat } from '@app/common/utilities';
 
 // Component Imports
 import FancyTable from '@app/common/components/FancyTable';
@@ -394,7 +392,9 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       <Form>
         <p>
           Also editing:{' '}
-          {_.map(this.state.clients, (client, i) => <Label as="span" key={i} content={client} />)}
+          {_.map(this.state.clients, (client, i) => (
+            <Label as="span" key={i} content={client} />
+          ))}
         </p>
         <Form.Field>
           <Dropdown
@@ -613,10 +613,9 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   filter: __ => __.confirm_level_id.value <= 0,
                 },
               ]}
-              headerRow={columns}
+              columnDefs={columns}
               tableData={this.state.attendance}
               renderBodyRow={(entry: AttendanceEntry, i: number) => {
-                const assignedExec = _.find(this.state.execList, ['user_id', entry.assigned_exec]);
                 return {
                   key: entry.user_shift_id,
                   cells: [

@@ -1,7 +1,7 @@
 /* tslint:disable:no-console no-var-requires import-name */
 import to from '@lib/await-to-js';
 import * as Bluebird from 'bluebird';
-import * as csvStringify from 'csv-stringify';
+import * as csvStringify from 'csv-stringify/lib/sync';
 import * as Express from 'express';
 import * as _ from 'lodash';
 import * as mysql from 'promise-mysql';
@@ -314,8 +314,7 @@ export const exportToCSV: Express.RequestHandler = async (req, res) => {
     _.map(data, row => [row.first_name, row.last_name, row.phone_1, row.phone_2, row.notes]),
   );
 
-  let csv;
-  [err, csv] = await to(Bluebird.promisify(csvStringify)(rows));
+  const csv = csvStringify(rows);
   if (err) return res.error(500, 'Error parsing data', err);
 
   res.setHeader('Content-disposition', 'attachment; filename=attendance.csv');

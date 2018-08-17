@@ -67,7 +67,7 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
             <Form>
               <FancyTable
                 tableData={this.props.user.user.userShifts}
-                headerRow={['Status', 'Event', 'Shift', 'Hours', 'Hours Letter']}
+                columnDefs={['Status', 'Event', 'Shift', 'Hours', 'Hours Letter']}
                 filters={[
                   {
                     name: 'confirmed',
@@ -105,7 +105,8 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
             </Form>
           ) : (
             <p>
-              No events found 😢<br />
+              No events found 😢
+              <br />
               <Link to="/events">Sign up for an event!</Link>
             </p>
           )}

@@ -36,7 +36,7 @@ export default class FormRequest extends React.Component<{}, FormRequestState> {
   }
 
   public handleChange = (e: React.FormEvent<any>, { name, value }: any) => {
-    this.setState({ [name]: value });
+    this.setState({ [name]: value } as any);
   };
 
   public handleSubmit = () => {

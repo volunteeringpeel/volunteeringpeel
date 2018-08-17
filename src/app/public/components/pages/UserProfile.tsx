@@ -77,7 +77,7 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
   }
 
   public handleChange = (event: React.FormEvent<any>, { name, value, checked }: any) => {
-    this.setState({ [name]: checked || value });
+    this.setState({ [name]: checked || value } as any);
   };
 
   public handleSubmit = () => {

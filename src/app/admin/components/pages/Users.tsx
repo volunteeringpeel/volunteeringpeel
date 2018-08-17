@@ -4,19 +4,7 @@ import * as Promise from 'bluebird';
 import { LocationDescriptor } from 'history';
 import * as React from 'react';
 import { Route, RouteComponentProps } from 'react-router';
-import {
-  Button,
-  Dimmer,
-  Dropdown,
-  Form,
-  Header,
-  Icon,
-  Label,
-  Menu,
-  Pagination,
-  Segment,
-  Table,
-} from 'semantic-ui-react';
+import { Button, Dimmer, Dropdown, Form, Icon, Pagination } from 'semantic-ui-react';
 
 // Component Imports
 import FancyTable from '@app/common/components/FancyTable';
@@ -229,7 +217,7 @@ export default class Users extends React.Component<
         <Dimmer.Dimmable>
           <LoadingDimmer loading={this.state.loading} page={false} />
           <FancyTable
-            headerRow={headerRow}
+            columnDefs={headerRow}
             renderBodyRow={renderBodyRow}
             tableData={this.state.users}
             footerRow={footerRow}

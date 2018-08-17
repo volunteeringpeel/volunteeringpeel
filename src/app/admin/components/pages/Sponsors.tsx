@@ -4,7 +4,7 @@ import * as Promise from 'bluebird';
 import { LocationDescriptor } from 'history';
 import * as React from 'react';
 import { Route, RouteComponentProps } from 'react-router';
-import { Button, Dropdown, Form, Header, Label, Menu, Segment, Table } from 'semantic-ui-react';
+import { Button, Form } from 'semantic-ui-react';
 
 // Component Imports
 import FancyTable from '@app/common/components/FancyTable';
@@ -134,7 +134,7 @@ export default class Sponsors extends React.Component<
     return (
       <Form>
         <FancyTable
-          headerRow={headerRow}
+          columnDefs={headerRow}
           renderBodyRow={renderBodyRow}
           tableData={this.state.sponsors}
           footerRow={footerRow}

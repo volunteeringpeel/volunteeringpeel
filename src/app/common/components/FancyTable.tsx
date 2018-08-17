@@ -1,19 +1,12 @@
 import update from 'immutability-helper'; // tslint:disable-line:import-name
 import * as _ from 'lodash';
 import * as React from 'react';
-import {
-  Button,
-  Form,
-  SemanticShorthandItem,
-  Table,
-  TableProps,
-  TableRowProps,
-} from 'semantic-ui-react';
+import { Button, Form, Table, TableProps, TableRowProps } from 'semantic-ui-react';
 
 interface FancyTableProps<T> {
   filters: { name: string; description: string; filter: ((input: T) => boolean) }[];
   tableData: T[];
-  headerRow: (string | ColumnDefinition<T>)[];
+  columnDefs: (string | ColumnDefinition<T>)[];
   renderBodyRow: (data: T, i: number) => TableRowProps;
   sortCallback?: (key: string, dir: 'ascending' | 'descending') => any;
 }
@@ -50,8 +43,8 @@ export default class FancyTable<T> extends React.Component<
 
     this.handleSort = this.handleSort.bind(this);
 
-    _.map(this.props.headerRow, (header, i) => {
-      if (header.hide) this.state.hidden.add(i);
+    _.map(this.props.columnDefs, (header, i) => {
+      if (typeof header !== 'string' && header.hide) this.state.hidden.add(i);
     });
   }
 
@@ -71,7 +64,7 @@ export default class FancyTable<T> extends React.Component<
     if (this.props.sortCallback) {
       // find header entry
       const header = _.find(
-        this.props.headerRow,
+        this.props.columnDefs,
         row => key === (typeof row === 'string' ? row : row.key),
       );
       // parse header entry
@@ -115,7 +108,7 @@ export default class FancyTable<T> extends React.Component<
     let processedData = filteredData;
     if (!this.props.sortCallback) {
       const sortCol = _.find(
-        this.props.headerRow,
+        this.props.columnDefs,
         row => this.state.sortCol === (typeof row === 'string' ? row : row.key),
       );
       const sortPredicate = [];
@@ -136,7 +129,7 @@ export default class FancyTable<T> extends React.Component<
         <Form.Field inline>
           <label>Columns:</label>
           <Button.Group
-            buttons={_.map(this.props.headerRow, (header, i) => {
+            buttons={_.map(this.props.columnDefs, (header, i) => {
               const hidden = this.state.hidden.has(i);
               return {
                 key: i,
@@ -176,7 +169,7 @@ export default class FancyTable<T> extends React.Component<
           celled
           sortable
           headerRow={_.map(
-            _.filter(this.props.headerRow, (__, i) => !this.state.hidden.has(i)),
+            _.filter(this.props.columnDefs, (__, i) => !this.state.hidden.has(i)),
             (header, i) => {
               const sortColumn = typeof header === 'string' ? header : header.key;
               return (

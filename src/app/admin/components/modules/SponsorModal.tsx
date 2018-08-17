@@ -1,7 +1,5 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
-import * as Promise from 'bluebird';
-import immutabilityHelper from 'immutability-helper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Button, Form, Image, Modal } from 'semantic-ui-react';
@@ -66,7 +64,7 @@ export default class SponsorModal extends React.Component<SponsorModalProps, Spo
   }
   public handleChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
     if (name === 'pic') this.setState({ pic: (e.target as HTMLInputElement).files[0] });
-    else this.setState({ [name]: value || checked });
+    else this.setState({ [name]: value || checked } as any);
   };
   public render() {
     return (

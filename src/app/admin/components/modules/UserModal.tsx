@@ -1,6 +1,5 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
-import * as Promise from 'bluebird';
 import immutabilityHelper from 'immutability-helper';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -92,7 +91,7 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
 
   public handleChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
     if (name === 'pic') this.setState({ pic: (e.target as HTMLInputElement).files[0] });
-    else this.setState({ [name]: typeof value === 'undefined' ? checked : value });
+    else this.setState({ [name]: typeof value === 'undefined' ? checked : value } as any);
   };
 
   public render() {
