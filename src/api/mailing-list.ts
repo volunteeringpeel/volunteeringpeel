@@ -1,9 +1,6 @@
 /* tslint:disable:no-console no-var-requires import-name */
 import to from '@lib/await-to-js';
-import * as Bluebird from 'bluebird';
-import * as Express from 'express';
 import * as _ from 'lodash';
-import * as mysql from 'promise-mysql';
 
 // Import API core
 import * as Utilities from '@api/utilities';

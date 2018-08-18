@@ -1,10 +1,8 @@
 /* tslint:disable:no-console no-var-requires */
-import * as Promise from 'bluebird';
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as expressWs from 'express-ws';
 import * as path from 'path';
-import * as WebSocket from 'ws';
 
 import 'babel-polyfill';
 

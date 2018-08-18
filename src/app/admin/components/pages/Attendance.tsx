@@ -201,6 +201,9 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         // flashy animate
         const color = '#276f86';
         const backgroundColor = '#f8ffff';
+        // note to self:
+        // once Microsoft/TSJS-lib-generator#567 is merged or Microsoft/TypeScript#26073
+        // is otherwise closed, remove @types/web-animations-js and upgrade to typescript@3
         document.querySelector(`.cell-${command[1]}-${command[2]}`).animate(
           [
             {

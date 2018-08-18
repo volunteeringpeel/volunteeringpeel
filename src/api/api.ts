@@ -3,11 +3,10 @@ import to from '@lib/await-to-js';
 import * as Bluebird from 'bluebird';
 import * as Express from 'express';
 import * as jwt from 'express-jwt';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as jwksRsa from 'jwks-rsa';
 import * as _ from 'lodash';
 import * as multer from 'multer';
-import * as mv from 'mv';
 import * as mysql from 'promise-mysql';
 
 import * as Utilities from '@api/utilities';
@@ -225,9 +224,8 @@ api.post(
     let err;
     if (req.file) {
       [err] = await to(
-        Bluebird.promisify(mv)(
-          req.file.path,
-          `${global.appDir}/upload/sponsor/${req.file.filename}`,
+        Bluebird.resolve(
+          fs.move(req.file.path, `${global.appDir}/upload/sponsor/${req.file.filename}`),
         ),
       );
       if (err) return res.error(500, 'Failed to save uploaded file', err);

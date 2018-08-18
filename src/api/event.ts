@@ -2,9 +2,8 @@
 import to from '@lib/await-to-js';
 import * as Bluebird from 'bluebird';
 import * as Express from 'express';
+import * as fs from 'fs-extra';
 import * as _ from 'lodash';
-import * as mv from 'mv';
-import * as mysql from 'promise-mysql';
 
 // API Imports
 import * as Utilities from '@api/utilities';
@@ -134,7 +133,9 @@ export const editEvent = Utilities.asyncMiddleware(async (req, res) => {
   // Handle uploaded hours letter
   if (req.file) {
     [err] = await to(
-      Bluebird.promisify(mv)(req.file.path, `${global.appDir}/upload/letter/${req.file.filename}`),
+      Bluebird.resolve(
+        fs.move(req.file.path, `${global.appDir}/upload/letter/${req.file.filename}`),
+      ),
     );
     if (err) return res.error(500, 'Failed to save uploaded file', err);
     let affectedRows;
