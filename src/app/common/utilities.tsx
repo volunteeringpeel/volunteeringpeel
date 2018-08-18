@@ -4,7 +4,7 @@ import * as Promise from 'bluebird';
 import { createBrowserHistory } from 'history';
 import * as moment from 'moment';
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import * as ReactGA from 'react-ga';
 import { push, routerMiddleware, routerReducer } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore, Dispatch, Store } from 'redux';
 import reduxThunk from 'redux-thunk';
@@ -97,6 +97,10 @@ export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
       if (response.data.status === 'success') {
         dispatch(getUserSuccess(response as AxiosResponse<APIDataSuccess<User>>));
         if (response.data.data.new) {
+          ReactGA.event({
+            category: 'User',
+            action: 'Created Account',
+          });
           dispatch(
             addMessage({
               message: 'Welcome!',

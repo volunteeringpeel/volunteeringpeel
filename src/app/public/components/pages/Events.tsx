@@ -4,6 +4,7 @@ import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import * as React from 'react';
+import * as ReactGA from 'react-ga';
 import * as ReactMarkdown from 'react-markdown';
 import { Button, Container, Header, Item, Segment } from 'semantic-ui-react';
 
@@ -98,15 +99,13 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                   const full = spotsLeft === 0;
 
                   // list of shifts as HH:MM-HH:MM
-                  const shifts = _
-                    .map(
-                      event.shifts,
-                      shift =>
-                        `${moment(shift.start_time).format('hh:mm a')} – ${moment(
-                          shift.end_time,
-                        ).format('hh:mm a')}`,
-                    )
-                    .join(', ');
+                  const shifts = _.map(
+                    event.shifts,
+                    shift =>
+                      `${moment(shift.start_time).format('hh:mm a')} – ${moment(
+                        shift.end_time,
+                      ).format('hh:mm a')}`,
+                  ).join(', ');
                   return (
                     <Item key={event.event_id}>
                       <Item.Content>
@@ -139,6 +138,11 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                             event={event}
                             refresh={this.refresh}
                             onSuccess={() => {
+                              ReactGA.event({
+                                category: 'Events',
+                                action: 'Signed Up',
+                                label: event.name,
+                              });
                               this.props.addMessage({
                                 message: 'Signup successful',
                                 more: (
