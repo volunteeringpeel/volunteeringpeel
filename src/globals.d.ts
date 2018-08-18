@@ -1,12 +1,6 @@
 declare module '*.jpg';
 declare module '*.png';
 
-declare namespace NodeJS {
-  interface Global {
-    appDir: string;
-  }
-}
-
 type Renderable = JSX.Element | string;
 
 interface APIDataSuccess<T> {

@@ -19,6 +19,12 @@ declare global {
       userData: User;
     }
   }
+
+  namespace NodeJS {
+    interface Global {
+      appDir: string;
+    }
+  }
 }
 declare module 'express-ws' {
   interface Instance {
