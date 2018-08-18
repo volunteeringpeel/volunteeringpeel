@@ -7,7 +7,7 @@
     "jsx-key": false,
     "curly": [true, "ignore-same-line"],
     "interface-name": false,
-    "object-literal-sort-keys": [true, "match-declaration-order"],
+    "object-literal-sort-keys": false,
     "no-submodule-imports": false,
     "no-implicit-dependencies": false,
     "one-variable-per-declaration": false,
