@@ -299,8 +299,8 @@ export const exportToCSV: Express.RequestHandler = async (req, res) => {
   let err, data;
   [err, data] = await to(
     req.db.query(
-      `SELECT 
-        first_name, last_name, phone_1, phone_2, add_info
+      `SELECT
+        first_name, last_name, school, phone_1, phone_2, add_info
         FROM user_shift us
         JOIN user u ON u.user_id = us.user_id
         WHERE us.shift_id = ?`,
@@ -309,9 +309,9 @@ export const exportToCSV: Express.RequestHandler = async (req, res) => {
   );
   if (err) return res.error(500, 'Error selecting attendance data', err);
 
-  let rows = [['First', 'Last', 'Phone #1', 'Phone #2', 'Notes']];
+  let rows = [['First', 'Last', 'school', 'Phone #1', 'Phone #2', 'Notes']];
   rows = rows.concat(
-    _.map(data, row => [row.first_name, row.last_name, row.phone_1, row.phone_2, row.notes]),
+    _.map(data, row => [row.first_name, row.last_name, row.school, row.phone_1, row.phone_2, row.notes]),
   );
 
   const csv = csvStringify(rows);
