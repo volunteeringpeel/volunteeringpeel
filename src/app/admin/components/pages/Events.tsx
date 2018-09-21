@@ -72,6 +72,13 @@ export default class Events extends React.Component<
         <Grid.Row columns={2}>
           <Grid.Column>
             <Menu fluid vertical secondary pointing>
+              <Route path="/admin/events/-1">
+                {({ match }) => (
+                  <Menu.Item active={!!match} onClick={() => this.props.push('/admin/events/-1')}>
+                    <em>Add New Event</em>
+                  </Menu.Item>
+                )}
+              </Route>
               {this.state.events.map(event => (
                 <Route path={`/admin/events/${event.event_id}`} key={event.event_id}>
                   {({ match }) => (
@@ -84,13 +91,6 @@ export default class Events extends React.Component<
                   )}
                 </Route>
               ))}
-              <Route path="/admin/events/-1">
-                {({ match }) => (
-                  <Menu.Item active={!!match} onClick={() => this.props.push('/admin/events/-1')}>
-                    <em>Add New Event</em>
-                  </Menu.Item>
-                )}
-              </Route>
             </Menu>
           </Grid.Column>
           <Grid.Column stretched>
