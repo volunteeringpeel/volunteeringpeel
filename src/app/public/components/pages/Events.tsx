@@ -150,11 +150,11 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                                     Thanks for signing up! Here are some next steps.
                                     <ul>
                                       <li>
-                                        You will receive a CONFIRMATION EMAIL with more information
+                                        One week prior to the event, you will receive a CONFIRMATION EMAIL with more information
                                         regarding the event, please make sure to REPLY to confirm
                                         your attendance.
                                       </li>
-                                      <li>You will also receive a PHONE CALL prior to the event</li>
+                                      <li>If you do not reply, you will also receive a PHONE CALL prior to the event</li>
                                     </ul>
                                   </>
                                 ),
