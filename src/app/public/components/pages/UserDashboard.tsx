@@ -4,17 +4,7 @@ import * as moment from 'moment';
 import * as React from 'react';
 import { Redirect } from 'react-router';
 import { Link } from 'react-router-dom';
-import {
-  Button,
-  Container,
-  Form,
-  Header,
-  Icon,
-  Menu,
-  Segment,
-  Statistic,
-  Table,
-} from 'semantic-ui-react';
+import { Container, Form, Header, Segment, Statistic } from 'semantic-ui-react';
 
 // App Imports
 import { timeFormat } from '@app/common/utilities';
@@ -67,7 +57,7 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
             <Form>
               <FancyTable
                 tableData={this.props.user.user.userShifts}
-                columnDefs={['Status', 'Event', 'Shift', 'Hours', 'Hours Letter']}
+                columnDefs={['Status', 'Event', 'Shift', 'Date', 'Time', 'Hours', 'Hours Letter']}
                 filters={[
                   {
                     name: 'confirmed',
@@ -88,6 +78,10 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
                     userShift.confirmLevel.name,
                     userShift.parentEvent.name,
                     userShift.shift.shift_num,
+                    moment(userShift.shift.start_time).format('MMM D, YYYY'),
+                    `${moment(userShift.shift.start_time).format('hh:mm a')} – ${moment(
+                      userShift.shift.end_time,
+                    ).format('hh:mm a')}`,
                     timeFormat(moment.duration(userShift.hours)),
                     userShift.letter
                       ? {
