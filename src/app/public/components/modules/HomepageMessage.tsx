@@ -2,6 +2,9 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Container, Embed, Grid, Header, Message } from 'semantic-ui-react';
 
+// App Imports
+import Exec_Application_2018Docx from '@app/files/Exec_Application_2018.docx';
+
 // PUT ANY MESSAGE BOX THAT YOU WANT TO EXPORT HERE. DO NOT DELETE THE EXAMPLE ONE
 // tslint:disable-next-line:variable-name
 const HomepageMessage: React.ComponentType = () => {
@@ -48,9 +51,9 @@ const HomepageMessage: React.ComponentType = () => {
           Volunteering Peel Committee Member applications are out now! If you're a grade 9 or
           10 student who enjoys volunteering and leading volunteers, meeting new people and
           getting involved, then apply for the Volunteering Peel Executive team. Applications
-          are due on October 27th! <i>(note: application can't be opened on pdsb emails)</i>
+          are due on October 27th!
         </p>
-        <a href="https://drive.google.com/file/d/1QtDWxA6FHphLTxqhUeDOg4hRYwZLN5cF/view">
+        <a href={Exec_Application_2018Docx}>
           <Button primary>Apply Now</Button>
         </a>
       </Message>
