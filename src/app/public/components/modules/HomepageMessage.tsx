@@ -53,7 +53,7 @@ const HomepageMessage: React.ComponentType = () => {
           getting involved, then apply for the Volunteering Peel Executive team. Applications
           are due on October 27th!
         </p>
-        <a href={Exec_Application_2018Docx}>
+        <a href={VPExecsApp2018Docx}>
           <Button primary>Apply Now</Button>
         </a>
       </Message>
