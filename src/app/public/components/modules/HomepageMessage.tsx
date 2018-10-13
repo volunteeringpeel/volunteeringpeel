@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button, Container, Embed, Grid, Header, Message } from 'semantic-ui-react';
 
 // App Imports
-import Exec_Application_2018Docx from '@app/files/Exec_Application_2018.docx';
+import VPExecsApp2018Docx from '@app/downloads/VPExecsApp2018.docx';
 
 // PUT ANY MESSAGE BOX THAT YOU WANT TO EXPORT HERE. DO NOT DELETE THE EXAMPLE ONE
 // tslint:disable-next-line:variable-name
