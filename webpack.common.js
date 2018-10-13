@@ -44,7 +44,7 @@ module.exports = {
       },
 
       {
-        // images into the image folder
+        // files into the downloads folder
         test: /\.(docx)$/,
         use: [
           {
