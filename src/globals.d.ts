@@ -1,6 +1,6 @@
+declare module '*.docx';
 declare module '*.jpg';
 declare module '*.png';
-declare module '*.docx';
 
 type Renderable = JSX.Element | string;
 
