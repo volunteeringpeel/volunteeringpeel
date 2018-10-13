@@ -44,6 +44,19 @@ module.exports = {
       },
 
       {
+        // images into the image folder
+        test: /\.(docx)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: './files/[name].[ext]',
+            },
+          },
+        ],
+      },
+
+      {
         // sitemap, robots, copy normally
         test: /sitemap\.xml|robots\.txt/,
         use: [
