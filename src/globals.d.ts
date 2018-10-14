@@ -1,3 +1,4 @@
+declare module '*.docx';
 declare module '*.jpg';
 declare module '*.png';
 
