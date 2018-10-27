@@ -192,11 +192,12 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
           !_.includes(
             [
               'confirm_level_id',
-              'start_override',
-              'end_override',
               'hours_override',
               'assigned_exec',
               'add_info',
+              // convert to override form later
+              'start_time',
+              'end_time',
             ],
             field,
           )
@@ -204,9 +205,18 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
           return die(action, 'Invalid field', 'Field is not set as updatable via live API');
         }
         let result;
+        // check if this is a datetime field
+        const dateTime = field.includes('time');
+        const column = dateTime ? field.replace('time', 'override') : field;
+        const value = dateTime
+          ? new Date(data.data)
+              .toISOString()
+              .slice(0, 19)
+              .replace('T', ' ')
+          : data.data;
         [err, result] = await to(
           ws.db.query('UPDATE user_shift SET ? WHERE user_shift_id = ?', [
-            { [field]: data.data },
+            { [column]: value },
             entryID,
           ]),
         );
@@ -311,7 +321,14 @@ export const exportToCSV: Express.RequestHandler = async (req, res) => {
 
   let rows = [['First', 'Last', 'school', 'Phone #1', 'Phone #2', 'Notes']];
   rows = rows.concat(
-    _.map(data, row => [row.first_name, row.last_name, row.school, row.phone_1, row.phone_2, row.notes]),
+    _.map(data, row => [
+      row.first_name,
+      row.last_name,
+      row.school,
+      row.phone_1,
+      row.phone_2,
+      row.notes,
+    ]),
   );
 
   const csv = csvStringify(rows);
