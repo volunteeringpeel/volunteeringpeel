@@ -492,14 +492,21 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                               noWrap: true,
                             })),
                             // body rows
-                            ..._.map(_.sortBy(this.state.attendance, entry => entry.user.first_name ? entry.user.first_name.toLowerCase() : ''), entry => [
-                              entry.user.first_name,
-                              entry.user.last_name,
-                              entry.user.phone_1 || '',
-                              entry.user.phone_2 || '',
-                              '',
-                              '',
-                            ]),
+                            ..._.map(
+                              _.sortBy(
+                                this.state.attendance,
+                                entry =>
+                                  entry.user.first_name ? entry.user.first_name.toLowerCase() : '',
+                              ),
+                              entry => [
+                                entry.user.first_name,
+                                entry.user.last_name,
+                                entry.user.phone_1 || '',
+                                entry.user.phone_2 || '',
+                                '',
+                                '',
+                              ],
+                            ),
                           ],
                         },
                       },
