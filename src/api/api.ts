@@ -5,8 +5,8 @@ import * as Express from 'express';
 import * as jwt from 'express-jwt';
 import * as fs from 'fs-extra';
 import * as jwksRsa from 'jwks-rsa';
-import * as _ from 'lodash';
 import * as multer from 'multer';
+import * as nodemailer from 'nodemailer';
 import * as mysql from 'promise-mysql';
 
 import * as Utilities from '@api/utilities';
@@ -31,6 +31,30 @@ export const pool = mysql.createPool({
   charset: 'utf8mb4',
   timezone: '-04:00',
   connectionLimit: 100,
+});
+
+// Setup nodemailer
+export const transporter = nodemailer.createTransport(
+  {
+    host: 'smtpout.secureserver.net',
+    secure: true,
+    auth: {
+      user: 'no_reply@volunteeringpeel.org',
+      pass: process.env.EMAIL_PASSWORD,
+    },
+    tls: {
+      // do not fail on invalid certs
+      rejectUnauthorized: false,
+    },
+  },
+  { from: 'no_reply@volunteeringpeel.org' },
+);
+transporter.verify(error => {
+  if (error) {
+    console.error(error);
+  } else {
+    console.log('Mailserver connection ready');
+  }
 });
 
 // if (process.env.NODE_ENV !== 'production') {
