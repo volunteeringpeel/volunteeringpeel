@@ -5,6 +5,7 @@ import * as Express from 'express';
 import * as jwt from 'express-jwt';
 import * as fs from 'fs-extra';
 import * as jwksRsa from 'jwks-rsa';
+import * as _ from 'lodash';
 import * as multer from 'multer';
 import * as nodemailer from 'nodemailer';
 import * as mysql from 'promise-mysql';
@@ -12,6 +13,7 @@ import * as mysql from 'promise-mysql';
 import * as Utilities from '@api/utilities';
 
 // Import sub-APIs
+import { listify, pluralize } from '@api/../utilities';
 import * as AttendanceAPI from '@api/attendance';
 import * as EventAPI from '@api/event';
 import * as HeaderAPI from '@api/header';
@@ -298,9 +300,9 @@ api.post(
   '/signup',
   Utilities.asyncMiddleware(async (req, res) => {
     // Get user id from email
-    let err, users: { user_id: number }[];
+    let err, users: Partial<User>[];
     [err, users] = await to(
-      req.db.query('SELECT user_id FROM user WHERE email = ?', [req.user.email]),
+      req.db.query('SELECT user_id, first_name FROM user WHERE email = ?', [req.user.email]),
     );
     if (err || !users[0] || !users[0].user_id) {
       // lack of existence of users[0].user_id means user couldn't be found
@@ -313,13 +315,36 @@ api.post(
       req.body.add_info,
     ]);
 
-    let affectedRows;
-    [err, { affectedRows }] = await to(
+    let result;
+    [err, result] = await to(
       req.db.query('INSERT INTO user_shift (user_id, shift_id, add_info) VALUES ?', [values]),
     );
-    if (err || affectedRows !== req.body.shifts.length) {
+    if (err || result.affectedRows !== req.body.shifts.length) {
       return res.error(500, 'Error signing up', err);
     }
+
+    // Text for confirm modal on submit (sort shift numbers first)
+    const shiftsList = listify(_.sortBy(req.body.readable_nums), '#');
+    // Pluralization
+    const shiftPlural = pluralize('shift', req.body.readable_nums.length);
+    const emailText = `Hi ${users[0].first_name}!<br />
+    <br />
+    You have been successfully signed up for <b>${req.body.event}</b> ${shiftPlural}
+    ${shiftsList}.<br />
+    Please do not reply to this email.
+    `;
+
+    transporter.sendMail(
+      {
+        to: req.user.email,
+        subject: `Signup Confirmation: ${req.body.event}`,
+        html: emailText,
+      },
+      (error, info) => {
+        if (error) console.error(error);
+        else console.log(info.response);
+      },
+    );
 
     res.success('Signed up successfully', 201);
   }),
