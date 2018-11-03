@@ -21,7 +21,7 @@ import {
 } from 'semantic-ui-react';
 
 // App Imports
-import { listify, pluralize } from '@app/common/utilities';
+import { listify, pluralize } from '@app/../utilities';
 
 // Component Imports
 import ProgressColor from '@app/public/components/blocks/ProgressColor';
@@ -66,11 +66,15 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
         axios.post(
           `/api/signup`,
           {
+            // for use in db query
             shifts: _.map(
               this.state.selectedShifts,
               num => _.find(this.props.event.shifts, ['shift_num', num]).shift_id,
             ),
             add_info: this.state.add_info,
+            // for use in email
+            event: this.props.event.name,
+            readable_nums: this.state.selectedShifts,
           },
           {
             headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
