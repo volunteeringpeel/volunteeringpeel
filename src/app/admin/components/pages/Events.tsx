@@ -2,10 +2,12 @@
 import axios, { AxiosError } from 'axios';
 import { LocationDescriptor } from 'history';
 import * as _ from 'lodash';
+import * as moment from 'moment';
+import 'moment-timezone';
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { Link, Route } from 'react-router-dom';
-import { Grid, Header, Menu, Segment } from 'semantic-ui-react';
+import { Route } from 'react-router-dom';
+import { Grid, Menu, Segment } from 'semantic-ui-react';
 
 // Controllers Imports
 import EditEvent from '@app/admin/controllers/modules/EditEvent';
@@ -45,11 +47,20 @@ export default class Events extends React.Component<
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
         });
       })
-      .then(res => {
+      .then(({ data }) => {
+        const shifts = _.map(data.data.shifts, (shift: Shift) => ({
+          ...shift,
+          start_time: moment(shift.start_time)
+            .tz('America/Toronto')
+            .toISOString(),
+          end_time: moment(shift.end_time)
+            .tz('America/Toronto')
+            .toISOString(),
+        }));
         this.setState({
-          events: _.orderBy(res.data.data, 'shifts[0].start_time', 'desc'),
+          events: _.orderBy({ ...data.data, shifts }, 'shifts[0].start_time', 'desc'),
           // reset active event with new data and/or nothing if event was deleted
-          activeEvent: _.find(res.data.data, [
+          activeEvent: _.find(data.data, [
             'event_id',
             // check existence before checking id
             this.state.activeEvent && this.state.activeEvent.event_id,

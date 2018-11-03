@@ -5,7 +5,6 @@ import * as Express from 'express';
 import * as jwt from 'express-jwt';
 import * as fs from 'fs-extra';
 import * as jwksRsa from 'jwks-rsa';
-import * as _ from 'lodash';
 import * as multer from 'multer';
 import * as mysql from 'promise-mysql';
 
@@ -29,8 +28,11 @@ export const pool = mysql.createPool({
   password: process.env.DB_PASS,
   database: 'volunteeringpeel',
   charset: 'utf8mb4',
+  // note: not the timezone used by client, just the one that the server is configured with
   timezone: '-04:00',
   connectionLimit: 100,
+  // don't use javascript dates since timezones are handled on the frontend
+  dateStrings: true,
 });
 
 // if (process.env.NODE_ENV !== 'production') {

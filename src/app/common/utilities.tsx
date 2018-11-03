@@ -3,6 +3,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import * as Promise from 'bluebird';
 import { createBrowserHistory } from 'history';
 import * as moment from 'moment';
+import 'moment-timezone';
 import * as React from 'react';
 import * as ReactGA from 'react-ga';
 import { push, routerMiddleware, routerReducer } from 'react-router-redux';
@@ -29,19 +30,9 @@ export function timeFormat(time: moment.Duration) {
 }
 
 export function formatDateForMySQL(date: Date): string {
-  return (
-    date.getFullYear() +
-    '-' +
-    pad(date.getMonth() + 1) + // month is off by 1 (i.e. Jan = 0)
-    '-' +
-    pad(date.getDate()) +
-    ' ' +
-    pad(date.getHours()) +
-    ':' +
-    pad(date.getMinutes()) +
-    ':' +
-    pad(date.getSeconds())
-  );
+  return moment(date)
+    .tz('America/Toronto')
+    .format('YYYY-MM-DD HH:MM:SS');
 }
 
 export function listify(list: string[] | number[], prefix: string = ''): string {
