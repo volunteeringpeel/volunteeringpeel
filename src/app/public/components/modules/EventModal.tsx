@@ -7,7 +7,6 @@ import * as moment from 'moment';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
-import { Action } from 'redux-actions';
 import {
   Button,
   Dimmer,
@@ -153,8 +152,8 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
                   shift.spots_taken > shift.max_spots ? 0 : shift.max_spots - shift.spots_taken;
                 const shiftFull = spotsLeft === 0;
                 // Parse dates
-                const startDate = moment(`${shift.start_time}`);
-                const endDate = moment(`${shift.end_time}`);
+                const startDate = moment(`${shift.start_time}`).tz('America/Toronto');
+                const endDate = moment(`${shift.end_time}`).tz('America/Toronto');
                 // Has shift already been signed up for
                 const selected = _.includes(this.state.selectedShifts, shift.shift_num);
 
