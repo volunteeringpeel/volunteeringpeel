@@ -331,7 +331,9 @@ api.post(
     <br />
     You have been successfully signed up for <b>${req.body.event}</b> ${shiftPlural}
     ${shiftsList}.<br />
-    Please do not reply to this email.
+    You will receive another email with further details a week prior to the event. We look forward to seeing you at the event!
+
+    Please do not reply to this email. For any inquiries, or if you cannot attend the event, please email <a href="mailto:info@volunteeringpeel.org">info@volunteeringpeel.org<a>.
     `;
 
     transporter.sendMail(
