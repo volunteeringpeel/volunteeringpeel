@@ -9,7 +9,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-@Table
+@Table({ modelName: 'faq' })
 export class FAQ extends Model<FAQ> {
   @PrimaryKey @Column faq_id: number;
   @AllowNull(false) @Default(100) @Column priority: number;

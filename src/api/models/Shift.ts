@@ -14,7 +14,7 @@ import { Event } from '@api/models/Event';
 import { User } from '@api/models/User';
 import { UserShift } from '@api/models/UserShift';
 
-@Table
+@Table({ modelName: 'shift' })
 export class Shift extends Model<Shift> {
   @PrimaryKey @Column shift_id: number;
   @BelongsTo(() => Event, 'event_id') event: Event;

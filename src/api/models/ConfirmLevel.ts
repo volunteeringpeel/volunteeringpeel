@@ -9,7 +9,7 @@ import {
   Unique,
 } from 'sequelize-typescript';
 
-@Table
+@Table({ modelName: 'confirm_level' })
 export class ConfirmLevel extends Model<ConfirmLevel> {
   @PrimaryKey @Column confirm_level_id: number;
   @AllowNull(false) @Unique @Column name: string;

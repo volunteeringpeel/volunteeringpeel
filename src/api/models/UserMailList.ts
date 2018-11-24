@@ -4,7 +4,7 @@ import { Column, ForeignKey, Model, PrimaryKey, Table } from 'sequelize-typescri
 import { MailList } from '@api/models/MailList';
 import { User } from '@api/models/User';
 
-@Table
+@Table({ modelName: 'user_mail_list' })
 export class UserMailList extends Model<UserMailList> {
   @PrimaryKey @Column user_mail_list_id: number;
   @ForeignKey(() => User) @Column user_id: number;

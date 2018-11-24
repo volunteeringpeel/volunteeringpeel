@@ -9,7 +9,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 
-@Table
+@Table({ modelName: 'event' })
 export class Event extends Model<Event> {
   @PrimaryKey @Column event_id: number;
   @AllowNull(false) @Column name: string;

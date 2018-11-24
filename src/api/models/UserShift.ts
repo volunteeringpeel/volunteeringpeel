@@ -15,7 +15,7 @@ import { ConfirmLevel } from '@api/models/ConfirmLevel';
 import { Shift } from '@api/models/Shift';
 import { User } from '@api/models/User';
 
-@Table
+@Table({ modelName: 'user_shift' })
 export class UserShift extends Model<UserShift> {
   @PrimaryKey @Column user_mail_list_id: number;
   @ForeignKey(() => User) @Column user_id: number;

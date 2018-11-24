@@ -1,12 +1,12 @@
 /* tslint:disable:no-console no-var-requires variable-name member-access */
 import {
   AllowNull,
+  BelongsTo,
   BelongsToMany,
   Column,
   CreatedAt,
   DataType,
   Default,
-  HasOne,
   Model,
   PrimaryKey,
   Table,
@@ -18,12 +18,12 @@ import { Shift } from '@api/models/Shift';
 import { UserMailList } from '@api/models/UserMailList';
 import { UserShift } from '@api/models/UserShift';
 
-@Table
+@Table({ modelName: 'user' })
 export class User extends Model<User> {
   @PrimaryKey @Column user_id: number;
   @AllowNull(false) @Column email: string;
   @CreatedAt @Column signup_time: Date;
-  @HasOne(() => Role, 'role_id') role: Role;
+  @BelongsTo(() => Role, 'role_id') role: Role;
   @AllowNull(false) @Column first_name: string;
   @AllowNull(false) @Column last_name: string;
   @AllowNull(false) @Column phone_1: string;
@@ -37,5 +37,5 @@ export class User extends Model<User> {
   @BelongsToMany(() => MailList, () => UserMailList)
   mail_lists: MailList[];
   @BelongsToMany(() => Shift, () => UserShift)
-  shifts: Shift[];
+  userShifts: Shift[];
 }

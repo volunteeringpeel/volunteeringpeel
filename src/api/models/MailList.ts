@@ -14,7 +14,7 @@ import {
 import { User } from '@api/models/User';
 import { UserMailList } from '@api/models/UserMailList';
 
-@Table
+@Table({ modelName: 'mail_list' })
 export class MailList extends Model<MailList> {
   @PrimaryKey @Column mail_list_id: number;
   @Unique @AllowNull(false) @Column display_name: string;
