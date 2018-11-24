@@ -22,7 +22,7 @@ import { UserShift } from '@api/models/UserShift';
 export class User extends Model<User> {
   @PrimaryKey @Column user_id: number;
   @AllowNull(false) @Column email: string;
-  @CreatedAt @Column signup_time: Date;
+  @AllowNull(false) @Default(DataType.NOW) @Column signup_time: Date;
   @BelongsTo(() => Role, 'role_id') role: Role;
   @AllowNull(false) @Column first_name: string;
   @AllowNull(false) @Column last_name: string;
