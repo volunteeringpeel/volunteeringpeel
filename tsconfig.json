@@ -12,7 +12,9 @@
       "@api/*": ["src/api/*"],
       "@app/*": ["src/app/*"],
       "@lib/*": ["lib/*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "exclude": ["node_modules"]
 }

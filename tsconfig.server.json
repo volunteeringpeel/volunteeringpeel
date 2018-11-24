@@ -9,7 +9,9 @@
     "paths": {
       "@api/*": ["./src/api/*"],
       "@lib/*": ["./lib/*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "exclude": ["node_modules", "./src/app"]
 }
