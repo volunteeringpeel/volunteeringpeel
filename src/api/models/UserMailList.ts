@@ -6,7 +6,7 @@ import { User } from '@api/models/User';
 
 @Table
 export class UserMailList extends Model<UserMailList> {
-  @Column @PrimaryKey user_mail_list_id: number;
-  @Column @ForeignKey(() => User) user_id: number;
-  @Column @ForeignKey(() => MailList) mail_list_id: number;
+  @PrimaryKey @Column user_mail_list_id: number;
+  @ForeignKey(() => User) @Column user_id: number;
+  @ForeignKey(() => MailList) @Column mail_list_id: number;
 }

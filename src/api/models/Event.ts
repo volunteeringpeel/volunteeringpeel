@@ -11,12 +11,12 @@ import {
 
 @Table
 export class Event extends Model<Event> {
-  @Column @PrimaryKey event_id: number;
-  @Column @AllowNull(false) name: string;
-  @Column @AllowNull(false) address: string;
-  @Column @Default(null) transport: string;
-  @Column(DataType.TEXT) @AllowNull(false) description: string;
-  @Column @AllowNull(false) @Default(false) active: boolean;
-  @Column @AllowNull(false) @Default(false) add_info: boolean;
+  @PrimaryKey @Column event_id: number;
+  @AllowNull(false) @Column name: string;
+  @AllowNull(false) @Column address: string;
+  @Default(null) @Column transport: string;
+  @AllowNull(false) @Column(DataType.TEXT) description: string;
+  @AllowNull(false) @Default(false) @Column active: boolean;
+  @AllowNull(false) @Default(false) @Column add_info: boolean;
   @Column letter: string;
 }

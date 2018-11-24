@@ -17,16 +17,17 @@ import { User } from '@api/models/User';
 
 @Table
 export class UserShift extends Model<UserShift> {
-  @Column @PrimaryKey user_mail_list_id: number;
-  @Column @ForeignKey(() => User) user_id: number;
-  @Column @ForeignKey(() => Shift) shift_id: number;
+  @PrimaryKey @Column user_mail_list_id: number;
+  @ForeignKey(() => User) @Column user_id: number;
+  @ForeignKey(() => Shift) @Column shift_id: number;
   @Column(DataType.DATE) start_override: string;
   @Column(DataType.DATE) end_override: string;
   @Column(DataType.TIME) hours_override: string;
   @Column(DataType.TEXT) add_info: string;
 
-  @Column
-  @HasOne(() => ConfirmLevel, { foreignKey: { allowNull: false, defaultValue: 0 } })
+  @HasOne(() => ConfirmLevel, {
+    foreignKey: { name: 'confirm_level_id', allowNull: false, defaultValue: 0 },
+  })
   confirm_level: ConfirmLevel;
-  @Column @HasOne(() => User, 'assigned_exec') assigned_exec: User;
+  @HasOne(() => User, 'assigned_exec') assigned_exec: User;
 }

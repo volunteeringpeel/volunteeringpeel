@@ -16,10 +16,10 @@ import { UserMailList } from '@api/models/UserMailList';
 
 @Table
 export class MailList extends Model<MailList> {
-  @Column @PrimaryKey mail_list_id: number;
-  @Column @Unique @AllowNull(false) display_name: string;
+  @PrimaryKey @Column mail_list_id: number;
+  @Unique @AllowNull(false) @Column display_name: string;
   @Column(DataType.TEXT) description: string;
-  @Column @AllowNull(false) @Default(false) system: boolean;
+  @AllowNull(false) @Default(false) @Column system: boolean;
 
   @BelongsToMany(() => User, () => UserMailList)
   users: User[];

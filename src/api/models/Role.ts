@@ -3,6 +3,6 @@ import { AllowNull, Column, Model, PrimaryKey, Table, Unique } from 'sequelize-t
 
 @Table
 export class Role extends Model<Role> {
-  @Column @PrimaryKey role_id: number;
-  @Column @AllowNull(false) @Unique name: string;
+  @PrimaryKey @Column role_id: number;
+  @AllowNull(false) @Unique @Column name: string;
 }

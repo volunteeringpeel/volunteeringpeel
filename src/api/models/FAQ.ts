@@ -11,8 +11,8 @@ import {
 
 @Table
 export class FAQ extends Model<FAQ> {
-  @Column @PrimaryKey faq_id: number;
-  @Column @AllowNull(false) @Default(100) priority: number;
-  @Column(DataType.TEXT) @AllowNull(false) question: string;
-  @Column(DataType.TEXT) @AllowNull(false) answer: string;
+  @PrimaryKey @Column faq_id: number;
+  @AllowNull(false) @Default(100) @Column priority: number;
+  @AllowNull(false) @Column(DataType.TEXT) question: string;
+  @AllowNull(false) @Column(DataType.TEXT) answer: string;
 }

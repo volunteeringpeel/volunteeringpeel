@@ -11,7 +11,7 @@ import {
 
 @Table
 export class ConfirmLevel extends Model<ConfirmLevel> {
-  @Column @PrimaryKey confirm_level_id: number;
-  @Column @AllowNull(false) @Unique name: string;
+  @PrimaryKey @Column confirm_level_id: number;
+  @AllowNull(false) @Unique @Column name: string;
   @Column(DataType.TEXT) description: string;
 }

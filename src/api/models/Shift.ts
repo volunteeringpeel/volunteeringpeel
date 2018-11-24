@@ -2,6 +2,7 @@
 import {
   AllowNull,
   BelongsTo,
+  BelongsToMany,
   Column,
   DataType,
   Model,
@@ -10,16 +11,21 @@ import {
 } from 'sequelize-typescript';
 
 import { Event } from '@api/models/Event';
+import { User } from '@api/models/User';
+import { UserShift } from '@api/models/UserShift';
 
 @Table
 export class Shift extends Model<Shift> {
-  @Column @PrimaryKey shift_id: number;
-  @Column @BelongsTo(() => Event) event: Event;
+  @PrimaryKey @Column shift_id: number;
+  @BelongsTo(() => Event, 'event_id') event: Event;
 
-  @Column @AllowNull(false) shift_num: number;
-  @Column(DataType.DATE) @AllowNull(false) start_time: string;
-  @Column(DataType.DATE) @AllowNull(false) end_time: string;
-  @Column @AllowNull(false) max_spots: number;
+  @AllowNull(false) @Column shift_num: number;
+  @AllowNull(false) @Column(DataType.DATE) start_time: string;
+  @AllowNull(false) @Column(DataType.DATE) end_time: string;
+  @AllowNull(false) @Column max_spots: number;
   @Column(DataType.ENUM('breakfast', 'lunch', 'dinner', 'snack')) meals: string;
-  @Column(DataType.TEXT) @AllowNull(false) notes: string;
+  @AllowNull(false) @Column(DataType.TEXT) notes: string;
+
+  @BelongsToMany(() => User, () => UserShift)
+  users: User[];
 }
