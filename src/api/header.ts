@@ -7,7 +7,6 @@ import * as fs from 'fs-extra';
 import * as Utilities from '@api/utilities';
 
 export const getHeaderImage = Utilities.asyncMiddleware(async (req, res) => {
-  req.db.release();
   // Get list of images inside of header folder
   const [err, images] = await to(Bluebird.resolve(fs.readdir(global.appDir + '/upload/header')));
   if (err) res.error(500, 'Error picking a header image', err);
