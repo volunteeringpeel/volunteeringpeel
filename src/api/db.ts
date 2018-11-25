@@ -1,8 +1,13 @@
 /* tslint:disable:no-console no-var-requires variable-name */
 import { Sequelize } from 'sequelize-typescript';
 
+const db: {
+  sequelize: Sequelize;
+  Sequelize: typeof Sequelize;
+} = { Sequelize, sequelize: null };
+
 // Setup MySQL
-const sequelize = new Sequelize({
+db.sequelize = new Sequelize({
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   dialect: 'mysql',
@@ -15,19 +20,10 @@ const sequelize = new Sequelize({
     freezeTableName: true,
     underscored: true,
     charset: 'utf8mb4',
+    timestamps: false,
   },
   // note: not the timezone used by client, just the one that the server is configured with
   timezone: '-04:00',
-  modelPaths: ['@api/models'],
 });
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log('Connection has been established successfully.');
-  })
-  .catch(err => {
-    console.error('Unable to connect to the database:', err);
-  });
-
-export { sequelize, Sequelize };
+export default db;
