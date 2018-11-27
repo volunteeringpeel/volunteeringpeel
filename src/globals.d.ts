@@ -4,7 +4,7 @@ declare module '*.png';
 
 type Renderable = JSX.Element | string;
 
-declare namespace VolunteeringPeel {
+declare namespace VP {
   interface APIDataSuccess<T> {
     status: 'success';
     data: T;
@@ -82,7 +82,7 @@ declare namespace VolunteeringPeel {
     priority: number;
   }
 
-  interface VPEvent {
+  interface Event {
     event_id: number;
     name: string;
     address: string;
