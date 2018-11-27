@@ -32,7 +32,7 @@ export function timeFormat(time: moment.Duration) {
 export function formatDateForMySQL(date: Date): string {
   return moment(date)
     .tz('America/Toronto')
-    .format('YYYY-MM-DD HH:MM:SS');
+    .format('YYYY-MM-DD HH:mm:ss');
 }
 
 export function listify(list: string[] | number[], prefix: string = ''): string {
