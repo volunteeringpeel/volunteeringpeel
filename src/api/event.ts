@@ -119,12 +119,12 @@ export const editEvent = Utilities.asyncMiddleware(async (req, res) => {
   [err, event] = await to(
     Event.findByPrimary(req.params.id).then(found => {
       if (found !== null) return found;
-      return Event.build(eventData);
+      return Event.create(eventData);
     }),
   );
   if (err) return res.error(500, 'Error creating new event', err);
   // Update event data
-  [err] = await to(event.update(eventData));
+  [err, event] = await to(event.update(eventData));
   if (err) return res.error(500, 'Error updating event data', err);
 
   // Delete each shift marked for deletion
@@ -132,28 +132,31 @@ export const editEvent = Utilities.asyncMiddleware(async (req, res) => {
   if (err) return res.error(500, 'Error deleting shift', err);
 
   // Create/update shifts (delete is above)
-  _.forEach(params.shifts as VP.Shift[], async s => {
-    const shiftData = {
-      shift_num: s.shift_num,
-      max_spots: s.max_spots,
-      start_time: s.start_time,
-      end_time: s.end_time,
-      meals: s.meals.join(),
-      notes: s.notes,
-    };
-    // Find or create new shift
-    let shift;
-    [err, shift] = await to(
-      Shift.findByPrimary(s.shift_id).then(found => {
-        if (found !== null) return found;
-        return Shift.build(shiftData);
-      }),
-    );
-    if (err) return res.error(500, 'Error creating shift', err);
-    // Update shift
-    [err] = await to(shift.update(shiftData, { logging: console.log }));
-    if (err) return res.error(500, 'Error updating shift', err);
-  });
+  await Promise.all(
+    _.map(params.shifts as VP.Shift[], async s => {
+      const shiftData = {
+        event_id: event.event_id,
+        shift_num: s.shift_num,
+        max_spots: s.max_spots,
+        start_time: s.start_time,
+        end_time: s.end_time,
+        meals: s.meals.join(),
+        notes: s.notes,
+      };
+      // Find or create new shift
+      let shift;
+      [err, shift] = await to(
+        Shift.findByPrimary(s.shift_id).then(found => {
+          if (found !== null) return found;
+          return Shift.create(shiftData);
+        }),
+      );
+      if (err) return res.error(500, 'Error creating shift', err);
+      // Update shift
+      [err] = await to(shift.update(shiftData, { logging: console.log }));
+      if (err) return res.error(500, 'Error updating shift', err);
+    }),
+  );
 
   // Handle uploaded hours letter
   if (req.file) {
