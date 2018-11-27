@@ -1,6 +1,7 @@
 /* tslint:disable:no-console no-var-requires variable-name member-access */
 import {
   AllowNull,
+  AutoIncrement,
   BelongsTo,
   BelongsToMany,
   Column,
@@ -26,7 +27,7 @@ import { UserShift } from '@api/models/UserShift';
 })
 @Table({ modelName: 'shift' })
 export class Shift extends Model<Shift> {
-  @PrimaryKey @Column shift_id: number;
+  @PrimaryKey @AutoIncrement @Column shift_id: number;
   @BelongsTo(() => Event, 'event_id') event: Event;
 
   @AllowNull(false) @Column shift_num: number;

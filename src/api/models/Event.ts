@@ -1,6 +1,7 @@
 /* tslint:disable:no-console no-var-requires variable-name member-access */
 import {
   AllowNull,
+  AutoIncrement,
   Column,
   DataType,
   Default,
@@ -14,7 +15,7 @@ import { Shift } from '@api/models/Shift';
 
 @Table({ modelName: 'event' })
 export class Event extends Model<Event> {
-  @PrimaryKey @Column event_id: number;
+  @PrimaryKey @AutoIncrement @Column event_id: number;
   @AllowNull(false) @Column name: string;
   @AllowNull(false) @Column address: string;
   @Default(null) @Column transport: string;

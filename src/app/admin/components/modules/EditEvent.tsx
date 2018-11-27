@@ -381,7 +381,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
         </Segment>
         <Form.Group>
           <Button.Group fluid>
-            <Button type="submit" animated="fade" positive>
+            <Button onClick={this.handleSubmit} animated="fade" positive>
               <Button.Content hidden>Save</Button.Content>
               <Button.Content visible>
                 <Icon name="save" />

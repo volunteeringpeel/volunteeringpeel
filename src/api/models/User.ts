@@ -1,10 +1,10 @@
 /* tslint:disable:no-console no-var-requires variable-name member-access */
 import {
   AllowNull,
+  AutoIncrement,
   BelongsTo,
   BelongsToMany,
   Column,
-  CreatedAt,
   DataType,
   Default,
   Model,
@@ -20,7 +20,7 @@ import { UserShift } from '@api/models/UserShift';
 
 @Table({ modelName: 'user' })
 export class User extends Model<User> {
-  @PrimaryKey @Column user_id: number;
+  @PrimaryKey @AutoIncrement @Column user_id: number;
   @AllowNull(false) @Column email: string;
   @AllowNull(false) @Default(DataType.NOW) @Column signup_time: Date;
   @BelongsTo(() => Role, 'role_id') role: Role;

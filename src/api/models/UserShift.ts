@@ -1,9 +1,8 @@
 /* tslint:disable:no-console no-var-requires variable-name member-access */
 import {
-  AllowNull,
+  AutoIncrement,
   Column,
   DataType,
-  Default,
   ForeignKey,
   HasOne,
   Model,
@@ -17,7 +16,7 @@ import { User } from '@api/models/User';
 
 @Table({ modelName: 'user_shift' })
 export class UserShift extends Model<UserShift> {
-  @PrimaryKey @Column user_shift_id: number;
+  @PrimaryKey @AutoIncrement @Column user_shift_id: number;
   @ForeignKey(() => User) @Column user_id: number;
   @ForeignKey(() => Shift) @Column shift_id: number;
   @Column(DataType.DATE) start_override: string;

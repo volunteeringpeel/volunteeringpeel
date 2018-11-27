@@ -1,6 +1,7 @@
 /* tslint:disable:no-console no-var-requires variable-name member-access */
 import {
   AllowNull,
+  AutoIncrement,
   BelongsToMany,
   Column,
   DataType,
@@ -16,7 +17,7 @@ import { UserMailList } from '@api/models/UserMailList';
 
 @Table({ modelName: 'mail_list' })
 export class MailList extends Model<MailList> {
-  @PrimaryKey @Column mail_list_id: number;
+  @PrimaryKey @AutoIncrement @Column mail_list_id: number;
   @Unique @AllowNull(false) @Column display_name: string;
   @Column(DataType.TEXT) description: string;
   @AllowNull(false) @Default(false) @Column system: boolean;
