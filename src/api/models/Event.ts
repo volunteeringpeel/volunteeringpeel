@@ -4,10 +4,13 @@ import {
   Column,
   DataType,
   Default,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
 } from 'sequelize-typescript';
+
+import { Shift } from '@api/models/Shift';
 
 @Table({ modelName: 'event' })
 export class Event extends Model<Event> {
@@ -19,4 +22,6 @@ export class Event extends Model<Event> {
   @AllowNull(false) @Default(false) @Column active: boolean;
   @AllowNull(false) @Default(false) @Column add_info: boolean;
   @Column letter: string;
+
+  @HasMany(() => Shift, { sourceKey: 'event_id', foreignKey: 'event_id' }) shifts: Shift[];
 }

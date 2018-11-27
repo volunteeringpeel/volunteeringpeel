@@ -93,7 +93,7 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
 export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
   let err;
 
-  const out: UserData = {
+  const out: VP.UserData = {
     user: null,
     new: false,
     userShifts: [],
@@ -141,10 +141,10 @@ export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
     [err, entry] = await to(User.create(newUser));
     if (err) return res.error(500, 'Error creating user', err);
 
-    out.user = entry.dataValues;
+    out.user = entry.dataValues as VP.Exec;
     out.new = true;
   } else {
-    out.user = user.dataValues;
+    out.user = user.dataValues as VP.Exec;
   }
 
   [err, out.user.mail_lists] = await to(Bluebird.resolve(getUserMailLists(out.user.user_id)));
@@ -305,7 +305,7 @@ export async function getUserShifts(id: number): Promise<any[]> {
   );
 }
 
-export async function getUserMailLists(id: number): Promise<MailList[]> {
+export async function getUserMailLists(id: number): Promise<VP.MailList[]> {
   return db.sequelize.query(
     `SELECT m.mail_list_id as mail_list_id, m.display_name as display_name, m.description as description, NOT ISNULL(user_mail_list_id) subscribed
       FROM user u
@@ -316,10 +316,7 @@ export async function getUserMailLists(id: number): Promise<MailList[]> {
   );
 }
 
-export async function updateUserMailLists(
-  id: number,
-  mailLists: VolunteeringPeel.MailList[],
-): Promise<any> {
+export async function updateUserMailLists(id: number, mailLists: VP.MailList[]): Promise<any> {
   // update mail list data
   return UserMailList.destroy({ where: { user_id: id } }).then(() =>
     UserMailList.bulkCreate(

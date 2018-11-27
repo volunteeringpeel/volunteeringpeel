@@ -267,14 +267,14 @@ api.get('/header-image', HeaderAPI.listHeaderImages);
 api.post('/header-image', upload.single('header'), HeaderAPI.uploadHeaderImage);
 api.delete('/header-image/:filename', HeaderAPI.deleteHeaderImage);
 
-// // Prived/authorized by JWT endpoint
-// api.get('/event', EventAPI.eventQuery(true));
-// // Endpoint doesn't require JWT (i.e. not logged in)
-// api.get('/public/event', EventAPI.eventQuery(false));
-// // Edit event
-// api.post('/event/:id', upload.single('letter'), EventAPI.editEvent);
-// // Delete event
-// api.delete('/event/:id', EventAPI.deleteEvent);
+// Prived/authorized by JWT endpoint
+api.get('/event', EventAPI.eventQuery(true));
+// Endpoint doesn't require JWT (i.e. not logged in)
+api.get('/public/event', EventAPI.eventQuery(false));
+// Edit event
+api.post('/event/:id', upload.single('letter'), EventAPI.editEvent);
+// Delete event
+api.delete('/event/:id', EventAPI.deleteEvent);
 
 // Signup
 api.post(

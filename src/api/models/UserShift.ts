@@ -17,7 +17,7 @@ import { User } from '@api/models/User';
 
 @Table({ modelName: 'user_shift' })
 export class UserShift extends Model<UserShift> {
-  @PrimaryKey @Column user_mail_list_id: number;
+  @PrimaryKey @Column user_shift_id: number;
   @ForeignKey(() => User) @Column user_id: number;
   @ForeignKey(() => Shift) @Column shift_id: number;
   @Column(DataType.DATE) start_override: string;
