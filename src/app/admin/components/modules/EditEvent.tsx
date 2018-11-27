@@ -13,10 +13,10 @@ import { Button, Form, Icon, Menu, Segment } from 'semantic-ui-react';
 import { formatDateForMySQL } from '@app/common/utilities';
 
 interface EditEventProps {
-  addMessage: (message: Message) => any;
+  addMessage: (message: VP.Message) => any;
   cancel: () => void;
   loading: (status: boolean) => any;
-  originalEvent: VPEvent;
+  originalEvent: VP.Event;
   refresh: () => Promise<void>;
   push: (path: string) => void;
 }
@@ -28,7 +28,7 @@ interface EditEventState {
   transport: string;
   active: boolean;
   add_info: boolean;
-  shifts: Shift[];
+  shifts: VP.Shift[];
   selectedShiftNum: number;
   deleteShifts: number[];
   letter: File;

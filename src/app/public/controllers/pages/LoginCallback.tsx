@@ -4,7 +4,7 @@ import { connect, Dispatch } from 'react-redux';
 // Component Imports
 import LoginCallback from '@app/public/components/pages/LoginCallback';
 
-const mapStateToProps = (state: State) => ({
+const mapStateToProps = (state: VP.State) => ({
   location: state.router.location,
 });
 

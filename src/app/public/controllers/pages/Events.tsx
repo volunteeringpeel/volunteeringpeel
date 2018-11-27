@@ -8,11 +8,14 @@ import { addMessage, loading } from '@app/common/actions';
 import { loadUser } from '@app/common/utilities';
 import Events from '@app/public/components/pages/Events';
 
-const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
   loadUser: loadUser.bind(null, dispatch),
-  addMessage: (message: Message) => dispatch(addMessage(message)),
+  addMessage: (message: VP.Message) => dispatch(addMessage(message)),
 });
 
-const connectedEvents = connect(null, mapDispatchToProps)(Events);
+const connectedEvents = connect(
+  null,
+  mapDispatchToProps,
+)(Events);
 
 export default connectedEvents;

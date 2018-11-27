@@ -13,14 +13,14 @@ import { Grid, Menu, Segment } from 'semantic-ui-react';
 import EditEvent from '@app/admin/controllers/modules/EditEvent';
 
 interface EventProps {
-  addMessage: (message: Message) => any;
+  addMessage: (message: VP.Message) => any;
   loading: (status: boolean) => any;
   push: (location: LocationDescriptor) => any;
 }
 
 interface EventState {
-  events: VPEvent[];
-  activeEvent: VPEvent;
+  events: VP.Event[];
+  activeEvent: VP.Event;
 }
 
 export default class Events extends React.Component<
@@ -48,7 +48,7 @@ export default class Events extends React.Component<
         });
       })
       .then(({ data }) => {
-        const shifts = _.map(data.data.shifts, (shift: Shift) => ({
+        const shifts = _.map(data.data.shifts, (shift: VP.Shift) => ({
           ...shift,
           start_time: moment(shift.start_time)
             .tz('America/Toronto')

@@ -7,10 +7,13 @@ import { addMessage } from '@app/common/actions';
 // Component Imports
 import Images from '@app/admin/components/pages/Images';
 
-const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
-  addMessage: (message: Message) => dispatch(addMessage(message)),
+const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
+  addMessage: (message: VP.Message) => dispatch(addMessage(message)),
 });
 
-const connectedImages = connect(null, mapDispatchToProps)(Images);
+const connectedImages = connect(
+  null,
+  mapDispatchToProps,
+)(Images);
 
 export default connectedImages;

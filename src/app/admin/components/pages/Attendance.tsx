@@ -33,10 +33,10 @@ import { timeFormat } from '@app/common/utilities';
 import FancyTable from '@app/common/components/FancyTable';
 
 interface AttendanceProps {
-  addMessage: (message: Message) => any;
+  addMessage: (message: VP.Message) => any;
   loading: (status: boolean) => any;
   push: (location: LocationDescriptor) => any;
-  user: Exec;
+  user: VP.Exec;
 }
 
 interface AttendanceState {
@@ -56,7 +56,7 @@ interface AttendanceState {
     event_id: number;
   }[];
   execList: DropdownItemProps[];
-  confirmLevels: ConfirmLevel[];
+  confirmLevels: VP.ConfirmLevel[];
   clients: string[];
   addEntry: boolean;
   addUser: number;
@@ -90,7 +90,7 @@ interface AttendanceField<T> {
 
 export default class Attendance extends React.Component<AttendanceProps, AttendanceState> {
   private ws: WebSocket;
-  private wsCallbacks: { [action: string]: (data: WebSocketData<any>) => void } = {};
+  private wsCallbacks: { [action: string]: (data: VP.WebSocketData<any>) => void } = {};
   constructor(props: AttendanceProps) {
     super(props);
 
@@ -136,7 +136,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       );
     };
     this.ws.onmessage = (e: MessageEvent) => {
-      let data: WebSocketData<any>;
+      let data: VP.WebSocketData<any>;
       try {
         data = JSON.parse(e.data);
       } catch (e) {
@@ -153,12 +153,15 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     }
   }
 
-  public sendMessage(message: WebSocketRequest<any>, callback: (data: WebSocketData<any>) => void) {
+  public sendMessage(
+    message: VP.WebSocketRequest<any>,
+    callback: (data: VP.WebSocketData<any>) => void,
+  ) {
     this.wsCallbacks[message.action] = callback;
     this.ws.send(JSON.stringify(message));
   }
 
-  public recieveMessage(data: WebSocketData<any>): void {
+  public recieveMessage(data: VP.WebSocketData<any>): void {
     if (data.action === 'global') {
       // global error, handle
       if (data.status === 'error') {
@@ -493,10 +496,8 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                             })),
                             // body rows
                             ..._.map(
-                              _.sortBy(
-                                this.state.attendance,
-                                entry =>
-                                  entry.user.first_name ? entry.user.first_name.toLowerCase() : '',
+                              _.sortBy(this.state.attendance, entry =>
+                                entry.user.first_name ? entry.user.first_name.toLowerCase() : '',
                               ),
                               entry => [
                                 entry.user.first_name,

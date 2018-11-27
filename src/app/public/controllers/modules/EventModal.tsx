@@ -8,7 +8,7 @@ import { userAbleToRegister } from '@app/public/selectors';
 // Component Imports
 import EventModal from '@app/public/components/modules/EventModal';
 
-const mapStateToProps = (state: State) => ({
+const mapStateToProps = (state: VP.State) => ({
   ableToRegister: userAbleToRegister(state),
 });
 

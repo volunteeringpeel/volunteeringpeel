@@ -11,7 +11,7 @@ declare global {
     }
 
     interface SessionData {
-      userData: VolunteeringPeel.User;
+      userData: VP.User;
     }
   }
 

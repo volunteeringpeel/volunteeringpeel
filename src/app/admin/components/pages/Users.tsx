@@ -15,13 +15,13 @@ import UserModal from '@app/admin/controllers/modules/UserModal';
 import * as _ from 'lodash';
 
 interface UsersProps {
-  addMessage: (message: Message) => any;
+  addMessage: (message: VP.Message) => any;
   push: (location: LocationDescriptor) => any;
 }
 
 interface UsersState {
-  users: ((User | Exec) & { shiftHistory: { [confirmLevel: number]: number } })[];
-  confirmLevels: ConfirmLevel[];
+  users: ((VP.User | VP.Exec) & { shiftHistory: { [confirmLevel: number]: number } })[];
+  confirmLevels: VP.ConfirmLevel[];
   loading: boolean;
   search: string;
   latestData: number;
@@ -142,7 +142,7 @@ export default class Users extends React.Component<
         />
       </th>,
     ];
-    const renderBodyRow = (user: User, i: number) => ({
+    const renderBodyRow = (user: VP.User, i: number) => ({
       key: `row-${i}`,
       cells: [
         { key: 'role', content: [null, 'Volunteer', 'Organizer', 'Executive'][user.role_id] },
@@ -233,36 +233,35 @@ export default class Users extends React.Component<
             }}
           />
         </Dimmer.Dimmable>
-        {this.state.users.length &&
-          this.state.confirmLevels.length && (
-            <Route
-              path="/admin/users/:id"
-              component={({ match }: RouteComponentProps<any>) => (
-                <UserModal
-                  user={
-                    +match.params.id < 0
-                      ? {
-                          user_id: -1,
-                          first_name: '',
-                          last_name: '',
-                          email: '',
-                          phone_1: '',
-                          phone_2: '',
-                          school: '',
-                          role_id: 1,
-                          mail_lists: [],
-                          show_exec: true,
-                          shiftHistory: {},
-                        }
-                      : _.find(this.state.users, ['user_id', +match.params.id])
-                  }
-                  confirmLevels={this.state.confirmLevels}
-                  cancel={() => this.props.push('/admin/users')}
-                  refresh={() => this.refresh()}
-                />
-              )}
-            />
-          )}
+        {this.state.users.length && this.state.confirmLevels.length && (
+          <Route
+            path="/admin/users/:id"
+            component={({ match }: RouteComponentProps<any>) => (
+              <UserModal
+                user={
+                  +match.params.id < 0
+                    ? {
+                        user_id: -1,
+                        first_name: '',
+                        last_name: '',
+                        email: '',
+                        phone_1: '',
+                        phone_2: '',
+                        school: '',
+                        role_id: 1,
+                        mail_lists: [],
+                        show_exec: true,
+                        shiftHistory: {},
+                      }
+                    : _.find(this.state.users, ['user_id', +match.params.id])
+                }
+                confirmLevels={this.state.confirmLevels}
+                cancel={() => this.props.push('/admin/users')}
+                refresh={() => this.refresh()}
+              />
+            )}
+          />
+        )}
       </Form>
     );
   }

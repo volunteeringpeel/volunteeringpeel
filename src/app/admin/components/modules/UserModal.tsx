@@ -10,15 +10,15 @@ import MessageBox from '@app/common/controllers/MessageBox';
 import ProgressColor from '@app/public/components/blocks/ProgressColor';
 
 interface UserModalProps {
-  addMessage: (message: Message) => any;
+  addMessage: (message: VP.Message) => any;
   cancel: () => void;
   refresh: () => void;
-  mailListTemplate: MailList[];
-  user: (User | Exec) & { shiftHistory: { [confirmLevel: number]: number } };
-  confirmLevels: ConfirmLevel[];
+  mailListTemplate: VP.MailList[];
+  user: (VP.User | VP.Exec) & { shiftHistory: { [confirmLevel: number]: number } };
+  confirmLevels: VP.ConfirmLevel[];
 }
 
-type UserModalState = (User | Exec) & { pic: File };
+type UserModalState = (VP.User | VP.Exec) & { pic: File };
 
 export default class UserModal extends React.Component<UserModalProps, UserModalState> {
   constructor(props: UserModalProps) {
@@ -33,9 +33,9 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
       school: props.user.school || '',
       role_id: props.user.role_id || 1,
       mail_lists: props.user.mail_lists || props.mailListTemplate,
-      title: (props.user as Exec).title || null,
-      bio: (props.user as Exec).bio || null,
-      show_exec: props.user.role_id === 3 ? (props.user as Exec).show_exec : 0,
+      title: (props.user as VP.Exec).title || null,
+      bio: (props.user as VP.Exec).bio || null,
+      show_exec: props.user.role_id === 3 ? (props.user as VP.Exec).show_exec : 0,
       pic: null,
     };
 
@@ -53,9 +53,9 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
         school: nextProps.user.school || '',
         role_id: nextProps.user.role_id || 1,
         mail_lists: nextProps.user.mail_lists || this.props.mailListTemplate,
-        title: nextProps.user.role_id === 3 ? (nextProps.user as Exec).title : null,
-        bio: nextProps.user.role_id === 3 ? (nextProps.user as Exec).bio : null,
-        show_exec: nextProps.user.role_id === 3 ? (nextProps.user as Exec).show_exec : null,
+        title: nextProps.user.role_id === 3 ? (nextProps.user as VP.Exec).title : null,
+        bio: nextProps.user.role_id === 3 ? (nextProps.user as VP.Exec).bio : null,
+        show_exec: nextProps.user.role_id === 3 ? (nextProps.user as VP.Exec).show_exec : null,
         pic: null,
       });
     }
@@ -167,7 +167,7 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
                   label="Title"
                   data-tooltip="Please don't write anything stupid (or do)."
                   name="title"
-                  value={(this.state as Exec).title}
+                  value={(this.state as VP.Exec).title}
                   onChange={this.handleChange}
                   required
                 />
@@ -175,18 +175,18 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
                   label="Bio"
                   data-tooltip="Keep it PG."
                   name="bio"
-                  value={(this.state as Exec).bio}
+                  value={(this.state as VP.Exec).bio}
                   onChange={this.handleChange}
                   required
                 />
                 <Form.Checkbox
                   label="Should exec be shown on Team page?"
                   name="show_exec"
-                  checked={(this.state as Exec).show_exec}
+                  checked={(this.state as VP.Exec).show_exec}
                   onChange={this.handleChange}
                   required
                 />
-                <Image src={`/upload/user/${(this.props.user as Exec).pic}`} size="tiny" />
+                <Image src={`/upload/user/${(this.props.user as VP.Exec).pic}`} size="tiny" />
                 <Form.Input
                   label="Picture"
                   data-tooltip="Maximum size 1 MB, type PNG or JPG"

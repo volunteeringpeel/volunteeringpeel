@@ -13,7 +13,7 @@ import routes from '@app/admin/routes';
 import MessageBox from '@app/common/controllers/MessageBox';
 
 interface ContentProps {
-  user: UserState;
+  user: VP.UserState;
   push: (path: LocationDescriptor) => void;
 }
 

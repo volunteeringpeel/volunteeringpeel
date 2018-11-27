@@ -13,7 +13,7 @@ interface SponsorsProps {
 }
 
 interface SponsorsState {
-  sponsors: Sponsor[];
+  sponsors: VP.Sponsor[];
 }
 
 export default class Sponsors extends React.Component<SponsorsProps, SponsorsState> {

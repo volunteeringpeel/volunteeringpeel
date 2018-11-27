@@ -12,7 +12,7 @@ interface FAQProps {
 }
 
 interface FAQState {
-  faqs: FAQ[];
+  faqs: VP.FAQ[];
 }
 
 export default class FAQPage extends React.Component<FAQProps, FAQState> {

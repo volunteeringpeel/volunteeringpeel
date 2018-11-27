@@ -7,17 +7,20 @@ import { Dispatch } from 'redux';
 
 import Content from '@app/admin/components/Content';
 
-const mapStateToProps = (state: State) => ({
+const mapStateToProps = (state: VP.State) => ({
   user: state.user,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
   push: (path: LocationDescriptor) => {
     dispatch(push(path));
   },
 });
 
-const connectedController = connect(mapStateToProps, mapDispatchToProps)(Content);
+const connectedController = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Content);
 // tslint:disable-next-line:variable-name
 const ContentController = withRouter(connectedController);
 

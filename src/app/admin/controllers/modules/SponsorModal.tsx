@@ -8,8 +8,8 @@ import { addMessage } from '@app/common/actions';
 // Component Imports
 import SponsorModal from '@app/admin/components/modules/SponsorModal';
 
-const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
-  addMessage: (message: Message) => dispatch(addMessage(message)),
+const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
+  addMessage: (message: VP.Message) => dispatch(addMessage(message)),
 });
 
 const connectedSponsorModal = connect(

@@ -28,34 +28,37 @@ const loading = handleAction<boolean, boolean>(
   false,
 );
 
-const defaultUser: UserState = { user: { user: null, new: false, userShifts: [] }, status: 'out' };
-const user = handleActions<UserState, any>(
+const defaultUser: VP.UserState = {
+  user: { user: null, new: false, userShifts: [] },
+  status: 'out',
+};
+const user = handleActions<VP.UserState, any>(
   {
-    [GET_USER]: (state: UserState, action: Action<Promise<any>>): UserState => {
+    [GET_USER]: (state: VP.UserState, action: Action<Promise<any>>): VP.UserState => {
       return { ...state, status: 'loading' };
     },
     [GET_USER_SUCCESS]: (
-      state: UserState,
-      action: Action<AxiosResponse<APIDataSuccess<UserData>>>,
-    ): UserState => {
+      state: VP.UserState,
+      action: Action<AxiosResponse<VP.APIDataSuccess<VP.UserData>>>,
+    ): VP.UserState => {
       return { status: 'in', user: action.payload.data.data };
     },
     [GET_USER_FAILURE]: (
-      state: UserState,
-      action: Action<AxiosResponse<APIDataError>>,
-    ): UserState => {
+      state: VP.UserState,
+      action: Action<AxiosResponse<VP.APIDataError>>,
+    ): VP.UserState => {
       return defaultUser;
     },
-    [LOGOUT]: (state: UserState, action: Action<void>): UserState => {
+    [LOGOUT]: (state: VP.UserState, action: Action<void>): VP.UserState => {
       return defaultUser;
     },
   },
   defaultUser,
 );
 
-const messages = handleActions<Message[], any>(
+const messages = handleActions<VP.Message[], any>(
   {
-    [ADD_MESSAGE]: (state: Message[], action: Action<Message>): Message[] => {
+    [ADD_MESSAGE]: (state: VP.Message[], action: Action<VP.Message>): VP.Message[] => {
       const highestID = _.maxBy(state, 'id');
       return [
         {
@@ -67,10 +70,10 @@ const messages = handleActions<Message[], any>(
         ...state,
       ];
     },
-    [DISMISS_MESSAGE]: (state: Message[], action: Action<number>): Message[] => {
+    [DISMISS_MESSAGE]: (state: VP.Message[], action: Action<number>): VP.Message[] => {
       return state.filter(todo => todo.id !== action.payload);
     },
-    [DISMISS_ALL_MESSAGES]: (state: Message[], action: Action<void>): Message[] => {
+    [DISMISS_ALL_MESSAGES]: (state: VP.Message[], action: Action<void>): VP.Message[] => {
       return [];
     },
   },

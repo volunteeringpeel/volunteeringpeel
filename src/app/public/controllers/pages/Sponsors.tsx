@@ -7,10 +7,13 @@ import { loading } from '@app/common/actions';
 // Component Imports
 import Sponsors from '@app/public/components/pages/Sponsors';
 
-const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
   loading: (status: boolean) => dispatch(loading(status)),
 });
 
-const connectedEvents = connect(null, mapDispatchToProps)(Sponsors);
+const connectedEvents = connect(
+  null,
+  mapDispatchToProps,
+)(Sponsors);
 
 export default connectedEvents;

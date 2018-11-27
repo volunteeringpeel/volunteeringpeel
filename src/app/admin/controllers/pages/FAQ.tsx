@@ -7,10 +7,13 @@ import { addMessage } from '@app/common/actions';
 // Component Imports
 import FAQ from '@app/admin/components/pages/FAQ';
 
-const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
-  addMessage: (message: Message) => dispatch(addMessage(message)),
+const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
+  addMessage: (message: VP.Message) => dispatch(addMessage(message)),
 });
 
-const connectedFAQ = connect(null, mapDispatchToProps)(FAQ);
+const connectedFAQ = connect(
+  null,
+  mapDispatchToProps,
+)(FAQ);
 
 export default connectedFAQ;

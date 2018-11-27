@@ -30,7 +30,7 @@ import ConfirmModal from '@app/public/components/modules/ConfirmModal';
 interface EventModalProps {
   ableToRegister: React.ReactElement<any> | true;
   onSuccess: () => void;
-  event: VPEvent;
+  event: VP.Event;
   refresh: () => PromiseLike<any>;
 }
 
@@ -39,7 +39,7 @@ interface EventModalState {
   selectedShifts: number[];
   add_info: string | number;
   submitting: boolean;
-  message: Message;
+  message: VP.Message;
 }
 
 export default class EventModal extends React.Component<EventModalProps, EventModalState> {
@@ -146,7 +146,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
           </Segment>
           <Segment vertical>
             <Item.Group>
-              {_.map(this.props.event.shifts, (shift: Shift) => {
+              {_.map(this.props.event.shifts, (shift: VP.Shift) => {
                 // Calculate if event is full based on spots (sum up shift spots)
                 const spotsLeft =
                   shift.spots_taken > shift.max_spots ? 0 : shift.max_spots - shift.spots_taken;

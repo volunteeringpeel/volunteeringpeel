@@ -14,7 +14,7 @@ interface TeamProps {
 }
 
 interface TeamState {
-  execs: Exec[];
+  execs: VP.Exec[];
 }
 
 export default class Team extends React.Component<TeamProps, TeamState> {

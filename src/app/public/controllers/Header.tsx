@@ -8,17 +8,20 @@ import { Dispatch } from 'redux';
 // Component Imports
 import Header from '@app/public/components/Header';
 
-const mapStateToProps = (state: State) => ({
+const mapStateToProps = (state: VP.State) => ({
   user: state.user,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
   push: (path: LocationDescriptor) => {
     dispatch(push(path));
   },
 });
 
-const connectedHeader = connect(mapStateToProps, mapDispatchToProps)(Header);
+const connectedHeader = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Header);
 // tslint:disable-next-line:variable-name
 const HeaderController = withRouter(connectedHeader);
 

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 // Component Imports
 import UserDashboard from '@app/public/components/pages/UserDashboard';
 
-const mapStateToProps = (state: State) => ({
+const mapStateToProps = (state: VP.State) => ({
   user: state.user,
 });
 

@@ -68,7 +68,7 @@ export default class FormContact extends React.Component<{}, FormContactState> {
           />
         </Form.Group>
         <Form.TextArea
-          label="Message"
+          label="VP.Message"
           name="message"
           value={message}
           placeholder="Write your message here, and we'll get back to you as soon as we can!"

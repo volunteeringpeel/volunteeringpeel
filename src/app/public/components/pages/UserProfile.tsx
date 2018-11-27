@@ -8,10 +8,10 @@ import { Redirect } from 'react-router';
 import { Container, Form, Segment } from 'semantic-ui-react';
 
 interface UserProfileProps {
-  user: UserState;
+  user: VP.UserState;
   push: (path: LocationDescriptor) => void;
   loadUser: () => void;
-  addMessage: (message: Message) => void;
+  addMessage: (message: VP.Message) => void;
 }
 
 interface UserProfileState {
@@ -20,7 +20,7 @@ interface UserProfileState {
   phone_1: string;
   phone_2: string;
   school: string;
-  mail_lists: MailList[];
+  mail_lists: VP.MailList[];
   title: string;
   bio: string;
 }
@@ -54,8 +54,8 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
         phone_2: user.phone_2 || '',
         school: user.school || '',
         mail_lists: user.mail_lists || [],
-        title: user.role_id === 3 ? (user as Exec).title : null,
-        bio: user.role_id === 3 ? (user as Exec).bio : null,
+        title: user.role_id === 3 ? (user as VP.Exec).title : null,
+        bio: user.role_id === 3 ? (user as VP.Exec).bio : null,
       });
     }
   }
@@ -70,8 +70,8 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
         phone_2: user.phone_2 || '',
         school: user.school || '',
         mail_lists: user.mail_lists || [],
-        title: user.role_id === 3 ? (user as Exec).title : null,
-        bio: user.role_id === 3 ? (user as Exec).bio : null,
+        title: user.role_id === 3 ? (user as VP.Exec).title : null,
+        bio: user.role_id === 3 ? (user as VP.Exec).bio : null,
       });
     }
   }

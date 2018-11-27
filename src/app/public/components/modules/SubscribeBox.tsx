@@ -13,7 +13,7 @@ interface SubscribeBoxState {
   loading: boolean;
   email: string;
   tocAgree: boolean;
-  message: Message;
+  message: VP.Message;
 }
 
 export default class SubscribeBox extends React.Component<SubscribeBoxProps, SubscribeBoxState> {

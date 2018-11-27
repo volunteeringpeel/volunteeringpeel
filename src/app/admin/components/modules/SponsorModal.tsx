@@ -8,12 +8,12 @@ import { Button, Form, Image, Modal } from 'semantic-ui-react';
 import MessageBox from '@app/common/controllers/MessageBox';
 
 interface SponsorModalProps {
-  addMessage: (message: Message) => any;
+  addMessage: (message: VP.Message) => any;
   cancel: () => void;
   refresh: () => void;
-  sponsor: Sponsor;
+  sponsor: VP.Sponsor;
 }
-type SponsorModalState = Sponsor & { pic: File };
+type SponsorModalState = VP.Sponsor & { pic: File };
 export default class SponsorModal extends React.Component<SponsorModalProps, SponsorModalState> {
   constructor(props: SponsorModalProps) {
     super(props);

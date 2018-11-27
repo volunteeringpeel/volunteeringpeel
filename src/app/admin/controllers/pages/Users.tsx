@@ -11,7 +11,7 @@ import { loading } from '@app/common/actions';
 import Users from '@app/admin/components/pages/Users';
 import { loadUser } from '@app/common/utilities';
 
-const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
   push: (path: LocationDescriptor) => {
     dispatch(push(path));
   },
