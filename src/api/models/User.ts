@@ -24,14 +24,14 @@ export class User extends Model<User> {
   @AllowNull(false) @Column email: string;
   @AllowNull(false) @Default(DataType.NOW) @Column signup_time: Date;
   @BelongsTo(() => Role, 'role_id') role: Role;
-  @AllowNull(false) @Column first_name: string;
-  @AllowNull(false) @Column last_name: string;
-  @AllowNull(false) @Column phone_1: string;
-  @AllowNull(false) @Column phone_2: string;
-  @AllowNull(false) @Column school: string;
-  @AllowNull(false) @Column title: string;
-  @AllowNull(false) @Column(DataType.TEXT) bio: string;
-  @AllowNull(false) @Column pic: string;
+  @Column first_name: string;
+  @Column last_name: string;
+  @Column phone_1: string;
+  @Column phone_2: string;
+  @Column school: string;
+  @Column title: string;
+  @Column(DataType.TEXT) bio: string;
+  @Column pic: string;
   @AllowNull(false) @Default(true) @Column show_exec: boolean;
 
   @BelongsToMany(() => MailList, () => UserMailList)

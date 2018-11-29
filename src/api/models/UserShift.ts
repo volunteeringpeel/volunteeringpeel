@@ -28,5 +28,5 @@ export class UserShift extends Model<UserShift> {
     foreignKey: { name: 'confirm_level_id', allowNull: false, defaultValue: 0 },
   })
   confirm_level: ConfirmLevel;
-  @HasOne(() => User, 'assigned_exec') assigned_exec: User;
+  @HasOne(() => User, 'user_id') assigned_exec: User;
 }
