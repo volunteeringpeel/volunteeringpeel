@@ -13,10 +13,10 @@ import { Button, Form, Icon, Menu, Segment } from 'semantic-ui-react';
 import { formatDateForMySQL } from '@app/common/utilities';
 
 interface EditEventProps {
-  addMessage: (message: Message) => any;
+  addMessage: (message: VP.Message) => any;
   cancel: () => void;
   loading: (status: boolean) => any;
-  originalEvent: VPEvent;
+  originalEvent: VP.Event;
   refresh: () => Promise<void>;
   push: (path: string) => void;
 }
@@ -28,7 +28,7 @@ interface EditEventState {
   transport: string;
   active: boolean;
   add_info: boolean;
-  shifts: Shift[];
+  shifts: VP.Shift[];
   selectedShiftNum: number;
   deleteShifts: number[];
   letter: File;
@@ -381,7 +381,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
         </Segment>
         <Form.Group>
           <Button.Group fluid>
-            <Button type="submit" animated="fade" positive>
+            <Button onClick={this.handleSubmit} animated="fade" positive>
               <Button.Content hidden>Save</Button.Content>
               <Button.Content visible>
                 <Icon name="save" />

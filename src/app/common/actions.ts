@@ -9,7 +9,7 @@ import { createAction } from 'redux-actions';
 export const LOADING = 'LOADING';
 export const loading = createAction<boolean, boolean>(LOADING, (active: boolean) => active);
 
-// User Management
+// VP.User Management
 export const LOGOUT = 'LOGOUT';
 export const logout = createAction<void>(LOGOUT, () => {
   // Clear access token and ID token from local storage
@@ -19,7 +19,7 @@ export const logout = createAction<void>(LOGOUT, () => {
 });
 
 export const GET_USER = 'GET_USER';
-export const getUser = createAction<Promise<AxiosResponse<APIData<User>>>, string>(
+export const getUser = createAction<Promise<AxiosResponse<VP.APIData<VP.User>>>, string>(
   GET_USER,
   (token: string) =>
     Promise.resolve(
@@ -34,22 +34,25 @@ export const getUser = createAction<Promise<AxiosResponse<APIData<User>>>, strin
 );
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
 export const getUserSuccess = createAction<
-  AxiosResponse<APIDataSuccess<User>>,
-  AxiosResponse<APIDataSuccess<User>>
->(GET_USER_SUCCESS, (response: AxiosResponse<APIDataSuccess<User>>) => response);
+  AxiosResponse<VP.APIDataSuccess<VP.User>>,
+  AxiosResponse<VP.APIDataSuccess<VP.User>>
+>(GET_USER_SUCCESS, (response: AxiosResponse<VP.APIDataSuccess<VP.User>>) => response);
 export const GET_USER_FAILURE = 'GET_USER_FAILURE';
 export const getUserFailure = createAction<
-  AxiosResponse<APIDataError>,
-  AxiosResponse<APIDataError>
->(GET_USER_FAILURE, (response: AxiosResponse<APIDataError>) => response);
+  AxiosResponse<VP.APIDataError>,
+  AxiosResponse<VP.APIDataError>
+>(GET_USER_FAILURE, (response: AxiosResponse<VP.APIDataError>) => response);
 
 // Error Management
 export const ADD_MESSAGE = 'ADD_MESSAGE';
-export const addMessage = createAction<Message, Message>(ADD_MESSAGE, (message: Message) => ({
-  more: '',
-  severity: 'error',
-  ...message,
-}));
+export const addMessage = createAction<VP.Message, VP.Message>(
+  ADD_MESSAGE,
+  (message: VP.Message) => ({
+    more: '',
+    severity: 'error',
+    ...message,
+  }),
+);
 export const DISMISS_MESSAGE = 'DISMISS_MESSAGE';
 export const dismissMessage = createAction<number, number>(DISMISS_MESSAGE, (id: number) => id);
 export const DISMISS_ALL_MESSAGES = 'DISMISS_ALL_MESSAGES';

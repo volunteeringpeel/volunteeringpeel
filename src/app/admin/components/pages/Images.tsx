@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Button, Card, CardProps, Form } from 'semantic-ui-react';
 
 interface ImagesProps {
-  addMessage: (message: Message) => any;
+  addMessage: (message: VP.Message) => any;
 }
 
 interface ImagesState {

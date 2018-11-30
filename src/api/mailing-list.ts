@@ -5,31 +5,30 @@ import * as _ from 'lodash';
 // Import API core
 import * as Utilities from '@api/utilities';
 
+import { MailList } from '@api/models/MailList';
+import { User } from '@api/models/User';
+
 export const getMailingList = Utilities.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err, results;
   [err, results] = await to(
-    req.db.query(
-      `SELECT
-        mail_list_id, display_name, description,
-        first_name, last_name, email
-      FROM vw_user_mail_list`,
-    ),
+    MailList.findAll({
+      attributes: ['mail_list_id', 'display_name', 'description'],
+      include: [{ model: User, attributes: ['first_name', 'last_name', 'email'] }],
+    }),
   );
-
-  // group results by display_name
-  const grouped = _.groupBy(results, 'mail_list_id');
+  if (err) res.error(500, 'Error loading mail list data');
 
   // restructure data
-  const lists = _.map(grouped, (list: any) => ({
-    mail_list_id: list[0].mail_list_id,
-    display_name: list[0].display_name,
-    description: list[0].description,
-    members: _.map(list, (item: any) => ({
-      first_name: item.first_name,
-      last_name: item.last_name,
-      email: item.email,
+  const lists = _.map(results, list => ({
+    mail_list_id: list.mail_list_id,
+    display_name: list.display_name,
+    description: list.description,
+    members: _.map(list.users, user => ({
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
     })),
   }));
 
@@ -40,7 +39,7 @@ export const deleteMailingList = Utilities.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
   let err;
-  [err] = await to(req.db.query('DELETE FROM mail_list WHERE mail_list_id = ?', +req.params.id));
+  [err] = await to(MailList.destroy({ where: { mail_list_id: req.params.id } }));
   if (err) return res.error(500, 'Error deleting mail list', err);
   res.success('Mail list deleted successfully', 200);
 });
@@ -53,46 +52,28 @@ export const updateMailingList = Utilities.asyncMiddleware(async (req, res) => {
 
   // insert new mail list
   if (+req.params.id === -1) {
-    [err] = await to(req.db.query('INSERT INTO mail_list SET ?', { display_name, description }));
+    [err] = await to(MailList.create({ display_name, description }));
     if (err) return res.error(500, 'Error creating mail list', err);
     return res.success('Mail list created successfully', 201);
   }
 
   // update existing mail list
   [err] = await to(
-    req.db.query('UPDATE mail_list SET ? WHERE ?', [
-      { display_name, description },
-      { mail_list_id: +req.params.id },
-    ]),
+    MailList.update({ display_name, description }, { where: { mail_list_id: +req.params.id } }),
   );
-  if (err) return res.error(500, 'Error creating mail list', err);
+  if (err) return res.error(500, 'Error updating mail list', err);
   res.success('Mail list updated successfully', 200);
 });
 
 export const signup = Utilities.asyncMiddleware(async (req, res) => {
-  let err;
-
-  let userID: number;
-  [err, { insertId: userID }] = await to(
-    req.db.query(
-      'INSERT INTO user (email) VALUES (?) ON DUPLICATE KEY UPDATE user_id = LAST_INSERT_ID(user_id)',
-      req.body.email,
-    ),
+  let err, results;
+  [err, results] = await to(
+    User.findOrCreate({ where: { email: req.body.email }, attributes: ['email'] }),
   );
   if (err) return res.error(500, 'Error creating email record', err);
 
-  let result;
-  [err, result] = await to(
-    req.db.query('INSERT INTO user_mail_list SET ?', {
-      user_id: userID,
-      mail_list_id: req.params.id,
-    }),
-  );
-  if (err) return res.error(500, 'Error subscribing email', err);
+  [err] = await to(results[0].$add('mail_lists', req.params.id));
+  if (err) return res.error(500, 'Error subscribing email! You may already be subscribed', err);
 
-  if (result.affectedRows === 1) {
-    res.success(`${req.body.email} added to mailing list!`, 201);
-  } else {
-    res.error(500, 'This should not happen.', null);
-  }
+  res.success(`${req.body.email} added to mailing list!`, 201);
 });

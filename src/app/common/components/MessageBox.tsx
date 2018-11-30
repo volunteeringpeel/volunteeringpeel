@@ -1,18 +1,12 @@
 // Library Imports
 import * as _ from 'lodash';
 import * as React from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 import { Action } from 'redux-actions';
-import { Button, Container, Message, Segment } from 'semantic-ui-react';
-
-// App Imports
-import { dismissMessage } from '@app/common/actions';
-import Auth from '@app/public/Auth';
+import { Button, Container, Message } from 'semantic-ui-react';
 
 interface MessageBoxProps {
   as?: any;
-  messages: Message[];
+  messages: VP.Message[];
   dismissMessage: (id: number) => () => Action<number>;
   dismissAllMessages: () => Action<void>;
 }

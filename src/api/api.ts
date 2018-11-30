@@ -6,34 +6,54 @@ import * as jwt from 'express-jwt';
 import * as fs from 'fs-extra';
 import * as jwksRsa from 'jwks-rsa';
 import * as multer from 'multer';
-import * as mysql from 'promise-mysql';
 
 import * as Utilities from '@api/utilities';
 
 // Import sub-APIs
 import * as AttendanceAPI from '@api/attendance';
+import db from '@api/db';
 import * as EventAPI from '@api/event';
 import * as HeaderAPI from '@api/header';
 import * as MailingListAPI from '@api/mailing-list';
 import * as UserAPI from '@api/user';
-import { wss } from '../index';
+import { wss } from '..';
+
+import { ConfirmLevel } from '@api/models/ConfirmLevel';
+import { Event } from '@api/models/Event';
+import { FAQ } from '@api/models/FAQ';
+import { MailList } from '@api/models/MailList';
+import { Role } from '@api/models/Role';
+import { Shift } from '@api/models/Shift';
+import { Sponsor } from '@api/models/Sponsor';
+import { User } from '@api/models/User';
+import { UserMailList } from '@api/models/UserMailList';
+import { UserShift } from '@api/models/UserShift';
 
 // Initialize API
 const api = Express.Router();
 
-// Setup MySQL
-export const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: 'volunteeringpeel',
-  charset: 'utf8mb4',
-  // note: not the timezone used by client, just the one that the server is configured with
-  timezone: '-04:00',
-  connectionLimit: 100,
-  // don't use javascript dates since timezones are handled on the frontend
-  dateStrings: true,
-});
+// SQL setup
+db.sequelize.addModels([
+  ConfirmLevel,
+  Event,
+  FAQ,
+  MailList,
+  Role,
+  Shift,
+  Sponsor,
+  User,
+  UserMailList,
+  UserShift,
+]);
+
+db.sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });
 
 // if (process.env.NODE_ENV !== 'production') {
 api.use((req, res, next) => {
@@ -59,10 +79,6 @@ const upload = multer({ storage });
 api.use((req, res, next) => {
   // Return functions
   res.error = async (status, error, details) => {
-    if (req.db) {
-      // await req.db.rollback();
-      req.db.release();
-    }
     console.error(`[${new Date().toISOString()}] error ${error}`);
     console.error(details);
     res
@@ -71,11 +87,6 @@ api.use((req, res, next) => {
   };
 
   res.success = async (data, status = 200) => {
-    if (req.db) {
-      // [err] = await to(req.db.commit());
-      // if (err) return res.error(500, 'Error saving changes', err);
-      req.db.release();
-    }
     console.log(`[${new Date().toISOString()}] success ${data}`);
     if (data) res.status(status).json({ data, status: 'success' });
     else res.status(status).json({ status: 'success' });
@@ -110,23 +121,18 @@ api.use((err: any, req: Express.Request, res: Express.Response, next: Express.Ne
 api.use(
   Utilities.asyncMiddleware(async (req, res, next) => {
     if (req.path.indexOf('/ws') > -1) return next();
-
-    // Store db connection inside of req for access by other API files
-    let err;
-    [err, req.db] = await to(pool.getConnection());
-    if (err) return res.error(500, 'Error connecting to database', err);
-    // [err] = await to(req.db.beginTransaction());
-    // if (err) return res.error(500, 'Error opening transaction', err);
-
     if (req.user) {
-      let data;
+      let data, err;
       [err, data] = await to(
-        req.db.query('SELECT role_id FROM user WHERE email = ?', [req.user.email]),
+        User.findOne({
+          where: { email: req.user.email },
+          attributes: [],
+          include: [{ model: Role }],
+        }),
       );
       // only assign role_id if it exists, otherwise 0
-      req.user.role_id = data && data[0] && data[0].role_id ? data[0].role_id : 0;
+      req.user.role_id = data ? data.role.role_id : 0;
     }
-
     next();
   }),
 );
@@ -159,9 +165,9 @@ api.post('/public/mailing-list/:id', MailingListAPI.signup);
 api.get(
   '/public/faq',
   Utilities.asyncMiddleware(async (req, res) => {
-    let err, faqs;
+    let err, faqs: FAQ[];
     [err, faqs] = await to(
-      req.db.query('SELECT question, answer, faq_id FROM faq ORDER BY priority'),
+      FAQ.findAll({ order: ['priority'], attributes: ['question', 'answer', 'faq_id'] }),
     );
     if (err) return res.error(500, 'Error retrieving FAQs', err);
     res.success(faqs, 200);
@@ -174,12 +180,10 @@ api.post(
     const { question, answer } = req.body;
     const id = +req.params.id;
     if (id > 0) {
-      [err] = await to(
-        req.db.query('UPDATE faq SET ? WHERE faq_id = ?', [{ question, answer }, req.params.id]),
-      );
+      [err] = await to(FAQ.update({ question, answer }, { where: { faq_id: req.params.id } }));
       if (err) return res.error(500, 'Error updating FAQ', err);
     } else {
-      [err] = await to(req.db.query('INSERT INTO faq SET ?', [{ question, answer }]));
+      [err] = await to(FAQ.create({ question, answer }));
       if (err) return res.error(500, 'Error creating FAQ', err);
     }
     return res.success('FAQ processed successfully', id > 0 ? 200 : 201);
@@ -192,9 +196,11 @@ api.get(
   Utilities.asyncMiddleware(async (req, res) => {
     let err, execs;
     [err, execs] = await to(
-      req.db.query(
-        'SELECT user_id, first_name, last_name, title, bio, pic FROM user WHERE role_id = 3 AND show_exec = 1',
-      ),
+      User.findAll({
+        where: { show_exec: true },
+        attributes: ['user_id', 'first_name', 'last_name', 'title', 'bio', 'pic'],
+        include: [{ model: Role, where: { role_id: Utilities.ROLE_EXECUTIVE } }],
+      }),
     );
     if (err) return res.error(500, 'Error retrieving executive data', err);
     res.success(execs, 200);
@@ -207,9 +213,10 @@ api.get(
   Utilities.asyncMiddleware(async (req, res) => {
     let err, sponsors;
     [err, sponsors] = await to(
-      req.db.query(
-        'SELECT sponsor_id, name, image, website, priority FROM sponsor ORDER BY priority',
-      ),
+      Sponsor.findAll({
+        order: ['priority'],
+        attributes: ['sponsor_id', 'name', 'image', 'website', 'priority'],
+      }),
     );
     if (err) return res.error(500, 'Error retrieving sponsor data', err);
     res.success(sponsors, 200);
@@ -233,13 +240,13 @@ api.post(
       if (err) return res.error(500, 'Failed to save uploaded file', err);
       data.image = req.file.filename;
     }
-    if (id < 0) {
-      [err] = await to(req.db.query('INSERT INTO sponsor SET ?', [data]));
-    } else {
-      [err] = await to(
-        req.db.query('UPDATE sponsor SET ? WHERE sponsor_id = ?', [data, +req.params.id]),
-      );
-    }
+
+    [err] =
+      // create if id is negative
+      id < 0
+        ? await to(Sponsor.create(data))
+        : await to(Sponsor.update(data, { where: { sponsor_id: req.params.id } }));
+
     if (err) return res.error(500, 'Failed to process sponsor data', err);
     res.success('Sponsor processed successfully', id < 0 ? 201 : 200);
   }),
@@ -248,9 +255,7 @@ api.delete(
   '/sponsor/:id',
   Utilities.asyncMiddleware(async (req, res) => {
     if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
-    const [err, { affectedRows }] = await to(
-      req.db.query('DELETE FROM sponsor WHERE sponsor_id = ?', [+req.params.id]),
-    );
+    const [err, affectedRows] = await to(Sponsor.destroy({ where: { sponsor_id: req.params.id } }));
     if (err || affectedRows < 1) return res.error(500, 'Failed to delete sponsor', err);
     res.success('Sponsor deleted successfully', 202);
   }),
@@ -276,26 +281,25 @@ api.post(
   '/signup',
   Utilities.asyncMiddleware(async (req, res) => {
     // Get user id from email
-    let err, users: { user_id: number }[];
-    [err, users] = await to(
-      req.db.query('SELECT user_id FROM user WHERE email = ?', [req.user.email]),
+    let err, user: User;
+    [err, user] = await to(
+      // req.db.query('SELECT user_id FROM user WHERE email = ?', [req.user.email]),
+      User.findOne({ where: { email: req.user.email } }),
     );
-    if (err || !users[0] || !users[0].user_id) {
+    if (err || !user) {
       // lack of existence of users[0].user_id means user couldn't be found
       return res.error(500, 'Error retrieving user information', err);
     }
 
-    const values = (req.body.shifts as number[]).map(shift => [
-      users[0].user_id,
-      shift,
-      req.body.add_info,
-    ]);
+    const values = (req.body.shifts as number[]).map(shift => ({
+      user_id: user.user_id,
+      shift_id: shift,
+      add_info: req.body.add_info,
+    }));
 
-    let affectedRows;
-    [err, { affectedRows }] = await to(
-      req.db.query('INSERT INTO user_shift (user_id, shift_id, add_info) VALUES ?', [values]),
-    );
-    if (err || affectedRows !== req.body.shifts.length) {
+    let rows: UserShift[];
+    [err, rows] = await to(UserShift.bulkCreate(values));
+    if (err || rows.length !== req.body.shifts.length) {
       return res.error(500, 'Error signing up', err);
     }
 

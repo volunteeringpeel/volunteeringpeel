@@ -4,12 +4,15 @@
     "noImplicitAny": true,
     "target": "es6",
     "moduleResolution": "node",
+    "module": "commonjs",
     "jsx": "react",
     "baseUrl": ".",
     "paths": {
       "@api/*": ["./src/api/*"],
       "@lib/*": ["./lib/*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "exclude": ["node_modules", "./src/app"]
 }

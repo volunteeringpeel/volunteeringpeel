@@ -14,13 +14,13 @@ import SponsorModal from '@app/admin/controllers/modules/SponsorModal';
 import * as _ from 'lodash';
 
 interface SponsorsProps {
-  addMessage: (message: Message) => any;
+  addMessage: (message: VP.Message) => any;
   loading: (status: boolean) => any;
   push: (location: LocationDescriptor) => any;
 }
 
 interface SponsorsState {
-  sponsors: Sponsor[];
+  sponsors: VP.Sponsor[];
 }
 
 export default class Sponsors extends React.Component<
@@ -92,7 +92,7 @@ export default class Sponsors extends React.Component<
         />
       </th>,
     ];
-    const renderBodyRow = (sponsor: Sponsor, i: number) => ({
+    const renderBodyRow = (sponsor: VP.Sponsor, i: number) => ({
       key: `row-${i}`,
       cells: [
         sponsor.priority,

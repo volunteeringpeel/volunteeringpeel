@@ -7,10 +7,13 @@ import { loading } from '@app/common/actions';
 // Component Imports
 import FAQ from '@app/public/components/pages/FAQ';
 
-const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
   loading: (status: boolean) => dispatch(loading(status)),
 });
 
-const connectedFAQ = connect(null, mapDispatchToProps)(FAQ);
+const connectedFAQ = connect(
+  null,
+  mapDispatchToProps,
+)(FAQ);
 
 export default connectedFAQ;

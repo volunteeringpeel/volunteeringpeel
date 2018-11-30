@@ -19,12 +19,12 @@ import EventModal from '@app/public/controllers/modules/EventModal';
 
 interface EventsProps {
   loadUser: () => void;
-  addMessage: (message: Message) => any;
+  addMessage: (message: VP.Message) => any;
 }
 
 interface EventsState {
   loading: boolean;
-  events: VPEvent[];
+  events: VP.Event[];
 }
 
 export default class Events extends React.Component<EventsProps, EventsState> {
@@ -79,7 +79,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
             </div>
             <Item.Group divided>
               {this.state.events.length > 0 ? (
-                _.map(this.state.events, (event: VPEvent) => {
+                _.map(this.state.events, (event: VP.Event) => {
                   // Import dates into moment.js for easy comparison and formatting
                   const startDates = _.map(event.shifts, shift => moment(shift.start_time));
                   const endDates = _.map(event.shifts, shift => moment(shift.end_time));
@@ -152,11 +152,14 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                                     Thanks for signing up! Here are some next steps.
                                     <ul>
                                       <li>
-                                        One week prior to the event, you will receive a CONFIRMATION EMAIL with more information
-                                        regarding the event, please make sure to REPLY to confirm
-                                        your attendance.
+                                        One week prior to the event, you will receive a CONFIRMATION
+                                        EMAIL with more information regarding the event, please make
+                                        sure to REPLY to confirm your attendance.
                                       </li>
-                                      <li>If you do not reply, you will also receive a PHONE CALL prior to the event</li>
+                                      <li>
+                                        If you do not reply, you will also receive a PHONE CALL
+                                        prior to the event
+                                      </li>
                                     </ul>
                                   </>
                                 ),

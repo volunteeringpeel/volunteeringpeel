@@ -4,23 +4,31 @@ import * as Bluebird from 'bluebird';
 import * as csvStringify from 'csv-stringify/lib/sync';
 import * as Express from 'express';
 import * as _ from 'lodash';
-import * as mysql from 'promise-mysql';
 import * as WebSocket from 'ws';
 
 // API Imports
 import * as API from '@api/api';
+import db from '@api/db';
 import * as JwtAPI from '@api/jwt';
 import * as Utilities from '@api/utilities';
+
+import { ConfirmLevel } from '@api/models/ConfirmLevel';
+import { Event } from '@api/models/Event';
+import { Role } from '@api/models/Role';
+import { Shift } from '@api/models/Shift';
+import { User } from '@api/models/User';
+import { UserShift } from '@api/models/UserShift';
+
+const { fn, col } = db.Sequelize;
 
 interface AttendanceWebSocket extends WebSocket {
   isAlive: boolean;
   user: User;
-  db: mysql.PoolConnection;
   release: () => void;
 }
 
 // send a message to all clients
-const broadcast = (msg: WebSocketData<any>) =>
+const broadcast = (msg: VP.WebSocketData<any>) =>
   API.attendanceWss.clients.forEach(client => {
     if (client.readyState === client.OPEN) client.send(JSON.stringify(msg));
   });
@@ -36,29 +44,20 @@ const broadcastClients = () => {
 };
 export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
   // Utility functions
-  const send = (res: WebSocketData<any>) => {
+  const send = (res: VP.WebSocketData<any>) => {
     if (ws.readyState === ws.OPEN) ws.send(JSON.stringify(res));
   };
   const die = async (action: string, error: string, details: any) => {
-    ws.release();
     send({ action, error, details, status: 'error' });
+    console.error(error, details);
   };
   const success = async (action: string, data: any) => {
-    ws.release();
     send({ action, data, status: 'success' });
-  };
-
-  ws.release = () => {
-    if (ws.db) {
-      if ((API.pool as any).pool._freeConnections.indexOf(ws.db) !== -1) {
-        ws.db.release();
-      }
-    }
   };
 
   ws.on('message', async (message: string) => {
     // Parse data
-    let data: WebSocketRequest<any>;
+    let data: VP.WebSocketRequest<any>;
     try {
       data = JSON.parse(message);
     } catch (e) {
@@ -76,100 +75,107 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
     let err, user;
     [err, user] = await to(Bluebird.resolve(JwtAPI.verify(data.key)));
     if (err) return die(action, 'Cannot parse token', err);
-    // Get database connection if not exist
-    if (!ws.db) [err, ws.db] = await to(API.pool.getConnection());
-    if (err) return die(action, 'Cannot connect to database', err);
     // Get user data
     if (!ws.user) {
-      let userInfo;
-      [err, userInfo] = await to(
-        ws.db.query('SELECT first_name, last_name, role_id, pic FROM user WHERE email = ?', [
-          user.email,
-        ]),
+      [err, ws.user] = await to(
+        User.findOne({
+          where: { email: user.email },
+          attributes: ['first_name', 'last_name', 'pic'],
+          include: [{ model: Role, attributes: ['role_id'] }],
+        }),
       );
-      console.log(userInfo);
-      if (err || !userInfo || !userInfo[0]) return die(action, 'Cannot find user', err);
-      ws.user = userInfo[0];
+      if (err || !ws.user) return die(action, 'Cannot find user', err);
     }
-    if (ws.user.role_id < 3) return die(action, 'Unauthorized', 'Token has no admin perms');
+    if (ws.user.role.role_id < 3) return die(action, 'Unauthorized', 'Token has no admin perms');
 
     switch (command[0]) {
       case 'shifts': {
-        let shifts: any[];
-        [err, shifts] = await to(
-          ws.db.query(`SELECT
-            shift_id, shift_num, name, start_time, event_id
-            FROM vw_user_shift
-            GROUP BY shift_id, shift_num, name, start_time, event_id
-          `),
+        let events;
+        [err, events] = await to(
+          Event.findAll({
+            attributes: ['event_id', 'name'],
+            include: [{ model: Shift, attributes: ['shift_id', 'shift_num', 'start_time'] }],
+            order: [[{ model: Shift, as: 'shifts' }, 'shift_num']], // ensure shifts are in order
+          }),
         );
-        if (err) return die(action, 'Error retrieving shift list', err);
+        if (err) return die(action, 'Error retrieving event/shift list', err);
 
-        // order by parent event's earliest shift
+        // order events by earliest shift
+        events = _.orderBy(events, 'shifts[0].start_time', ['desc']);
+
         return success(
           action,
-          _.orderBy(
-            shifts,
-            [
-              shift => {
-                const earliestShift = _.minBy(
-                  _.filter(shifts, ['event_id', shift.event_id]),
-                  'shift_num',
-                );
-                return earliestShift.start_time;
-              },
-              'shift_num',
-            ],
-            ['desc', 'asc'],
+          _.flatten(
+            // copy event_id and event name into the shift values
+            _.map(events, e =>
+              e.shifts.map(s => ({ ...s.dataValues, event_id: e.event_id, name: e.name })),
+            ),
           ),
         );
       }
       case 'refresh': {
         // ex. refresh/1|1524957214
         // grab user's first and last name as well as vw_user_shift
-        let userShifts: any[]; // update typings at a later date
-        [err, userShifts] = await to(
-          ws.db.query(
-            `SELECT
-              us.user_shift_id, us.confirm_level_id,
-              us.start_time, us.end_time, us.hours_override,
-              us.assigned_exec, us.other_shifts, us.add_info,
-              u.user_id, u.first_name, u.last_name,
-              u.phone_1, u.phone_2, u.email
-            FROM vw_user_shift us
-            JOIN user u ON u.user_id = us.user_id
-            WHERE us.shift_id = ?`,
-            [command[1]],
-          ),
+        let shift: Shift;
+        [err, shift] = await to(
+          Shift.findByPrimary(command[1], {
+            attributes: ['start_time', 'end_time'],
+            include: [
+              {
+                model: User,
+                attributes: ['user_id', 'first_name', 'last_name', 'phone_1', 'phone_2', 'email'],
+                through: {
+                  attributes: [
+                    'user_shift_id',
+                    'start_override',
+                    'end_override',
+                    'hours_override',
+                    'assigned_exec',
+                    // 'other_shifts', find a way to do this
+                    'add_info',
+                    'confirm_level_id',
+                  ],
+                },
+              },
+            ],
+          }),
         );
         if (err) return die(action, 'Error retreiving attendance', err);
 
-        let confirmLevels: ConfirmLevel[];
+        let confirmLevels;
         [err, confirmLevels] = await to(
-          ws.db.query('SELECT confirm_level_id as id, name, description FROM confirm_level'),
+          ConfirmLevel.findAll({
+            attributes: [['confirm_level_id', 'id'], 'name', 'description'],
+            raw: true,
+          }),
         );
         if (err) return die(action, 'Error retrieving attendance statuses', err);
 
-        let execs: Exec[];
-        [err, execs] = await to(ws.db.query('SELECT * FROM user WHERE role_id = 3'));
+        let execs;
+        [err, execs] = await to(
+          User.findAll({
+            include: [{ model: Role, where: { role_id: Utilities.ROLE_EXECUTIVE } }],
+          }),
+        );
 
         return success(action, {
-          attendance: _.map(userShifts, userShift => ({
-            user_shift_id: +userShift.user_shift_id,
-            confirm_level_id: +userShift.confirm_level_id,
-            start_time: userShift.start_time,
-            end_time: userShift.end_time,
-            hours_override: userShift.hours_override,
-            other_shifts: userShift.other_shifts,
-            assigned_exec: +userShift.assigned_exec,
-            add_info: userShift.add_info,
+          // weird typings necessary because of include.attributes
+          attendance: _.map(shift.users, (u: User & { user_shift: UserShift }) => ({
+            user_shift_id: u.user_shift.user_shift_id,
+            confirm_level_id: u.user_shift.confirm_level_id,
+            start_time: u.user_shift.start_override || shift.start_time,
+            end_time: u.user_shift.end_override || shift.end_time,
+            hours_override: u.user_shift.hours_override,
+            // other_shifts: u.user_shift.other_shifts,
+            assigned_exec: u.user_shift.assigned_exec,
+            add_info: u.user_shift.add_info,
             user: {
-              user_id: +userShift.user_id,
-              first_name: userShift.first_name,
-              last_name: userShift.last_name,
-              phone_1: userShift.phone_1,
-              phone_2: userShift.phone_2,
-              email: userShift.email,
+              user_id: u.user_id,
+              first_name: u.first_name,
+              last_name: u.last_name,
+              phone_1: u.phone_1,
+              phone_2: u.phone_2,
+              email: u.email,
             },
           })),
           levels: confirmLevels,
@@ -204,7 +210,6 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
         ) {
           return die(action, 'Invalid field', 'Field is not set as updatable via live API');
         }
-        let result;
         // check if this is a datetime field
         const dateTime = field.includes('time');
         const column = dateTime ? field.replace('time', 'override') : field;
@@ -214,11 +219,9 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
               .slice(0, 19)
               .replace('T', ' ')
           : data.data;
-        [err, result] = await to(
-          ws.db.query('UPDATE user_shift SET ? WHERE user_shift_id = ?', [
-            { [column]: value },
-            entryID,
-          ]),
+
+        [err] = await to(
+          UserShift.update({ [column]: value }, { where: { user_shift_id: entryID } }),
         );
         if (err) return die(action, 'Error updating attendance, please try again', err);
 
@@ -229,7 +232,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
         let users;
         // todo: filter out already signed up users
         [err, users] = await to(
-          ws.db.query('SELECT user_id, email, first_name, last_name FROM user'),
+          User.findAll({ attributes: ['user_id', 'email', 'first_name', 'last_name'] }),
         );
         if (err) return die(action, 'Cannot find users', err);
 
@@ -246,21 +249,19 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
       }
       case 'add': {
         // ex. add/1|1524957214
-        [err] = await to(
-          ws.db.query('INSERT INTO user_shift SET ?', [
-            { user_id: data.data, shift_id: command[1] },
-          ]),
-        );
+        [err] = await to(UserShift.create({ user_id: data.data, shift_id: command[1] }));
         if (err) return die(action, 'Cannot insert record', err);
         return success(action, 'Added record successfully');
       }
       case 'delete': {
         // ex delete/1|1524957214
         [err] = await to(
-          ws.db.query('DELETE FROM user_shift WHERE user_id = ? AND shift_id = ?', [
-            data.data,
-            command[1],
-          ]),
+          UserShift.destroy({
+            where: {
+              user_id: data.data,
+              shift_id: command[1],
+            },
+          }),
         );
         if (err) return die(action, 'Cannot delete record', err);
         return success(action, 'Record deleted successfully');
@@ -274,7 +275,6 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
   // update all other clients if someone dies
   ws.on('close', () => {
     broadcastClients();
-    ws.release();
   });
 
   // pong handling
@@ -306,28 +306,30 @@ setInterval(() => {
 export const exportToCSV: Express.RequestHandler = async (req, res) => {
   if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
-  let err, data;
-  [err, data] = await to(
-    req.db.query(
-      `SELECT
-        first_name, last_name, school, phone_1, phone_2, add_info
-        FROM user_shift us
-        JOIN user u ON u.user_id = us.user_id
-        WHERE us.shift_id = ?`,
-      [req.params.id],
-    ),
+  let err, shift: Shift;
+  [err, shift] = await to(
+    Shift.findByPrimary(req.params.id, {
+      attributes: [],
+      include: [
+        {
+          model: User,
+          attributes: ['first_name', 'last_name', 'school', 'phone_1', 'add_info'],
+          through: { attributes: ['add_info'] },
+        },
+      ],
+    }),
   );
   if (err) return res.error(500, 'Error selecting attendance data', err);
 
   let rows = [['First', 'Last', 'school', 'Phone #1', 'Phone #2', 'Notes']];
   rows = rows.concat(
-    _.map(data, row => [
+    _.map(shift.users, row => [
       row.first_name,
       row.last_name,
       row.school,
       row.phone_1,
       row.phone_2,
-      row.notes,
+      // row.add_info,
     ]),
   );
 
@@ -337,5 +339,4 @@ export const exportToCSV: Express.RequestHandler = async (req, res) => {
   res.setHeader('Content-disposition', 'attachment; filename=attendance.csv');
   res.set('Content-Type', 'text/csv');
   res.status(200).send(csv);
-  req.db.release();
 };

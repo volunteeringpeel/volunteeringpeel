@@ -11,14 +11,17 @@ import { loading } from '@app/common/actions';
 import Events from '@app/admin/components/pages/Events';
 import { loadUser } from '@app/common/utilities';
 
-const mapDispatchToProps = (dispatch: Dispatch<State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
   loading: (status: boolean) => dispatch(loading(status)),
   push: (path: LocationDescriptor) => {
     dispatch(push(path));
   },
 });
 
-const connectedEvents = connect(null, mapDispatchToProps)(Events);
+const connectedEvents = connect(
+  null,
+  mapDispatchToProps,
+)(Events);
 const routerEvents = withRouter(connectedEvents);
 
 export default routerEvents;

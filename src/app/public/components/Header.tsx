@@ -15,7 +15,7 @@ import routes from '@app/public/routes';
 import MessageBox from '@app/common/controllers/MessageBox';
 
 interface HeaderComponentProps {
-  user: UserState;
+  user: VP.UserState;
   push: (path: LocationDescriptor) => void;
 }
 

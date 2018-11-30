@@ -8,7 +8,7 @@ import { dismissAllMessages, dismissMessage } from '@app/common/actions';
 // Component Inputs
 import MessageBox from '@app/common/components/MessageBox';
 
-const mapStateToProps = (state: State) => ({
+const mapStateToProps = (state: VP.State) => ({
   messages: state.messages,
 });
 
@@ -18,6 +18,9 @@ const mapDispatchToProps = (dispatch: Dispatch<number>) => ({
 });
 
 // tslint:disable-next-line:variable-name
-const MessageBoxController = connect(mapStateToProps, mapDispatchToProps)(MessageBox);
+const MessageBoxController = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(MessageBox);
 
 export default MessageBoxController;

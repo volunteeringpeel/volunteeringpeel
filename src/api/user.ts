@@ -3,10 +3,19 @@ import to from '@lib/await-to-js';
 import * as Bluebird from 'bluebird';
 import * as fs from 'fs-extra';
 import * as _ from 'lodash';
-import * as mysql from 'promise-mysql';
 
 // Import API core
+import db from '@api/db';
 import * as Utilities from '@api/utilities';
+
+import { ConfirmLevel } from '@api/models/ConfirmLevel';
+import { MailList } from '@api/models/MailList';
+import { Role } from '@api/models/Role';
+import { User } from '@api/models/User';
+import { UserMailList } from '@api/models/UserMailList';
+import { UserShift } from '@api/models/UserShift';
+
+const Op = db.Sequelize.Op;
 
 export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
   if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
@@ -20,38 +29,52 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
 
   // list of searchable columns
   const searchable = ['first_name', 'last_name', 'email', 'phone_1', 'phone_2'];
-  const searchQuery = `WHERE ${searchable.map(col => `${col} LIKE "%${search}%"`).join(' OR ')}`;
+  const searchQuery = searchable.map(col => ({ [col]: { [Op.like]: `%${search}%` } }));
 
   // convert to sql ASC/DESC
   // not escaped since it can only be ASC or DESC
   let sortDirSql = 'ASC';
   if (sortDir === 'descending') sortDirSql = 'DESC';
 
-  let err, users: Exec[];
-  [err, users] = await to(
-    req.db.query(
-      `SELECT
-        user_id, role_id,
-        first_name, last_name,
-        email, phone_1, phone_2, school,
-        title, bio, pic, show_exec
-      FROM user
-      ${search ? searchQuery : ''}
-      ORDER BY ?? ${sortDirSql}
-      LIMIT ? OFFSET ?`,
-      [sortCol, pageSize, pageSize * (page - 1)],
-    ),
+  // generate conditions
+  const conditions = { [Op.or]: searchQuery };
+
+  let err, result;
+  [err, result] = await to(
+    User.findAndCountAll({
+      where: conditions,
+      order: [[sortCol, sortDirSql]],
+      limit: pageSize,
+      offset: pageSize * (page - 1),
+      attributes: [
+        'user_id',
+        'role_id',
+        'first_name',
+        'last_name',
+        'email',
+        'phone_1',
+        'phone_2',
+        'school',
+        'title',
+        'bio',
+        'pic',
+        'show_exec',
+      ],
+      include: [{ model: UserShift, include: [{ model: ConfirmLevel }] }],
+    }),
   );
   if (err) return res.error(500, 'Error getting user data', err);
 
+  const userData = result.rows;
+  // get number of pages (for pagination)
+  const lastPage = Math.ceil(result.count / pageSize);
+
+  let users;
   [err, users] = await to(
     Bluebird.all(
-      users.map(async user => {
-        // get mailing list data
-        const mailLists = await Bluebird.resolve(getUserMailLists(user.user_id, req.db));
-        const shifts = await Bluebird.resolve(getUserShifts(user.user_id, req.db));
-        const shiftHistory = _.countBy(shifts, 'confirmLevel.id');
-        return { ...user, shiftHistory, show_exec: !!+user.show_exec, mail_lists: mailLists };
+      userData.map(async user => {
+        const shiftHistory = _.countBy(user.userShifts, 'confirmLevel.id');
+        return { ...user, shiftHistory, show_exec: !!+user.show_exec };
       }),
     ),
   );
@@ -60,17 +83,9 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
   // get human-readable confirm levels
   let confirmLevels: ConfirmLevel[];
   [err, confirmLevels] = await to(
-    req.db.query('SELECT confirm_level_id as id, name, description FROM confirm_level'),
+    ConfirmLevel.findAll({ attributes: [['confirm_level_id', 'id'], 'name', 'description'] }),
   );
   if (err) return res.error(500, 'Error retrieving attendance statuses', err);
-
-  // get number of pages (for pagination)
-  let userCount: any[];
-  [err, userCount] = await to(
-    req.db.query(`SELECT COUNT(*) FROM user ${search ? searchQuery : ''}`),
-  );
-  if (err) return res.error(500, 'Error counting users', err);
-  const lastPage = Math.ceil(userCount[0]['COUNT(*)'] / pageSize);
 
   res.success({ users, confirmLevels, lastPage }, 200);
 });
@@ -78,26 +93,33 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
 export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
   let err;
 
-  const out: UserData = {
+  const out: VP.UserData = {
     user: null,
     new: false,
     userShifts: [],
   };
 
   // Try selecting a user
-  let user: User;
+  let user;
   [err, user] = await to(
-    req.db
-      .query(
-        `SELECT
-          user_id,
-          first_name, last_name, email, school,
-          phone_1, phone_2, role_id,
-          bio, title, pic, show_exec
-        FROM user WHERE email = ?`,
-        [req.user.email],
-      )
-      .then(__ => __[0]),
+    User.findOne({
+      where: { email: req.user.email },
+      attributes: [
+        'user_id',
+        'first_name',
+        'last_name',
+        'email',
+        'school',
+        'phone_1',
+        'phone_2',
+        'bio',
+        'title',
+        'pic',
+        'show_exec',
+        'role_id',
+      ],
+      include: [{ model: Role }, { model: MailList }],
+    }),
   );
   if (err) return res.error(500, 'Error searching for user', err);
 
@@ -115,26 +137,19 @@ export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
       role_id: 1,
     };
 
-    let result: any;
-    [err, result] = await to(req.db.query('INSERT INTO user SET ?', [newUser]));
+    let entry;
+    [err, entry] = await to(User.create(newUser));
     if (err) return res.error(500, 'Error creating user', err);
 
-    out.user = { ...newUser, phone_1: null, phone_2: null, school: null };
-    out.user.user_id = result.insertId;
+    out.user = entry.dataValues as VP.Exec;
     out.new = true;
   } else {
-    out.user = user;
+    out.user = user.dataValues as VP.Exec;
   }
 
-  // Get shifts
-  [err, out.userShifts] = await to(Bluebird.resolve(getUserShifts(out.user.user_id, req.db)));
-  if (err) return res.error(500, 'Error finding user shifts', err);
-
-  // Mail lists
-  [err, out.user.mail_lists] = await to(
-    Bluebird.resolve(getUserMailLists(out.user.user_id, req.db)),
-  );
+  [err, out.user.mail_lists] = await to(Bluebird.resolve(getUserMailLists(out.user.user_id)));
   if (err) return res.error(500, 'Error finding mail list data', err);
+
   res.success(out, out.new ? 201 : 200);
 });
 
@@ -143,7 +158,7 @@ export const deleteUser = Utilities.asyncMiddleware(async (req, res) => {
 
   // Delete user
   let err;
-  [err] = await to(req.db.query('DELETE FROM user WHERE user_id = ?', [req.params.id]));
+  [err] = await to(User.destroy({ where: { user_id: req.params.id } }));
   if (err) return res.error(500, 'Error deleting user', err);
 
   res.success('User deleted successfully', 200);
@@ -163,7 +178,7 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
     bio,
     title,
     show_exec,
-  }: Exec = req.body;
+  } = req.body;
 
   // updating own user
   if (req.params.id === 'current') {
@@ -176,26 +191,23 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
       );
     }
 
-    // get user id
     let id;
-    [err, [{ user_id: id }]] = await to(
-      req.db.query('SELECT user_id FROM user WHERE email = ?', req.user.email),
+    [err, { user_id: id }] = await to(
+      User.findOne({ where: { email: req.user.email }, attributes: ['user_id'] }),
     );
-    if (err) return res.error(500, 'Error finding user records', err);
+    if (err) return res.error(500, 'Error updating user', err);
 
     // update the profile in the database
     let result;
     [err, result] = await to(
-      req.db.query('UPDATE user SET ? WHERE ?', [
-        // fields to update
+      User.update(
         { first_name, last_name, phone_1, phone_2, school, bio, title },
-        // find the user with this email
-        { user_id: id },
-      ]),
+        { where: { user_id: id } },
+      ),
     );
     if (err) return res.error(500, 'Error updating user', err);
-
-    if (result.affectedRows !== 1) {
+    console.log(result);
+    if (result[0] > 1) {
       return res.error(
         500,
         'Profile could not update.',
@@ -204,7 +216,7 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
     }
 
     // update mail lists
-    [err] = await to(Bluebird.resolve(updateUserMailLists(id, mail_lists, req.db)));
+    [err] = await to(Bluebird.resolve(updateUserMailLists(id, mail_lists)));
     if (err) return res.error(500, 'Error updating mail lists', err);
 
     res.success('Profile updated successfully', 200);
@@ -213,7 +225,7 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
     if (req.user.role_id < Utilities.ROLE_EXECUTIVE) res.error(403, 'Unauthorized');
 
     // get parameters from request body
-    const { email, role_id }: User = req.body;
+    const { email, role_id } = req.body;
     const pic = req.file ? req.file.filename : null;
     if (pic) {
       [err] = await to(
@@ -235,27 +247,18 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
       bio,
       title,
       pic,
-      show_exec: +show_exec,
+      show_exec,
     };
 
     if (+req.params.id === -1) {
-      [err] = await to(req.db.query('INSERT INTO user SET ?', data));
+      [err] = await to(User.create(data));
       if (err) return res.error(500, 'Error creating user', err);
     } else {
-      [err] = await to(
-        req.db.query('UPDATE user SET ? WHERE ?', [
-          // fields to update
-          data,
-          // find the user with this email
-          { user_id: req.params.id },
-        ]),
-      );
+      [err] = await to(User.update(data, { where: { user_id: req.params.id } }));
       if (err) return res.error(500, 'Error updating user data', err);
 
       [err] = await to(
-        Bluebird.resolve(
-          updateUserMailLists(req.params.id, JSON.parse(req.body.mail_lists), req.db),
-        ),
+        Bluebird.resolve(updateUserMailLists(req.params.id, JSON.parse(req.body.mail_lists))),
       );
       if (err) return res.error(500, 'Error updating mail lists', err);
     }
@@ -264,9 +267,10 @@ export const updateUser = Utilities.asyncMiddleware(async (req, res) => {
   }
 });
 
-export async function getUserShifts(id: number, db: mysql.PoolConnection): Promise<any[]> {
+export async function getUserShifts(id: number): Promise<any[]> {
   return _.map(
-    await db.query(
+    // TODO: figure out a way to use views with sequelize
+    await db.sequelize.query(
       `SELECT
         user_shift_id, user_id,
         confirm_level_id, confirm_level, confirm_description,
@@ -274,9 +278,9 @@ export async function getUserShifts(id: number, db: mysql.PoolConnection): Promi
         start_time, end_time, hours, meals, notes
         event_id, name, address, transport, description, letter
       FROM vw_user_shift WHERE user_id = ?`,
-      [id],
+      { replacements: [id], type: db.Sequelize.QueryTypes.SELECT },
     ),
-    userShift => ({
+    ({ dataValues: userShift }) => ({
       user_shift_id: +userShift.user_shift_id,
       confirmLevel: {
         id: +userShift.confirm_level_id,
@@ -301,36 +305,24 @@ export async function getUserShifts(id: number, db: mysql.PoolConnection): Promi
   );
 }
 
-export async function getUserMailLists(id: number, db: mysql.PoolConnection): Promise<MailList[]> {
-  return _.map(
-    await db.query(
-      `SELECT m.mail_list_id, m.display_name, m.description, NOT ISNULL(user_mail_list_id) subscribed
+export async function getUserMailLists(id: number): Promise<VP.MailList[]> {
+  return db.sequelize.query(
+    `SELECT m.mail_list_id as mail_list_id, m.display_name as display_name, m.description as description, NOT ISNULL(user_mail_list_id) subscribed
       FROM user u
       JOIN mail_list m
       LEFT JOIN user_mail_list uml on uml.user_id = u.user_id AND uml.mail_list_id = m.mail_list_id
       WHERE u.user_id = ?`,
-      [id],
-    ),
-    (list: MailList) => ({ ...list, subscribed: !!list.subscribed }),
+    { replacements: [id], type: db.Sequelize.QueryTypes.SELECT },
   );
 }
 
-export async function updateUserMailLists(
-  id: number,
-  mailLists: MailList[],
-  db: mysql.PoolConnection,
-): Promise<any> {
+export async function updateUserMailLists(id: number, mailLists: VP.MailList[]): Promise<any> {
   // update mail list data
-  return db.query('DELETE FROM user_mail_list WHERE user_id = ?', id).then(() =>
-    Promise.all(
-      mailLists.map(async list => {
-        if (list.subscribed) {
-          return db.query('INSERT INTO user_mail_list SET ?', {
-            user_id: id,
-            mail_list_id: list.mail_list_id,
-          });
-        }
-      }),
+  return UserMailList.destroy({ where: { user_id: id } }).then(() =>
+    UserMailList.bulkCreate(
+      mailLists
+        .filter(list => list.subscribed)
+        .map(list => ({ user_id: id, mail_list_id: list.mail_list_id })),
     ),
   );
 }

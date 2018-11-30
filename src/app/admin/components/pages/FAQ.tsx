@@ -8,11 +8,11 @@ import * as ReactMarkdown from 'react-markdown';
 import { Accordion, Button, Form, Segment } from 'semantic-ui-react';
 
 interface FAQProps {
-  addMessage: (message: Message) => any;
+  addMessage: (message: VP.Message) => any;
 }
 
 interface FAQState {
-  faqs: FAQ[];
+  faqs: VP.FAQ[];
   states: { state: 'positive' | 'negative'; faq_id: number }[];
   loading: boolean;
 }

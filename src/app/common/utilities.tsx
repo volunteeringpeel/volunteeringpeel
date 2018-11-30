@@ -32,7 +32,7 @@ export function timeFormat(time: moment.Duration) {
 export function formatDateForMySQL(date: Date): string {
   return moment(date)
     .tz('America/Toronto')
-    .format('YYYY-MM-DD HH:MM:SS');
+    .format('YYYY-MM-DD HH:mm:ss');
 }
 
 export function listify(list: string[] | number[], prefix: string = ''): string {
@@ -61,7 +61,7 @@ export function pluralize(noun: string, number: number): string {
  * @param dispatch Dispatch to base redux on
  * @returns Promise awaiting success (true) or failure (false)
  */
-export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
+export function loadUser(dispatch: Dispatch<VP.State>): Promise<boolean> {
   // Check whether there's local storage
   if (!localStorage.getItem('access_token')) return Promise.resolve(false);
   dispatch(loading(true));
@@ -86,7 +86,7 @@ export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
     .payload.then(response => {
       // success
       if (response.data.status === 'success') {
-        dispatch(getUserSuccess(response as AxiosResponse<APIDataSuccess<User>>));
+        dispatch(getUserSuccess(response as AxiosResponse<VP.APIDataSuccess<VP.User>>));
         if (response.data.data.new) {
           ReactGA.event({
             category: 'User',
@@ -110,7 +110,7 @@ export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
       }
       // failure
       dispatch(logout());
-      dispatch(getUserFailure(response as AxiosResponse<APIDataError>));
+      dispatch(getUserFailure(response as AxiosResponse<VP.APIDataError>));
       dispatch(
         addMessage({
           message: response.data.error,
@@ -138,9 +138,9 @@ export function loadUser(dispatch: Dispatch<State>): Promise<boolean> {
 
 export const history = createBrowserHistory();
 
-function configureStore(initialState?: State) {
+function configureStore(initialState?: VP.State) {
   let middleware = [routerMiddleware(history), reduxThunk];
-  let newStore: Store<State>;
+  let newStore: Store<VP.State>;
 
   if (process.env.NODE_ENV !== 'production') {
     const reduxLogger = require('redux-logger').default;
@@ -148,13 +148,13 @@ function configureStore(initialState?: State) {
 
     const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-    newStore = createStore<State>(
+    newStore = createStore<VP.State>(
       combineReducers({ ...reducers, router: routerReducer }),
       initialState,
       composeEnhancers(applyMiddleware(...middleware)),
     );
   } else {
-    newStore = createStore<State>(
+    newStore = createStore<VP.State>(
       combineReducers({ ...reducers, router: routerReducer }),
       initialState,
       compose(applyMiddleware(...middleware)),

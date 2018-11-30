@@ -6,7 +6,7 @@ import { createSelector } from 'reselect';
 // App Imports
 import Auth from '@app/public/Auth';
 
-const getUser = (state: State) => state.user;
+const getUser = (state: VP.State) => state.user;
 
 export const userAbleToRegister = createSelector([getUser], user => {
   // if not logged in, can't register

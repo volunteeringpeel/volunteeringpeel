@@ -13,7 +13,7 @@ import { timeFormat } from '@app/common/utilities';
 import FancyTable from '@app/common/components/FancyTable';
 
 interface UserDashboardProps {
-  user: UserState;
+  user: VP.UserState;
   loading: boolean;
 }
 
@@ -70,7 +70,7 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
                     filter: userShift => !!userShift.letter,
                   },
                 ]}
-                renderBodyRow={(userShift: UserShift) => ({
+                renderBodyRow={(userShift: VP.UserShift) => ({
                   key: userShift.user_shift_id,
                   positive: userShift.confirmLevel.id >= 100,
                   negative: userShift.confirmLevel.id < 0,
