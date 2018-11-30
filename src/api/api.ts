@@ -199,7 +199,7 @@ api.get(
       User.findAll({
         where: { show_exec: true },
         attributes: ['user_id', 'first_name', 'last_name', 'title', 'bio', 'pic'],
-        include: [{ model: Role, where: { role_id: 3 } }],
+        include: [{ model: Role, where: { role_id: Utilities.ROLE_EXECUTIVE } }],
       }),
     );
     if (err) return res.error(500, 'Error retrieving executive data', err);

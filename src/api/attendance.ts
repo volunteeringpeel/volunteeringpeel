@@ -154,7 +154,9 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
 
         let execs;
         [err, execs] = await to(
-          User.findAll({ include: [{ model: Role, where: { role_id: 3 } }] }),
+          User.findAll({
+            include: [{ model: Role, where: { role_id: Utilities.ROLE_EXECUTIVE } }],
+          }),
         );
 
         return success(action, {
