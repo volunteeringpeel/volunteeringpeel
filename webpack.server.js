@@ -15,6 +15,8 @@ module.exports = {
     filename: 'index.js',
   },
 
+  devtool: 'source-map',
+
   // this is a server app not a web app
   target: 'node',
 

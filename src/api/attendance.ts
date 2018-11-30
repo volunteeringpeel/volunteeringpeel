@@ -93,7 +93,6 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
         let events;
         [err, events] = await to(
           Event.findAll({
-            logging: console.log,
             attributes: ['event_id', 'name'],
             include: [{ model: Shift, attributes: ['shift_id', 'shift_num', 'start_time'] }],
             order: [[{ model: Shift, as: 'shifts' }, 'shift_num']], // ensure shifts are in order

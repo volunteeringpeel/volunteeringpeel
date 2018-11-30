@@ -153,7 +153,7 @@ export const editEvent = Utilities.asyncMiddleware(async (req, res) => {
       );
       if (err) return res.error(500, 'Error creating shift', err);
       // Update shift
-      [err] = await to(shift.update(shiftData, { logging: console.log }));
+      [err] = await to(shift.update(shiftData));
       if (err) return res.error(500, 'Error updating shift', err);
     }),
   );
