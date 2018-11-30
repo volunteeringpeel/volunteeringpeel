@@ -146,20 +146,20 @@ api.delete('/user/:id', UserAPI.deleteUser);
 // Get current user
 api.get('/user/current', UserAPI.getCurrentUser);
 
-// // WebSocket
-// api.ws('/attendance/ws', AttendanceAPI.webSocket);
-// export const attendanceWss = wss.getWss('/api/attendance/ws');
-// // Export as CSV
-// api.get('/attendance/csv/:id', AttendanceAPI.exportToCSV);
+// WebSocket
+api.ws('/attendance/ws', AttendanceAPI.webSocket);
+export const attendanceWss = wss.getWss('/api/attendance/ws');
+// Export as CSV
+api.get('/attendance/csv/:id', AttendanceAPI.exportToCSV);
 
-// // Get all mailing lists
-// api.get('/mailing-list', MailingListAPI.getMailingList);
-// // Create or update mailing list
-// api.post('/mailing-list/:id', MailingListAPI.updateMailingList);
-// // Delete mailing list
-// api.delete('/mailing-list/:id', MailingListAPI.deleteMailingList);
-// // Signup to mailing list id
-// api.post('/public/mailing-list/:id', MailingListAPI.signup);
+// Get all mailing lists
+api.get('/mailing-list', MailingListAPI.getMailingList);
+// Create or update mailing list
+api.post('/mailing-list/:id', MailingListAPI.updateMailingList);
+// Delete mailing list
+api.delete('/mailing-list/:id', MailingListAPI.deleteMailingList);
+// Signup to mailing list id
+api.post('/public/mailing-list/:id', MailingListAPI.signup);
 
 // FAQ's
 api.get(
