@@ -4,10 +4,11 @@ import * as React from 'react';
 import { Button, Form, Table, TableProps, TableRowProps } from 'semantic-ui-react';
 
 interface FancyTableProps<T> {
-  filters: { name: string; description: string; filter: ((input: T) => boolean) }[];
+  filters: { name: string; description: string; filter: ((input: T) => boolean) | object }[];
   tableData: T[];
   columnDefs: (string | ColumnDefinition<T>)[];
   renderBodyRow: (data: T, i: number) => TableRowProps;
+  filterCallback?: (filters: any[]) => any;
   sortCallback?: (key: string, dir: 'ascending' | 'descending') => any;
 }
 
@@ -78,6 +79,15 @@ export default class FancyTable<T> extends React.Component<
     const updateFilter = (filter: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       e.stopPropagation();
+      // state hasn't updated yet so 0 = 1, 1 = -1, -1 = 0
+      if (this.props.filterCallback) {
+        const filters: any[] = [];
+        _.forEach(this.props.filters, f => {
+          if (this.state.filters[f.name] === 0) filters.push(f.filter);
+          if (this.state.filters[f.name] === 1) filters.push({ $not: f.filter });
+        });
+        this.props.filterCallback(filters);
+      }
       this.setState(
         update(this.state, {
           filters: {
@@ -90,22 +100,29 @@ export default class FancyTable<T> extends React.Component<
       );
     };
 
-    const activeFilters = _.filter(
-      this.props.filters,
-      filter => this.state.filters[filter.name] === 1,
-    );
-    const excludeFilters = _.filter(
-      this.props.filters,
-      filter => this.state.filters[filter.name] === -1,
-    );
-
-    const filteredData = _.reduce(
-      excludeFilters,
-      (acc, filter) => _.filter(acc, __ => !filter.filter(__)),
-      _.reduce(activeFilters, (acc, filter) => _.filter(acc, filter.filter), this.props.tableData),
-    );
-
-    let processedData = filteredData;
+    let processedData = this.props.tableData;
+    // only use client-side filtering if no server-side filtering
+    if (!this.props.filterCallback) {
+      const activeFilters = _.filter(
+        this.props.filters,
+        filter => this.state.filters[filter.name] === 1,
+      );
+      const excludeFilters = _.filter(
+        this.props.filters,
+        filter => this.state.filters[filter.name] === -1,
+      );
+      const filteredData = _.reduce(
+        excludeFilters,
+        (acc, filter) => _.filter(acc, __ => !(filter as any).filter(__)),
+        _.reduce(
+          activeFilters,
+          (acc, filter) => _.filter(acc, filter.filter),
+          this.props.tableData,
+        ),
+      );
+      processedData = filteredData;
+    }
+    // only use client-side sorting if no server-side sorting
     if (!this.props.sortCallback) {
       const sortCol = _.find(
         this.props.columnDefs,
@@ -121,7 +138,7 @@ export default class FancyTable<T> extends React.Component<
       // ascending -> asc, descending -> desc
       const sortDir = this.state.sortDir.substr(0, this.state.sortDir.indexOf('c') + 1);
 
-      processedData = _.orderBy(filteredData, sortPredicate, [sortDir]);
+      processedData = _.orderBy(this.props.tableData, sortPredicate, [sortDir]);
     }
 
     return (

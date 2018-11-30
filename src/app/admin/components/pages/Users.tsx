@@ -31,6 +31,7 @@ interface UsersState {
   lastPage: number;
   sortKey: string;
   sortDir: 'ascending' | 'descending';
+  filters: any[];
 }
 
 export default class Users extends React.Component<
@@ -51,6 +52,7 @@ export default class Users extends React.Component<
       loading: true,
       sortKey: 'user_id',
       sortDir: 'ascending',
+      filters: [],
     };
 
     this.refresh = this.refresh.bind(this);
@@ -88,7 +90,9 @@ export default class Users extends React.Component<
       .then(() => {
         const query = `/api/user?page=${this.state.page}&page_size=${this.state.pageSize}&sort=${
           this.state.sortKey
-        }&sort_dir=${this.state.sortDir}&search=${encodeURIComponent(this.state.search)}`;
+        }&sort_dir=${this.state.sortDir}&search=${encodeURIComponent(
+          this.state.search,
+        )}&filters=${JSON.stringify(this.state.filters)}`;
         return axios.get(query, {
           headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
         });
@@ -221,7 +225,11 @@ export default class Users extends React.Component<
             renderBodyRow={renderBodyRow}
             tableData={this.state.users}
             footerRow={footerRow}
-            filters={[{ name: 'exec', description: 'Execs', filter: user => user.role_id === 3 }]}
+            filters={[{ name: 'exec', description: 'Execs', filter: { role_id: 3 } }]}
+            filterCallback={filters => {
+              this.setState({ filters });
+              this.refresh();
+            }}
             sortCallback={(key, dir) => {
               this.setState({
                 // reset page to 1 if sort changes
