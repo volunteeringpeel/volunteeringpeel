@@ -24,7 +24,6 @@ const { fn, col } = db.Sequelize;
 interface AttendanceWebSocket extends WebSocket {
   isAlive: boolean;
   user: User;
-  release: () => void;
 }
 
 // send a message to all clients
@@ -292,7 +291,6 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
 setInterval(() => {
   API.attendanceWss.clients.forEach((ws: AttendanceWebSocket) => {
     if (!ws.isAlive) {
-      ws.release();
       ws.terminate();
       broadcastClients();
       return;
