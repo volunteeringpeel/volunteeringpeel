@@ -3,6 +3,8 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import { Button, Form, Table, TableProps, TableRowProps } from 'semantic-ui-react';
 
+import AsyncComponent from '@app/common/AsyncComponent';
+
 interface FancyTableProps<T> {
   filters: { name: string; description: string; filter: ((input: T) => boolean) | object }[];
   tableData: T[];
@@ -27,7 +29,7 @@ interface FancyTableState<T> {
   sortDir: 'ascending' | 'descending';
 }
 
-export default class FancyTable<T> extends React.Component<
+export default class FancyTable<T> extends AsyncComponent<
   // allow table props to get passed through
   FancyTableProps<T> & TableProps,
   FancyTableState<T>
@@ -43,13 +45,14 @@ export default class FancyTable<T> extends React.Component<
     };
 
     this.handleSort = this.handleSort.bind(this);
+    this.handleFilter = this.handleFilter.bind(this);
 
     _.map(this.props.columnDefs, (header, i) => {
       if (typeof header !== 'string' && header.hide) this.state.hidden.add(i);
     });
   }
 
-  public handleSort = (key: string) => {
+  public handleSort = async (key: string) => {
     // ignore if null key
     if (key === null) return;
 
@@ -59,7 +62,7 @@ export default class FancyTable<T> extends React.Component<
     if (key === sortCol) {
       nextDir = sortDir === 'ascending' ? 'descending' : 'ascending';
     }
-    this.setState({ sortCol: key, sortDir: nextDir });
+    await this.setState({ sortCol: key, sortDir: nextDir });
 
     // handle callback
     if (this.props.sortCallback) {
@@ -75,31 +78,28 @@ export default class FancyTable<T> extends React.Component<
     }
   };
 
-  public render() {
-    const updateFilter = (filter: string) => (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      // state hasn't updated yet so 0 = 1, 1 = -1, -1 = 0
-      if (this.props.filterCallback) {
-        const filters: any[] = [];
-        _.forEach(this.props.filters, f => {
-          if (this.state.filters[f.name] === 0) filters.push(f.filter);
-          if (this.state.filters[f.name] === 1) filters.push({ $not: f.filter });
-        });
-        this.props.filterCallback(filters);
-      }
-      this.setState(
-        update(this.state, {
-          filters: {
-            [filter]: {
-              $set:
-                this.state.filters[filter] === 1 ? -1 : this.state.filters[filter] === -1 ? 0 : 1,
-            },
+  public handleFilter = async (name: string) => {
+    await this.setState(
+      update(this.state, {
+        filters: {
+          [name]: {
+            $set: this.state.filters[name] === 1 ? -1 : this.state.filters[name] === -1 ? 0 : 1,
           },
-        }),
-      );
-    };
+        },
+      }),
+    );
 
+    if (this.props.filterCallback) {
+      const filters: any[] = [];
+      _.forEach(this.props.filters, f => {
+        if (this.state.filters[f.name] === 1) filters.push(f.filter);
+        if (this.state.filters[f.name] === -1) filters.push({ $not: f.filter });
+      });
+      this.props.filterCallback(filters);
+    }
+  };
+
+  public render() {
     let processedData = this.props.tableData;
     // only use client-side filtering if no server-side filtering
     if (!this.props.filterCallback) {
@@ -175,7 +175,12 @@ export default class FancyTable<T> extends React.Component<
               content: filter.description,
               positive: this.state.filters[filter.name] === 1,
               negative: this.state.filters[filter.name] === -1,
-              onClick: updateFilter(filter.name),
+              // function generates function
+              onClick: (e: React.MouseEvent<HTMLButtonElement>) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.handleFilter(filter.name);
+              },
             }))}
           />
         </Form.Field>

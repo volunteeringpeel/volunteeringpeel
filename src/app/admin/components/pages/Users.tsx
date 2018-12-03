@@ -7,6 +7,7 @@ import { Route, RouteComponentProps } from 'react-router';
 import { Button, Dimmer, Dropdown, Form, Icon, Pagination } from 'semantic-ui-react';
 
 // Component Imports
+import AsyncComponent from '@app/common/AsyncComponent';
 import FancyTable from '@app/common/components/FancyTable';
 import LoadingDimmer from '@app/common/components/LoadingDimmer';
 
@@ -34,7 +35,7 @@ interface UsersState {
   filters: any[];
 }
 
-export default class Users extends React.Component<
+export default class Users extends AsyncComponent<
   UsersProps & RouteComponentProps<any>,
   UsersState
 > {
