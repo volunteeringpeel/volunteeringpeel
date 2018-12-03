@@ -25,6 +25,9 @@ db.sequelize = new Sequelize({
   // note: not the timezone used by client, just the one that the server is configured with
   timezone: '-04:00',
   logging: null,
+  operatorsAliases: {
+    $not: Sequelize.Op.not,
+  },
 });
 
 export default db;

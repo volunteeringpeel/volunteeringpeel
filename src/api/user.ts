@@ -11,9 +11,9 @@ import * as Utilities from '@api/utilities';
 import { ConfirmLevel } from '@api/models/ConfirmLevel';
 import { MailList } from '@api/models/MailList';
 import { Role } from '@api/models/Role';
+import { Shift } from '@api/models/Shift';
 import { User } from '@api/models/User';
 import { UserMailList } from '@api/models/UserMailList';
-import { UserShift } from '@api/models/UserShift';
 
 const Op = db.Sequelize.Op;
 
@@ -26,6 +26,7 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
   const sortCol = req.query.sort || 'user_id';
   const sortDir = req.query.sort_dir || 'ascending';
   const search = req.query.search || '';
+  const filters = JSON.parse(req.query.filters || []) || [];
 
   // list of searchable columns
   const searchable = ['first_name', 'last_name', 'email', 'phone_1', 'phone_2'];
@@ -36,8 +37,8 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
   let sortDirSql = 'ASC';
   if (sortDir === 'descending') sortDirSql = 'DESC';
 
-  // generate conditions
-  const conditions = { [Op.or]: searchQuery };
+  // generate conditions (search AND filters)
+  const conditions = { [Op.and]: [{ [Op.or]: searchQuery }, ...filters] };
 
   let err, result;
   [err, result] = await to(
@@ -60,7 +61,15 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
         'pic',
         'show_exec',
       ],
-      include: [{ model: UserShift, include: [{ model: ConfirmLevel }] }],
+      include: [
+        {
+          model: Shift,
+          required: false,
+          attributes: [],
+          through: { attributes: ['confirm_level_id'] },
+        },
+      ],
+      logging: console.log,
     }),
   );
   if (err) return res.error(500, 'Error getting user data', err);
@@ -74,7 +83,7 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
     Bluebird.all(
       userData.map(async user => {
         const shiftHistory = _.countBy(user.userShifts, 'confirmLevel.id');
-        return { ...user, shiftHistory, show_exec: !!+user.show_exec };
+        return { ...user.dataValues, shiftHistory, show_exec: !!+user.show_exec };
       }),
     ),
   );
