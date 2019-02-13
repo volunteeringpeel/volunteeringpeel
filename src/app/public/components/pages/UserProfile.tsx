@@ -198,8 +198,8 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
                       checked={list.subscribed}
                       data-tooltip={list.description}
                       onChange={(e, { checked }) =>
-                        this.setState(
-                          immutabilityHelper(this.state, {
+                        this.setState(prevState =>
+                          immutabilityHelper(prevState, {
                             mail_lists: { [i]: { subscribed: { $set: checked } } },
                           }),
                         )

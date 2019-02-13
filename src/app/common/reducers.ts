@@ -1,15 +1,12 @@
 // Library Imports
 import { AxiosResponse } from 'axios';
 import * as Promise from 'bluebird';
-import * as update from 'immutability-helper';
 import * as _ from 'lodash';
-import { combineReducers } from 'redux';
 import { Action, handleAction, handleActions } from 'redux-actions';
 
 // App Imports
 import {
   ADD_MESSAGE,
-  addMessage,
   DISMISS_ALL_MESSAGES,
   DISMISS_MESSAGE,
   GET_USER,
@@ -18,7 +15,6 @@ import {
   LOADING,
   LOGOUT,
 } from '@app/common/actions';
-import { store } from '@app/common/utilities';
 
 const loading = handleAction<boolean, boolean>(
   LOADING,

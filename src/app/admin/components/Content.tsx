@@ -2,9 +2,9 @@
 import { LocationDescriptor } from 'history';
 import * as _ from 'lodash';
 import * as React from 'react';
-import { Redirect, Route, RouteComponentProps, RouteProps } from 'react-router';
+import { Redirect, Route, RouteComponentProps } from 'react-router';
 import { renderRoutes } from 'react-router-config';
-import { Container, Divider, Grid, Header, Menu } from 'semantic-ui-react';
+import { Divider, Grid, Header, Menu } from 'semantic-ui-react';
 
 // App Imports
 import routes from '@app/admin/routes';

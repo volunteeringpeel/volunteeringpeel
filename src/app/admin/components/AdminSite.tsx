@@ -1,6 +1,6 @@
 // Library Imports
 import * as React from 'react';
-import { Redirect, Route, RouteComponentProps } from 'react-router';
+import { RouteComponentProps } from 'react-router';
 import { Menu } from 'semantic-ui-react';
 
 // Component Imports

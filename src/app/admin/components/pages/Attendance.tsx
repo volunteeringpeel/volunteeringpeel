@@ -187,8 +187,8 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         const ix = _.findIndex(this.state.attendance, ['user_shift_id', +command[1]]);
         if (ix < 0) return;
 
-        this.setState(
-          update(this.state, {
+        this.setState(prevState =>
+          update(prevState, {
             attendance: {
               [ix]: {
                 [command[2]]: {
@@ -294,8 +294,8 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         },
         data => {
           if ((this.state.attendance[ix] as any)[field].lock) {
-            this.setState(
-              update(this.state, {
+            this.setState(prevState =>
+              update(prevState, {
                 attendance: { [ix]: { [field]: { lock: { status: { $set: data.status } } } } },
               }),
             );
@@ -310,8 +310,8 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         },
       );
     }
-    this.setState(
-      update(this.state, {
+    this.setState(prevState =>
+      update(prevState, {
         attendance: {
           [ix]: {
             [field]: {
@@ -418,9 +418,9 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
             })}
             value={this.state.activeShift ? this.state.activeShift.shift_id : null}
             onChange={(e, { value }) => {
-              this.setState({
-                activeShift: _.find(this.state.shifts, ['shift_id', +value]),
-              });
+              this.setState(prevState => ({
+                activeShift: _.find(prevState.shifts, ['shift_id', +value]),
+              }));
               this.refresh(+value);
             }}
           />
@@ -433,10 +433,10 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                 <Button
                   content="Add Entry"
                   onClick={() => {
-                    this.setState({
-                      addEntry: !this.state.addEntry,
-                      addState: this.state.addEntry ? null : 'positive',
-                    });
+                    this.setState(prevState => ({
+                      addEntry: !prevState.addEntry,
+                      addState: prevState.addEntry ? null : 'positive',
+                    }));
                     this.sendMessage(
                       {
                         action: `users|${new Date().getTime()}`,

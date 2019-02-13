@@ -122,14 +122,14 @@ api.use(
   Utilities.asyncMiddleware(async (req, res, next) => {
     if (req.path.indexOf('/ws') > -1) return next();
     if (req.user) {
-      let data, err;
-      [err, data] = await to(
+      const [err, data] = await to(
         User.findOne({
           where: { email: req.user.email },
           attributes: [],
           include: [{ model: Role }],
         }),
       );
+      if (err) res.error(500, 'User does not exist', err);
       // only assign role_id if it exists, otherwise 0
       req.user.role_id = data ? data.role.role_id : 0;
     }

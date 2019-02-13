@@ -1,26 +1,13 @@
 // Library Imports
-import axios, { AxiosError } from 'axios';
-import * as Promise from 'bluebird';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Button,
-  Container,
-  Embed,
-  Form,
-  Grid,
-  Header,
-  Icon,
-  Image,
-  Message,
-  Segment,
-} from 'semantic-ui-react';
+import { Button, Container, Grid, Header, Icon, Image, Segment } from 'semantic-ui-react';
 
 // App Imports
 import homepageJpg from '@app/images/homepage.jpg';
 
 // Component Imports
-import HomepageMessage from '@app/public/components/modules/HomepageMessage';
+// import HomepageMessage from '@app/public/components/modules/HomepageMessage';
 import SubscribeBox from '@app/public/components/modules/SubscribeBox';
 
 export default class Homepage extends React.Component {

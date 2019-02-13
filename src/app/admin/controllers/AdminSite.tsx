@@ -1,8 +1,6 @@
 // Library Imports
-import { LocationDescriptor } from 'history';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { push } from 'react-router-redux';
 import { Dispatch } from 'redux';
 
 // App Imports

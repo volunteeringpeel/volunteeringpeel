@@ -76,8 +76,8 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
   public handleAddShift = () => {
     // find maximum shift_num, 0 if not exist, and add 1
     const newShiftNum = (_.max(_.map(this.state.shifts, 'shift_num')) || 0) + 1;
-    this.setState({
-      shifts: this.state.shifts.concat([
+    this.setState(prevState => ({
+      shifts: prevState.shifts.concat([
         {
           shift_id: -1,
           shift_num: newShiftNum,
@@ -89,7 +89,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
         },
       ]),
       selectedShiftNum: newShiftNum,
-    });
+    }));
   };
 
   public handleShiftChange = (e: React.FormEvent<any>, { name, value, checked }: any) => {
@@ -126,7 +126,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
         },
       };
     }
-    this.setState(update(this.state, { shifts: { [selectedShiftIndex]: newState } }));
+    this.setState(prevState => update(prevState, { shifts: { [selectedShiftIndex]: newState } }));
   };
 
   public handleShiftDelete = () => {
@@ -134,14 +134,16 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
 
     // shift is not newly created, so mark for deletion on server
     if (selectedShift.shift_id !== -1) {
-      this.setState({ deleteShifts: this.state.deleteShifts.concat([selectedShift.shift_id]) });
+      this.setState(prevState => ({
+        deleteShifts: prevState.deleteShifts.concat([selectedShift.shift_id]),
+      }));
     }
 
     // delete shift from client
-    this.setState({
-      shifts: _.filter(this.state.shifts, shift => shift.shift_num !== this.state.selectedShiftNum),
+    this.setState(prevState => ({
+      shifts: _.filter(prevState.shifts, shift => shift.shift_num !== prevState.selectedShiftNum),
       selectedShiftNum: null,
-    });
+    }));
   };
 
   public handleSubmit = () => {

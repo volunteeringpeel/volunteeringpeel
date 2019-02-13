@@ -206,8 +206,8 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
                   checked={list.subscribed}
                   data-tooltip={list.description}
                   onChange={(e, { checked }) =>
-                    this.setState(
-                      immutabilityHelper(this.state, {
+                    this.setState(prevState =>
+                      immutabilityHelper(prevState, {
                         mail_lists: { [i]: { subscribed: { $set: checked } } },
                       }),
                     )
