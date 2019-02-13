@@ -4,6 +4,7 @@
 [![dependencies Status](https://david-dm.org/volunteeringpeel/volunteeringpeel/status.svg)](https://david-dm.org/volunteeringpeel/volunteeringpeel)
 [![devDependencies Status](https://david-dm.org/volunteeringpeel/volunteeringpeel/dev-status.svg)](https://david-dm.org/volunteeringpeel/volunteeringpeel?type=dev)
 [![Waffle.io - Columns and their card count](https://badge.waffle.io/volunteeringpeel/volunteeringpeel.svg?columns=all)](https://waffle.io/volunteeringpeel/volunteeringpeel)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/volunteeringpeel/volunteeringpeel.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/volunteeringpeel/volunteeringpeel/alerts/)
 
 Volunteering Peel Beta site (WIP)
 
