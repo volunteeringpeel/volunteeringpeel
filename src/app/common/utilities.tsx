@@ -165,7 +165,7 @@ function configureStore(initialState?: VP.State) {
     // Enable Webpack hot module replacement for reducers
     module.hot.accept('./reducers', () => {
       const nextRootReducer = require('./reducers');
-      newStore.replaceReducer(combineReducers({ ...reducers, router: routerReducer }));
+      newStore.replaceReducer(combineReducers({ ...nextRootReducer, router: routerReducer }));
     });
   }
 
