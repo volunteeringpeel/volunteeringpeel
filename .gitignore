@@ -5,3 +5,4 @@ dist
 !.gitignore
 !.circleci
 !.babelrc
+yarn-error.log

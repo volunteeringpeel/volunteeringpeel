@@ -103,6 +103,7 @@ export default class FancyTable<T> extends AsyncComponent<
     let processedData = this.props.tableData;
     // only use client-side filtering if no server-side filtering
     if (!this.props.filterCallback) {
+      // find filters which are turned on
       const activeFilters = _.filter(
         this.props.filters,
         filter => this.state.filters[filter.name] === 1,
@@ -111,15 +112,19 @@ export default class FancyTable<T> extends AsyncComponent<
         this.props.filters,
         filter => this.state.filters[filter.name] === -1,
       );
+      // apply the filters
       const filteredData = _.reduce(
         excludeFilters,
+        // negative filters (stupid type hack included)
         (acc, filter) => _.filter(acc, __ => !(filter as any).filter(__)),
         _.reduce(
           activeFilters,
+          // positive filters
           (acc, filter) => _.filter(acc, filter.filter),
-          this.props.tableData,
+          processedData,
         ),
       );
+      // overwrite processedData with filtered data
       processedData = filteredData;
     }
     // only use client-side sorting if no server-side sorting
@@ -129,16 +134,18 @@ export default class FancyTable<T> extends AsyncComponent<
         row => this.state.sortCol === (typeof row === 'string' ? row : row.key),
       );
       const sortPredicate = [];
+      // handle shorthand sort parameter someColumn -> some_column
       if (typeof sortCol === 'string') {
         sortPredicate.push(_.snakeCase(this.state.sortCol));
       } else if (sortCol) {
+        // complex parameter where key is passed directly or handler function is passed
         sortPredicate.push(sortCol.function ? sortCol.function : sortCol.key);
       }
 
       // ascending -> asc, descending -> desc
       const sortDir = this.state.sortDir.substr(0, this.state.sortDir.indexOf('c') + 1);
-
-      processedData = _.orderBy(this.props.tableData, sortPredicate, [sortDir]);
+      // overwrite processedData with sorted data
+      processedData = _.orderBy(processedData, sortPredicate, [sortDir]);
     }
 
     return (
