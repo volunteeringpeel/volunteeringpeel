@@ -2,7 +2,7 @@
 import { connect, Dispatch } from 'react-redux';
 
 // App Imports
-import { addMessage, loading } from '@app/common/actions';
+import { addMessage } from '@app/common/actions';
 
 // Component Imports
 import { loadUser } from '@app/common/utilities';

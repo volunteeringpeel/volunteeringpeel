@@ -10,7 +10,7 @@ import { Button, Container, Header, Item, Segment } from 'semantic-ui-react';
 
 // Component Imports
 import ProgressColor from '@app/public/components/blocks/ProgressColor';
-import HomepageMessage from '@app/public/components/modules/HomepageMessage';
+// import HomepageMessage from '@app/public/components/modules/HomepageMessage';
 import SubscribeBox from '@app/public/components/modules/SubscribeBox';
 
 // Controller Imports
@@ -97,8 +97,6 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                   const maxSpots = _.sumBy(event.shifts, 'max_spots');
                   const spotsTaken = _.sumBy(event.shifts, 'spots_taken');
                   const spotsLeft = spotsTaken > maxSpots ? 0 : maxSpots - spotsTaken;
-                  // Event is full if spotsLeft === 0
-                  const full = spotsLeft === 0;
 
                   // list of shifts as HH:MM-HH:MM
                   const shifts = _.map(

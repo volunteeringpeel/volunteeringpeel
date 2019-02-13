@@ -1,8 +1,7 @@
 // Library Imports
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
 
 // App Imports
-import { addMessage } from '@app/common/actions';
 import { userAbleToRegister } from '@app/public/selectors';
 
 // Component Imports

@@ -1,7 +1,6 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
 import * as Promise from 'bluebird';
-import immutabilityHelper from 'immutability-helper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Form, Header, Message, TextArea } from 'semantic-ui-react';

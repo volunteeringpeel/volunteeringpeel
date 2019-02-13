@@ -3,8 +3,8 @@ import * as React from 'react';
 import { Container, Header, Segment } from 'semantic-ui-react';
 
 // Component Imports
-import FormContact from '@app/public/components/modules/FormContact';
-import FormRequest from '@app/public/components/modules/FormRequest';
+// import FormContact from '@app/public/components/modules/FormContact';
+// import FormRequest from '@app/public/components/modules/FormRequest';
 
 export default class Contact extends React.Component {
   public render() {

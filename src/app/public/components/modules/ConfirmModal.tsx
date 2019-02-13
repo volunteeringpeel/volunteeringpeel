@@ -1,5 +1,4 @@
 // Library Imports
-import * as Promise from 'bluebird';
 import * as React from 'react';
 import { Button, Header, Icon, Modal } from 'semantic-ui-react';
 

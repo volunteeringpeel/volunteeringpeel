@@ -9,7 +9,6 @@ import { loading } from '@app/common/actions';
 
 // Component Imports
 import Events from '@app/admin/components/pages/Events';
-import { loadUser } from '@app/common/utilities';
 
 const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
   loading: (status: boolean) => dispatch(loading(status)),

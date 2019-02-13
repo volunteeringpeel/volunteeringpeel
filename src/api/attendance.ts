@@ -8,7 +8,6 @@ import * as WebSocket from 'ws';
 
 // API Imports
 import * as API from '@api/api';
-import db from '@api/db';
 import * as JwtAPI from '@api/jwt';
 import * as Utilities from '@api/utilities';
 
@@ -18,8 +17,6 @@ import { Role } from '@api/models/Role';
 import { Shift } from '@api/models/Shift';
 import { User } from '@api/models/User';
 import { UserShift } from '@api/models/UserShift';
-
-const { fn, col } = db.Sequelize;
 
 interface AttendanceWebSocket extends WebSocket {
   isAlive: boolean;

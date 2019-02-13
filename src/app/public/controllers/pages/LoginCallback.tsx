@@ -1,5 +1,5 @@
 // Library Imports
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
 
 // Component Imports
 import LoginCallback from '@app/public/components/pages/LoginCallback';
