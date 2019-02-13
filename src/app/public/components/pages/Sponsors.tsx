@@ -46,7 +46,7 @@ export default class Sponsors extends React.Component<SponsorsProps, SponsorsSta
                 </Card.Content>
                 <Card.Content extra>
                   <Card.Meta>
-                    <a href={sponsor.website} target="_blank">
+                    <a href={sponsor.website} target="_blank" rel="noopener noreferrer">
                       Website
                     </a>
                   </Card.Meta>
