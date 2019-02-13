@@ -40,8 +40,8 @@ export default class AdminFAQ extends React.Component<FAQProps, FAQState> {
     { value }: any,
   ) => {
     const ix = _.findIndex(this.state.faqs, ['faq_id', id]);
-    this.setState(
-      update(this.state, {
+    this.setState(prevState =>
+      update(prevState, {
         faqs: {
           [ix]: {
             [field]: {
@@ -141,8 +141,8 @@ export default class AdminFAQ extends React.Component<FAQProps, FAQState> {
             onClick={() => {
               const minId = _.minBy(this.state.faqs, 'faq_id').faq_id;
               const newId = minId < 0 ? minId - 1 : -1;
-              this.setState(
-                update(this.state, {
+              this.setState(prevState =>
+                update(prevState, {
                   faqs: {
                     $push: [{ faq_id: newId, question: 'Question', answer: 'Answer' }],
                   },

@@ -57,15 +57,15 @@ export default class Events extends React.Component<
             .tz('America/Toronto')
             .toISOString(),
         }));
-        this.setState({
+        this.setState(prevState => ({
           events: _.orderBy({ ...data.data, shifts }, 'shifts[0].start_time', 'desc'),
           // reset active event with new data and/or nothing if event was deleted
           activeEvent: _.find(data.data, [
             'event_id',
             // check existence before checking id
-            this.state.activeEvent && this.state.activeEvent.event_id,
+            prevState.activeEvent && prevState.activeEvent.event_id,
           ]),
-        });
+        }));
         this.props.loading(false);
       })
       .catch((error: AxiosError) => {
