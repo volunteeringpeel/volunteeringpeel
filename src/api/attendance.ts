@@ -1,7 +1,7 @@
 /* tslint:disable:no-console no-var-requires import-name */
 import to from '@lib/await-to-js';
 import * as Bluebird from 'bluebird';
-import * as csvStringify from 'csv-stringify/lib/sync';
+import * as csvStringify from 'csv-stringify';
 import * as Express from 'express';
 import * as _ from 'lodash';
 import * as WebSocket from 'ws';
@@ -156,6 +156,7 @@ export const webSocket = (ws: AttendanceWebSocket, req: Express.Request) => {
             include: [{ model: Role, where: { role_id: Utilities.ROLE_EXECUTIVE } }],
           }),
         );
+        if (err) return die(action, 'Error retrieving exec list', err);
 
         return success(action, {
           // weird typings necessary because of include.attributes
@@ -331,10 +332,7 @@ export const exportToCSV: Express.RequestHandler = async (req, res) => {
     ]),
   );
 
-  const csv = csvStringify(rows);
-  if (err) return res.error(500, 'Error parsing data', err);
-
   res.setHeader('Content-disposition', 'attachment; filename=attendance.csv');
   res.set('Content-Type', 'text/csv');
-  res.status(200).send(csv);
+  csvStringify(rows).pipe(res);
 };
