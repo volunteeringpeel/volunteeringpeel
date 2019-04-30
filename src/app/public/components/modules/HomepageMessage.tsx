@@ -42,19 +42,34 @@ const HomepageMessage: React.ComponentType = () => {
   // );
 
   // Exec Apps
+  // return (
+  //   <Container style={{ paddingTop: '1em' }}>
+  //     <Message>
+  //       <Header as="h3">Apply to be part of the exec team!</Header>
+  //       <p>
+  //         Volunteering Peel Committee Member applications are out now! If you're a grade 9 or 10
+  //         student who enjoys volunteering and leading volunteers, meeting new people and getting
+  //         involved, then apply for the Volunteering Peel Executive team. Applications are due on
+  //         October 27th!
+  //       </p>
+  //       <a href={VPExecsApp2018Docx}>
+  //         <Button primary>Apply Now</Button>
+  //       </a>
+  //     </Message>
+  //   </Container>
+  // );
+
   return (
     <Container style={{ paddingTop: '1em' }}>
       <Message>
-        <Header as="h3">Apply to be part of the exec team!</Header>
+        <Header as="h3">We are currently experiencing some login issues</Header>
         <p>
-          Volunteering Peel Committee Member applications are out now! If you're a grade 9 or 10
-          student who enjoys volunteering and leading volunteers, meeting new people and getting
-          involved, then apply for the Volunteering Peel Executive team. Applications are due on
-          October 27th!
+          Currently, the auth0 option to send a confirmation code is not working. However, you can still log in or create an account via your Google or Facebook account by clicking "Login" then clicking one of the two buttons at the top.
         </p>
-        <a href={VPExecsApp2018Docx}>
-          <Button primary>Apply Now</Button>
-        </a>
+        <br/>
+        <p>
+          If you have neither a Google account (you can use your pdsb email) or Facebook, please email us at <a href="mailto:info@volunteeringpeel.org">info@volunteeringpeel.org</a> regarding the event(s) you wish to sign up for. Again, sorry for the inconvenience and we are doing our best to fix it as soon as possible.
+        </p>
       </Message>
     </Container>
   );
