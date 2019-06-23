@@ -7,14 +7,14 @@ import { Button, Container, Grid, Header, Icon, Image, Segment } from 'semantic-
 import homepageJpg from '@app/images/homepage.jpg';
 
 // Component Imports
-import HomepageMessage from '@app/public/components/modules/HomepageMessage';
+// import HomepageMessage from '@app/public/components/modules/HomepageMessage';
 import SubscribeBox from '@app/public/components/modules/SubscribeBox';
 
 export default class Homepage extends React.Component {
   public render() {
     return (
       <div className="large text">
-        <HomepageMessage />
+        {/* <HomepageMessage /> */}
         <Segment style={{ padding: '8em 0em 4em' }} vertical>
           <Grid stackable container verticalAlign="middle">
             <Grid.Row>
