@@ -110,13 +110,15 @@ declare namespace VP {
 
   interface UserShift {
     user_shift_id: number;
-    hours: string;
+    start_time: string;
+    end_time: string;
+    hours_override: string;
     confirmLevel: ConfirmLevel;
     letter: string;
     shift: Shift;
     parentEvent: {
       event_id: number;
-      name: number;
+      name: string;
     };
   }
 
