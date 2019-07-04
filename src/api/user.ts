@@ -196,6 +196,8 @@ export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
 
     // hacky way to get rid of the extraneous data
     out.user = user.dataValues as VP.Exec;
+    // @ts-ignore
+    delete out.user.userShifts;
   }
 
   [err, out.user.mail_lists] = await to(Bluebird.resolve(getUserMailLists(out.user.user_id)));
