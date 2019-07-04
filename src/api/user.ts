@@ -174,11 +174,15 @@ export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
         const confirmLevel = confirmLevels.find(
           level => level.id === shift.user_shift.confirm_level_id,
         );
+        const start = moment(shift.user_shift.start_override || shift.start_time);
+        const end = moment(shift.user_shift.end_override || shift.end_time);
+        const diff = moment.duration(shift.user_shift.hours_override || end.diff(start));
+        const hours = `${Math.floor(diff.asHours())}:${
+          diff.minutes() < 10 ? '0' + diff.minutes() : diff.minutes() // damn left-pad
+        }`;
         return {
+          hours,
           user_shift_id: shift.user_shift.user_shift_id,
-          start_time: shift.user_shift.start_override || shift.start_time,
-          end_time: shift.user_shift.end_override || shift.end_time,
-          hours_override: shift.user_shift.hours_override,
           letter: shift.event.letter,
           shift: shift.dataValues as any,
           confirmLevel: confirmLevel as any,

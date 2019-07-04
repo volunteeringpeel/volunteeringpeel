@@ -110,9 +110,7 @@ declare namespace VP {
 
   interface UserShift {
     user_shift_id: number;
-    start_time: string;
-    end_time: string;
-    hours_override: string;
+    hours: string;
     confirmLevel: ConfirmLevel;
     letter: string;
     shift: Shift;
