@@ -3,17 +3,20 @@ import to from '@lib/await-to-js';
 import * as Bluebird from 'bluebird';
 import * as fs from 'fs-extra';
 import * as _ from 'lodash';
+import * as moment from 'moment';
 
 // Import API core
 import db from '@api/db';
 import * as Utilities from '@api/utilities';
 
 import { ConfirmLevel } from '@api/models/ConfirmLevel';
+import { Event } from '@api/models/Event';
 import { MailList } from '@api/models/MailList';
 import { Role } from '@api/models/Role';
 import { Shift } from '@api/models/Shift';
 import { User } from '@api/models/User';
 import { UserMailList } from '@api/models/UserMailList';
+import { UserShift } from '@api/models/UserShift';
 
 const Op = db.Sequelize.Op;
 
@@ -65,7 +68,7 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
         {
           model: Shift,
           required: false,
-          attributes: [],
+          attributes: ['shift_id'],
           through: { attributes: ['confirm_level_id'] },
         },
       ],
@@ -127,8 +130,12 @@ export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
         'show_exec',
         'role_id',
       ],
-      include: [{ model: Role }, { model: MailList }],
-    }),
+      include: [
+        { model: Role },
+        { model: MailList },
+        { model: Shift, include: { model: Event, attributes: ['event_id', 'name', 'letter'] } },
+      ],
+    } as any),
   );
   if (err) return res.error(500, 'Error searching for user', err);
 
@@ -153,7 +160,44 @@ export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
     out.user = entry.dataValues as VP.Exec;
     out.new = true;
   } else {
+    // generate user shift data
+    let confirmLevels: ConfirmLevel[];
+    [err, confirmLevels] = await to(
+      ConfirmLevel.findAll({
+        attributes: [['confirm_level_id', 'id'], 'name', 'description'],
+        raw: true,
+      }),
+    );
+    if (err) return res.error(500, 'Error retrieving attendance statuses', err);
+    out.userShifts = user.userShifts.map(
+      (shift: Shift & { user_shift: UserShift; event: Event }) => {
+        const confirmLevel = confirmLevels.find(
+          level => level.id === shift.user_shift.confirm_level_id,
+        );
+        const start = moment(shift.user_shift.start_override || shift.start_time);
+        const end = moment(shift.user_shift.end_override || shift.end_time);
+        const diff = moment.duration(shift.user_shift.hours_override || end.diff(start));
+        const hours = `${Math.floor(diff.asHours())}:${
+          diff.minutes() < 10 ? '0' + diff.minutes() : diff.minutes() // damn left-pad
+        }`;
+        return {
+          hours,
+          user_shift_id: shift.user_shift.user_shift_id,
+          letter: shift.event.letter,
+          shift: shift.dataValues as any,
+          confirmLevel: confirmLevel as any,
+          parentEvent: {
+            event_id: shift.event.event_id,
+            name: shift.event.name,
+          },
+        };
+      },
+    );
+
+    // hacky way to get rid of the extraneous data
     out.user = user.dataValues as VP.Exec;
+    // @ts-ignore
+    delete out.user.userShifts;
   }
 
   [err, out.user.mail_lists] = await to(Bluebird.resolve(getUserMailLists(out.user.user_id)));
