@@ -79,6 +79,8 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
       )
       .then(res => {
         if (res.data.status === 'success') {
+          // ensure state is cleared in case of second submission
+          this.setState({ selectedShifts: [] });
           this.props.onSuccess();
           this.handleClose();
         } else {
