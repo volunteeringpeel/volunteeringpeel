@@ -29,7 +29,7 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
   const sortCol = req.query.sort || 'user_id';
   const sortDir = req.query.sort_dir || 'ascending';
   const search = req.query.search || '';
-  const filters = JSON.parse(req.query.filters || []) || [];
+  const filters = JSON.parse(req.query.filters || '[]') || [];
 
   // list of searchable columns
   const searchable = ['first_name', 'last_name', 'email', 'phone_1', 'phone_2'];
@@ -81,15 +81,13 @@ export const getAllUsers = Utilities.asyncMiddleware(async (req, res) => {
   // get number of pages (for pagination)
   const lastPage = Math.ceil(result.count / pageSize);
 
-  let users;
-  [err, users] = await to(
-    Bluebird.all(
-      userData.map(async user => {
-        const shiftHistory = _.countBy(user.userShifts, 'confirmLevel.id');
-        return { ...user.dataValues, shiftHistory, show_exec: !!+user.show_exec };
-      }),
-    ),
-  );
+  const users = userData.map(user => {
+    // count how many of each status value exists
+    const shiftHistory = _.countBy(user.userShifts, 'user_shift.confirm_level_id');
+    return { ...user.dataValues, shiftHistory, show_exec: !!+user.show_exec };
+  });
+
+  // TODO: mail list data missing??? wtf
   if (err) return res.error(500, 'Error getting mail list data', err);
 
   // get human-readable confirm levels

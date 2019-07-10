@@ -231,12 +231,9 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
                 Karma Bar: attended vs. missed
                 <br />
                 <small>
-                  {_.join(
-                    _.map(_.toPairs(this.props.user.shiftHistory), ([id, count]) => {
-                      return `${_.find(this.props.confirmLevels, ['id', +id]).name}: ${count}`;
-                    }),
-                    ', ',
-                  )}
+                  {_.map(_.toPairs(this.props.user.shiftHistory), ([id, count]) => {
+                    return `${_.find(this.props.confirmLevels, ['id', +id]).name}: ${count}`;
+                  }).join(', ')}
                 </small>
               </div>
             }
