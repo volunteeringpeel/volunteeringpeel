@@ -22,7 +22,7 @@ import {
 import * as reducers from '@app/common/reducers';
 
 // take a number and pad it with one zero if it needs to be (i.e. 1 => 01, 11 => 11, 123 => 123)
-const pad = (number: number) => (number < 10 ? ('00' + number).slice(-2) : number.toString());
+const pad = (number: number) => number.toString().padStart(2, '0');
 
 // moment duration toString basically (hh:mm)
 export function timeFormat(time: moment.Duration) {

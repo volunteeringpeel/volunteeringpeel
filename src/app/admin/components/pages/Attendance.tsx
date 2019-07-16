@@ -463,54 +463,55 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   onClick={() => {
                     // use sample row to get shift/event data
                     const pdf: pdfMake.TDocumentDefinitions = {
-                      pageSize: 'LETTER',
-                      header: {
+                      pageSize: pdfMake.PageSize.LETTER,
+                      header: () => ({
                         text: `\n${this.state.activeShift.name} | Shift ${
                           this.state.activeShift.shift_num
                         }`,
                         alignment: 'center',
-                      },
+                      }),
                       footer: (currentPage: number, pageCount: number) => ({
-                        text: currentPage + ' of ' + pageCount,
+                        text: `${currentPage} of ${pageCount}`,
                         alignment: 'center',
                       }),
-                      content: {
-                        table: {
-                          headerRows: 1,
-                          widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
-
-                          body: [
-                            // header row
-                            [
-                              'First',
-                              'Last',
-                              'Phone #1',
-                              'Phone #2',
-                              'Check-In Time',
-                              'Check-Out Time',
-                            ].map(text => ({
-                              text,
-                              bold: true,
-                              alignment: 'center',
-                              noWrap: true,
-                            })),
-                            // body rows
-                            ..._.map(
-                              _.sortBy(this.state.attendance, entry =>
-                                entry.user.first_name ? entry.user.first_name.toLowerCase() : '',
+                      content: [
+                        {
+                          table: {
+                            headerRows: 1,
+                            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                            body: [
+                              // header row
+                              [
+                                'First',
+                                'Last',
+                                'Phone #1',
+                                'Phone #2',
+                                'Check-In Time',
+                                'Check-Out Time',
+                              ].map(text => ({
+                                text,
+                                bold: true,
+                                alignment: 'center',
+                                noWrap: true,
+                              })),
+                              // body rows
+                              ..._.map(
+                                _.sortBy(this.state.attendance, entry =>
+                                  entry.user.first_name ? entry.user.first_name.toLowerCase() : '',
+                                ),
+                                entry => [
+                                  entry.user.first_name,
+                                  entry.user.last_name,
+                                  entry.user.phone_1 || '',
+                                  entry.user.phone_2 || '',
+                                  '',
+                                  '',
+                                ],
                               ),
-                              entry => [
-                                entry.user.first_name,
-                                entry.user.last_name,
-                                entry.user.phone_1 || '',
-                                entry.user.phone_2 || '',
-                                '',
-                                '',
-                              ],
-                            ),
-                          ],
+                            ],
+                          },
                         },
-                      },
+                      ],
                     };
                     // attendance Event Name # -> attendance-event-name-#
                     const filename = _.kebabCase(

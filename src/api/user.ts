@@ -175,9 +175,7 @@ export const getCurrentUser = Utilities.asyncMiddleware(async (req, res) => {
         const start = moment(shift.user_shift.start_override || shift.start_time);
         const end = moment(shift.user_shift.end_override || shift.end_time);
         const diff = moment.duration(shift.user_shift.hours_override || end.diff(start));
-        const hours = `${Math.floor(diff.asHours())}:${
-          diff.minutes() < 10 ? '0' + diff.minutes() : diff.minutes() // damn left-pad
-        }`;
+        const hours = `${Math.floor(diff.asHours())}:${String(diff.minutes()).padStart(2, '0')}`;
         return {
           hours,
           user_shift_id: shift.user_shift.user_shift_id,

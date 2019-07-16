@@ -11,7 +11,7 @@ export const getHeaderImage = Utilities.asyncMiddleware(async (req, res) => {
   const [err, images] = await to(Bluebird.resolve(fs.readdir(global.appDir + '/upload/header')));
   if (err) res.error(500, 'Error picking a header image', err);
   const randomImage = Math.floor(Math.random() * images.length);
-  res.status(200).sendFile(global.appDir + '/upload/header/' + images[randomImage]);
+  res.status(200).sendFile(`${global.appDir}/upload/header/${images[randomImage]}`);
 });
 
 export const listHeaderImages = Utilities.asyncMiddleware(async (req, res) => {
@@ -22,7 +22,7 @@ export const listHeaderImages = Utilities.asyncMiddleware(async (req, res) => {
 
 export const deleteHeaderImage = Utilities.asyncMiddleware(async (req, res) => {
   const [err] = await to(
-    Bluebird.resolve(fs.unlink(global.appDir + '/upload/header/' + req.params.filename)),
+    Bluebird.resolve(fs.unlink(`${global.appDir}/upload/header/${req.params.filename}`)),
   );
   if (err) res.error(500, 'Error deleting header image', err);
   res.success('Image deleted successfully');
