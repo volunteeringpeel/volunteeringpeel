@@ -2,10 +2,11 @@ const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const LessPluginAutoPrefix = require('less-plugin-autoprefix');
 const MinifyPlugin = require('babel-minify-webpack-plugin');
+const OptimizeCssnanoPlugin = require('@intervolga/optimize-cssnano-plugin');
 
 // this was copypasted from a faq should cover just about everybody ever
 const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 'android 4'];
@@ -46,13 +47,13 @@ module.exports = merge(common, {
           use: [
             { loader: 'cache-loader' },
             // use css. also sourcemap.
-            { loader: 'css-loader', options: { minimize: true } },
+            { loader: 'css-loader' },
             {
               // parse less for css-loader
               loader: 'less-loader',
               options: {
                 // source map for debugging
-                sourceMap: true,
+                // sourceMap: true,
                 // support all the browsers in the list up there
                 plugins: [new LessPluginAutoPrefix({ browsers: autoprefixerBrowsers })],
               },
@@ -66,7 +67,7 @@ module.exports = merge(common, {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: [{ loader: 'cache-loader' }, { loader: 'css-loader', options: { minimize: true } }],
+          use: [{ loader: 'cache-loader' }, { loader: 'css-loader' }],
         }),
       },
     ],
@@ -80,12 +81,14 @@ module.exports = merge(common, {
     // everything is relative to /
     publicPath: '/',
   },
+
   plugins: [
     // delete old files
-    new CleanWebpackPlugin([path.resolve(__dirname, 'dist', 'app')], { exclude: ['upload'] }),
+    new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ['**/*', '!upload'] }),
     // use special module ids for caching
     new webpack.HashedModuleIdsPlugin(),
     new ExtractTextPlugin('style.css'), // make sure css is separate from js
+    new OptimizeCssnanoPlugin(),
     new webpack.DefinePlugin({
       'process.env': {
         // set environment

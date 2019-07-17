@@ -3,7 +3,7 @@ const fs = require('fs');
 // relocate default config
 fs.writeFileSync(
   'node_modules/semantic-ui-less/theme.config',
-  "@import '../../src/app/css/semantic/theme.config';\n",
+  "@import (multiple) '../../src/app/css/semantic/theme.config';\n",
   'utf8'
 );
 
