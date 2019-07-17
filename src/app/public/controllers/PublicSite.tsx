@@ -1,7 +1,7 @@
 // Library Imports
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { Action, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 
 // App Imports
 import { loadUser } from '@app/common/utilities';

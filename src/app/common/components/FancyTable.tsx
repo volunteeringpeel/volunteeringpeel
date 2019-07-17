@@ -1,4 +1,4 @@
-import update, { Spec } from 'immutability-helper'; // tslint:disable-line:import-name
+import update from 'immutability-helper'; // tslint:disable-line:import-name
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Button, Form, Table, TableProps, TableRowProps } from 'semantic-ui-react';

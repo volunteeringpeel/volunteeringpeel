@@ -13,7 +13,7 @@
     "test": "tslint -c tslint.json 'src/**/*.ts' 'src/**/*.tsx'",
     "build": "yarn run build:server && yarn run build:client",
     "build:server": "webpack --config webpack.server.js",
-    "build:client": "node --max_old_space_size=8192 node_modules/.bin/webpack --config webpack.prod.js",
+    "build:client": "webpack --config webpack.prod.js",
     "dev": "nodemon",
     "postinstall": "node scripts/fix-semantic.js",
     "start": "node -r dotenv/config dist/index.js"
