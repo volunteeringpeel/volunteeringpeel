@@ -1,5 +1,6 @@
 // Library Imports
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 
 // App Imports
 import { loading } from '@app/common/actions';
@@ -7,7 +8,7 @@ import { loading } from '@app/common/actions';
 // Component Imports
 import Team from '@app/public/components/pages/Team';
 
-const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   loading: (status: boolean) => dispatch(loading(status)),
 });
 

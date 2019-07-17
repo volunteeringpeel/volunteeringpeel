@@ -1,6 +1,7 @@
 // Library Imports
 import * as _ from 'lodash';
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 
 // App Imports
 import { addMessage } from '@app/common/actions';
@@ -15,7 +16,7 @@ const mapStateToProps = (state: VP.State) => ({
   })),
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   addMessage: (message: VP.Message) => dispatch(addMessage(message)),
 });
 

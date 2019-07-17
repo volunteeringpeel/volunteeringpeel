@@ -1,7 +1,7 @@
 // Library Imports
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { Dispatch } from 'redux';
+import { Action, Dispatch } from 'redux';
 
 // App Imports
 import { loadUser } from '@app/common/utilities';
@@ -11,7 +11,7 @@ const mapStateToProps = (state: VP.State) => ({
   loading: state.loading,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   loadUser: loadUser.bind(null, dispatch),
 });
 

@@ -12,7 +12,7 @@ const mapStateToProps = (state: VP.State) => ({
   messages: state.messages,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<number>) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   dismissMessage: (id: number) => () => dispatch(dismissMessage(id)),
   dismissAllMessages: () => dispatch(dismissAllMessages()),
 });

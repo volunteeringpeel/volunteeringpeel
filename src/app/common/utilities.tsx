@@ -61,7 +61,7 @@ export function pluralize(noun: string, number: number): string {
  * @param dispatch Dispatch to base redux on
  * @returns Promise awaiting success (true) or failure (false)
  */
-export function loadUser(dispatch: Dispatch<VP.State>): Promise<boolean> {
+export function loadUser(dispatch: Dispatch): Promise<boolean> {
   // Check whether there's local storage
   if (!localStorage.getItem('access_token')) return Promise.resolve(false);
   dispatch(loading(true));
@@ -148,13 +148,13 @@ function configureStore(initialState?: VP.State) {
 
     const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-    newStore = createStore<VP.State>(
+    newStore = createStore(
       combineReducers({ ...reducers, router: routerReducer }),
       initialState,
       composeEnhancers(applyMiddleware(...middleware)),
     );
   } else {
-    newStore = createStore<VP.State>(
+    newStore = createStore(
       combineReducers({ ...reducers, router: routerReducer }),
       initialState,
       compose(applyMiddleware(...middleware)),

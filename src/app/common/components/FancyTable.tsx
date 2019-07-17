@@ -1,4 +1,4 @@
-import update from 'immutability-helper'; // tslint:disable-line:import-name
+import update, { Spec } from 'immutability-helper'; // tslint:disable-line:import-name
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Button, Form, Table, TableProps, TableRowProps } from 'semantic-ui-react';
@@ -143,7 +143,9 @@ export default class FancyTable<T> extends AsyncComponent<
       }
 
       // ascending -> asc, descending -> desc
-      const sortDir = this.state.sortDir.substr(0, this.state.sortDir.indexOf('c') + 1);
+      const sortDir = this.state.sortDir.substr(0, this.state.sortDir.indexOf('c') + 1) as
+        | 'asc'
+        | 'desc';
       // overwrite processedData with sorted data
       processedData = _.orderBy(processedData, sortPredicate, [sortDir]);
     }
@@ -155,6 +157,7 @@ export default class FancyTable<T> extends AsyncComponent<
           <Button.Group
             buttons={_.map(this.props.columnDefs, (header, i) => {
               const hidden = this.state.hidden.has(i);
+              const operation = { [hidden ? '$remove' : '$add']: [i] };
               return {
                 key: i,
                 content: typeof header === 'string' ? header : header.name,
@@ -164,9 +167,7 @@ export default class FancyTable<T> extends AsyncComponent<
                   e.stopPropagation();
                   this.setState(
                     update(this.state, {
-                      hidden: {
-                        [hidden ? '$remove' : '$add']: [i],
-                      },
+                      hidden: operation as { [x in '$remove' | '$add']: number[] },
                     }),
                   );
                 },

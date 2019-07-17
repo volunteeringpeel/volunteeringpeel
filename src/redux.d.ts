@@ -15,7 +15,7 @@ declare namespace VP {
     loading: boolean;
     messages: Message[];
     router: {
-      location: Location;
+      location: Location | unknown;
     };
   }
 }
