@@ -84,7 +84,7 @@ export default class Events extends React.Component<
           <Grid.Column>
             <Menu fluid vertical secondary pointing>
               <Route path="/admin/events/-1">
-                {({ match }) => (
+                {({ match }: any) => (
                   <Menu.Item active={!!match} onClick={() => this.props.push('/admin/events/-1')}>
                     <em>Add New Event</em>
                   </Menu.Item>
@@ -92,7 +92,7 @@ export default class Events extends React.Component<
               </Route>
               {this.state.events.map(event => (
                 <Route path={`/admin/events/${event.event_id}`} key={event.event_id}>
-                  {({ match }) => (
+                  {({ match }: any) => (
                     <Menu.Item
                       active={!!match}
                       onClick={() => this.props.push(`/admin/events/${event.event_id}`)}
@@ -107,7 +107,7 @@ export default class Events extends React.Component<
           <Grid.Column stretched>
             <Segment>
               <Route path="/admin/events/:id?">
-                {({ match }) => {
+                {({ match }: any) => {
                   // no selected event (i.e. id is not number/blank)
                   if (!+match.params.id) return <p>Please select an event to edit</p>;
                   // if can't find data deselect

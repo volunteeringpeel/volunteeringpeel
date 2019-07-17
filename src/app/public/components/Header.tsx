@@ -26,7 +26,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
     if (this.props.user.status === 'in') {
       userButton = (
         <Route path="/user">
-          {({ match }) => (
+          {({ match }: any) => (
             <Dropdown item text="Me" className={match ? 'active right' : 'right'}>
               <Dropdown.Menu>
                 <Dropdown.Header
@@ -73,7 +73,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
         <Menu stackable size="large" style={{ marginBottom: 0 }}>
           <Container>
             <Route path="/" exact>
-              {({ match }) => (
+              {({ match }: any) => (
                 <Menu.Item
                   active={!!match}
                   onClick={() => this.props.push('/')}
@@ -85,7 +85,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
             </Route>
             <Menu.Menu position="right">
               <Route path="/about">
-                {({ match }) => (
+                {({ match }: any) => (
                   <Dropdown item text="About" className={match ? 'active' : ''}>
                     <Dropdown.Menu>
                       <Dropdown.Item as="a" onClick={() => this.props.push('/about')}>
@@ -108,14 +108,14 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                 )}
               </Route>
               <Route path="/events">
-                {({ match }) => (
+                {({ match }: any) => (
                   <Menu.Item active={!!match} onClick={() => this.props.push('/events')}>
                     Events
                   </Menu.Item>
                 )}
               </Route>
               <Route path="/contact">
-                {({ match }) => (
+                {({ match }: any) => (
                   <Menu.Item active={!!match} onClick={() => this.props.push('/contact')}>
                     Contact
                   </Menu.Item>
@@ -128,7 +128,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
         <Segment inverted textAlign="center" vertical className="main-header">
           <Route
             path="/:page?/:subpage?"
-            render={({ match }) => {
+            render={({ match }: any) => {
               const page = _.find(routes, ['path', match.url]);
               if (!page) {
                 return <Redirect to="/" />;

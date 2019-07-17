@@ -11,7 +11,7 @@ const mapStateToProps = (state: VP.State) => ({
   user: state.user,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   push: (path: LocationDescriptor) => {
     dispatch(push(path));
   },

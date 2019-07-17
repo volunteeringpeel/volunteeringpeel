@@ -13,7 +13,7 @@ const mapStateToProps = (state: VP.State) => ({
   loading: state.loading,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   loadUser: () => {
     loadUser(dispatch).then(success => {
       if (!success) window.location.replace('/');

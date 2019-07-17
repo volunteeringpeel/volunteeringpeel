@@ -35,7 +35,7 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
       mail_lists: props.user.mail_lists || props.mailListTemplate,
       title: (props.user as VP.Exec).title || null,
       bio: (props.user as VP.Exec).bio || null,
-      show_exec: props.user.role_id === 3 ? (props.user as VP.Exec).show_exec : 0,
+      show_exec: props.user.role_id === 3 ? (props.user as VP.Exec).show_exec : false,
       pic: null,
     };
 

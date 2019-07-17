@@ -11,7 +11,7 @@ const mapStateToProps = (state: VP.State) => ({
   loading: state.loading,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   loadUser: loadUser.bind(null, dispatch),
 });
 

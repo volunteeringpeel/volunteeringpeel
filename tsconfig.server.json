@@ -3,6 +3,7 @@
     "sourceMap": true,
     "noImplicitAny": true,
     "target": "es6",
+    "lib": ["es2017", "scripthost", "dom"],
     "moduleResolution": "node",
     "module": "commonjs",
     "jsx": "react",

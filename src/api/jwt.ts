@@ -17,7 +17,7 @@ export const getSigningKey = async (kid: string): Promise<string> => {
   let err, key;
   [err, key] = await to(asyncSigningKey(kid));
   if (err) throw err;
-  return key.publicKey || key.rsaPublicKey;
+  return (key as jwksRsa.CertSigningKey).publicKey || (key as jwksRsa.RsaSigningKey).rsaPublicKey;
 };
 
 export const verify = async (token: string): Promise<JWTPayload> => {
