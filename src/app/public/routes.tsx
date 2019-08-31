@@ -40,6 +40,14 @@ const routes: Route[] = [
     }),
     title: 'Contact',
   },
+  {
+    path: '/apply',
+    component: reactLoadable({
+      loading: Loading,
+      loader: () => import('@app/public/components/pages/Apply'),
+    }),
+    title: 'Apply',
+  },
   // ABOUT PAGES
   {
     path: '/about',
