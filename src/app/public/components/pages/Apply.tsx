@@ -2,11 +2,7 @@
 import * as React from 'react';
 import { Button, Container, Header, Segment } from 'semantic-ui-react';
 
-// Component Imports
-// import FormContact from '@app/public/components/modules/FormContact';
-// import FormRequest from '@app/public/components/modules/FormRequest';
-
-export default class Contact extends React.Component {
+export default class Apply extends React.Component {
   public render() {
     return (
       <Container style={{ padding: '4em 0em' }}>
@@ -45,7 +41,6 @@ export default class Contact extends React.Component {
           </ul>
           <p>You will be responsible for the following::</p>
           <ul>
-            <li>Be grade 9 or 10 in or near the Peel Region</li>
             <li>Working closely with the rest of the leadership team to identify areas of improvement on the website.</li>
             <li>Fix bugs, and actively maintain the website.</li>
             <li>Add new enhancements, both front-end and back-end in order to make the user experience for both our executives and volunteers better.</li>
