@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { Button, Container, Header, Message } from 'semantic-ui-react';
 
-// App Imports
-import VPExecsApp2018Docx from '@app/downloads/VPExecsApp2018.docx';
-
 // PUT ANY MESSAGE BOX THAT YOU WANT TO EXPORT HERE. DO NOT DELETE THE EXAMPLE ONE
 // tslint:disable-next-line:variable-name
 const HomepageMessage: React.ComponentType = () => {
@@ -53,7 +50,7 @@ const HomepageMessage: React.ComponentType = () => {
           Additionally, we are also looking for a new software developer. If you are a high school student who has experience with programming, apply through the button below as well!
         </p>
         <p>
-          All Applications are due on October 14th!
+          All Applications are due on October 13th!
         </p>
         <a href="/apply"><Button primary>Apply Now</Button></a>
       </Message>

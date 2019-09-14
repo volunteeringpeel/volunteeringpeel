@@ -23,16 +23,16 @@ export default class Contact extends React.Component {
           <ul>
             <li>💒Get volunteer hours for your service! You will receive hours for working at home and attending our biweekly meetings. Our executive members log hundreds of hours each year!</li>
             <li>👨‍💼Develop valuable leadership experience! As a part of our executive team, you will be leading volunteers and learn how to facilitate large groups of people.</li>
-            <li>🌎 Gain experience in the real world! Throughout each year, we correspond with over 30 organizers across the GTA to provide volunteers for over 40 events! We also regularly work with the City, CVC, TRCA, and our other partners!</li>
-            <li>🙌 Be part of a tight family! Due to our small team of executives, you’ll develop a close friendship with the rest of the team. We support each other, as well as going out to do several team bonding activities.</li>
+            <li>🌎 Gain experience in the real world! Throughout each year, we correspond with over 30 organizers across the GTA to provide volunteers for over 40 events to 2000 students annually! We also regularly work with the City, CVC, TRCA, and our other partners!</li>
+            <li>🙌 Be part of a tight family! Due to our small team of executives, you’ll develop a close friendship with the rest of the team. We support each other, and do several team bonding activities.</li>
           </ul>
           <p>To apply, you must:</p>
           <ul>
             <li>Be grade 9 or 10 in or near the Peel Region</li>
-            <li>Fill out and submit the form below, before October 14th!</li>
+            <li>Fill out and email us the application below, before October 13th!</li>
             <li>We will get back to everyone. However, only successful candidates will be invited for an in person interview.</li>
           </ul>
-          <Button primary>Coming September 14th!</Button>
+          <a href="https://drive.google.com/file/d/1tNtcJ8uGT6Z3jRW8fW58esyhyyH9C3-k/view?usp=sharing"><Button primary>View Application</Button></a>
         </Segment>
         <Segment vertical>
           <Header as="h2">Volunteer Full-Stack Web Developer</Header>
@@ -57,7 +57,7 @@ export default class Contact extends React.Component {
             <li>Backend: Azure Functions on C# .NET Core, Azure SQL Server</li>
           </ul>
           <p>If you do not have these skill sets, and you think you have valuable skills somewhere else, we encourage you to still apply!</p>
-          <Button primary>Coming September 14th!</Button>
+          <Button primary>Coming September 15th!</Button>
         </Segment>
       </Container>
     );
