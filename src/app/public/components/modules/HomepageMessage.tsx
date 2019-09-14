@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { Button, Container, Header, Message } from 'semantic-ui-react';
 
-// App Imports
-import VPExecsApp2018Docx from '@app/downloads/VPExecsApp2018.docx';
-
 // PUT ANY MESSAGE BOX THAT YOU WANT TO EXPORT HERE. DO NOT DELETE THE EXAMPLE ONE
 // tslint:disable-next-line:variable-name
 const HomepageMessage: React.ComponentType = () => {
@@ -45,16 +42,17 @@ const HomepageMessage: React.ComponentType = () => {
   return (
     <Container style={{ paddingTop: '1em' }}>
       <Message>
-        <Header as="h3">Apply to be part of the exec team!</Header>
+        <Header as="h3">Apply to be part of the VP team!</Header>
         <p>
-          Volunteering Peel Committee Member applications are out now! If you're a grade 9 or 10
-          student who enjoys volunteering and leading volunteers, meeting new people and getting
-          involved, then apply for the Volunteering Peel Executive team. Applications are due on
-          October 27th!
+          Volunteering Peel Executive Applications are out now! If you're a grade 9 or 10 student who enjoys volunteering and leading volunteers, meeting new people and getting involved, then apply for the Volunteering Peel Executive team. 
         </p>
-        <a href={VPExecsApp2018Docx}>
-          <Button primary>Apply Now</Button>
-        </a>
+        <p>
+          Additionally, we are also looking for a new software developer. If you are a high school student who has experience with programming, apply through the button below as well!
+        </p>
+        <p>
+          All Applications are due on October 13th!
+        </p>
+        <a href="/apply"><Button primary>Apply Now</Button></a>
       </Message>
     </Container>
   );
