@@ -116,7 +116,7 @@ declare namespace VP {
     shift: Shift;
     parentEvent: {
       event_id: number;
-      name: number;
+      name: string;
     };
   }
 
