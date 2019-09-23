@@ -64,7 +64,7 @@ export default class Apply extends React.Component {
             </li>
           </ul>
           <a href="https://drive.google.com/file/d/1tNtcJ8uGT6Z3jRW8fW58esyhyyH9C3-k/view?usp=sharing">
-            <Button primary>View Application</Button>
+            <Button primary>View Application (must use personal email)</Button>
           </a>
         </Segment>
         <Segment vertical>
