@@ -1,5 +1,5 @@
 // Library Imports
-import { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as Promise from 'bluebird';
 import { connectRouter, push, routerMiddleware } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
@@ -20,6 +20,23 @@ import {
   logout,
 } from '@app/common/actions';
 import * as reducers from '@app/common/reducers';
+
+export const API_BASE =
+  process.env.NODE_ENV === 'production'
+    ? 'https://api.volunteeringpeel.org/v2'
+    : 'http://localhost:7071/v2';
+export const getAPI = (endpoint: string, config?: AxiosRequestConfig) =>
+  axios.get(`${API_BASE}/${endpoint}`, config);
+export const putAPI = (endpoint: string, data?: any, config?: AxiosRequestConfig) =>
+  axios.put(`${API_BASE}/${endpoint}`, data, config);
+export const postAPI = (endpoint: string, data?: any, config?: AxiosRequestConfig) =>
+  axios.post(`${API_BASE}/${endpoint}`, data, config);
+
+export const BLOB_BASE =
+  process.env.NODE_ENV === 'production'
+    ? 'https://volunteeringpeel.blob.core.windows.net/website-upload'
+    : 'http://localhost:10000';
+export const blobSrc = (file: string) => `${BLOB_BASE}/${file}`;
 
 // take a number and pad it with one zero if it needs to be (i.e. 1 => 01, 11 => 11, 123 => 123)
 const pad = (number: number) => number.toString().padStart(2, '0');

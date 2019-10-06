@@ -1,11 +1,13 @@
 // Library Imports
-import axios from 'axios';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Link } from 'react-router-dom';
 import { Accordion, Container, Segment } from 'semantic-ui-react';
+
+// App Imports
+import { getAPI } from '@app/common/utilities';
 
 interface FAQProps {
   loading: (status: boolean) => any;
@@ -26,7 +28,7 @@ export default class FAQPage extends React.Component<FAQProps, FAQState> {
 
   public componentDidMount() {
     Promise.resolve(() => this.props.loading(true))
-      .then(() => axios.get('/api/public/faq'))
+      .then(() => getAPI('faq'))
       .then(res => {
         this.props.loading(false);
         this.setState({ faqs: res.data.data });

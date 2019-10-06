@@ -1,15 +1,17 @@
 // Library Imports
-import axios, { AxiosError } from 'axios';
-import { LocationDescriptor } from 'history';
+import { AxiosError } from 'axios';
 import immutabilityHelper from 'immutability-helper';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Redirect } from 'react-router';
 import { Container, Form, Segment } from 'semantic-ui-react';
 
+// App Imports
+import { putAPI } from '@app/common/utilities';
+
 interface UserProfileProps {
   user: VP.UserState;
-  push: (path: LocationDescriptor) => void;
+  push: (path: string) => void;
   loadUser: () => void;
   addMessage: (message: VP.Message) => void;
 }
@@ -92,10 +94,9 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       bio: this.state.bio,
     };
 
-    axios
-      .post('/api/user/current', data, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
-      })
+    putAPI('me', data, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
+    })
       .then(res => {
         this.props.addMessage({ message: res.data.data, severity: 'positive' });
         this.props.loadUser();
