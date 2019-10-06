@@ -1,6 +1,6 @@
 // Library Imports
+import { push } from 'connected-react-router';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
 import { Dispatch } from 'redux';
 
 // App Imports

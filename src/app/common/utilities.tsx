@@ -1,12 +1,12 @@
 // Library Imports
 import { AxiosError, AxiosResponse } from 'axios';
 import * as Promise from 'bluebird';
+import { connectRouter, push, routerMiddleware } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import * as moment from 'moment';
 import 'moment-timezone';
 import * as React from 'react';
 import * as ReactGA from 'react-ga';
-import { push, routerMiddleware, routerReducer } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore, Dispatch, Store } from 'redux';
 import reduxThunk from 'redux-thunk';
 
@@ -149,13 +149,13 @@ function configureStore(initialState?: VP.State) {
     const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
     newStore = createStore(
-      combineReducers({ ...reducers, router: routerReducer }),
+      combineReducers({ ...reducers, router: connectRouter(history) }),
       initialState,
       composeEnhancers(applyMiddleware(...middleware)),
     );
   } else {
     newStore = createStore(
-      combineReducers({ ...reducers, router: routerReducer }),
+      combineReducers({ ...reducers, router: connectRouter(history) }),
       initialState,
       compose(applyMiddleware(...middleware)),
     );
@@ -165,7 +165,9 @@ function configureStore(initialState?: VP.State) {
     // Enable Webpack hot module replacement for reducers
     module.hot.accept('./reducers', () => {
       const nextRootReducer = require('./reducers');
-      newStore.replaceReducer(combineReducers({ ...nextRootReducer, router: routerReducer }));
+      newStore.replaceReducer(
+        combineReducers({ ...nextRootReducer, router: connectRouter(history) }),
+      );
     });
   }
 

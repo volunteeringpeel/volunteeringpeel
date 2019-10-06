@@ -1,8 +1,8 @@
 // Library Imports
+import { push } from 'connected-react-router';
 import { LocationDescriptor } from 'history';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { push } from 'react-router-redux';
 import { Dispatch } from 'redux';
 
 // App Imports
@@ -13,7 +13,7 @@ import Events from '@app/admin/components/pages/Events';
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   loading: (status: boolean) => dispatch(loading(status)),
-  push: (path: LocationDescriptor) => {
+  push: (path: string) => {
     dispatch(push(path));
   },
 });

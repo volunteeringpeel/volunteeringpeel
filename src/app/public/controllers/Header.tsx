@@ -1,8 +1,7 @@
 // Library Imports
-import { LocationDescriptor } from 'history';
+import { push } from 'connected-react-router';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { push } from 'react-router-redux';
 import { Dispatch } from 'redux';
 
 // Component Imports
@@ -13,7 +12,7 @@ const mapStateToProps = (state: VP.State) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  push: (path: LocationDescriptor) => {
+  push: (path: string) => {
     dispatch(push(path));
   },
 });
