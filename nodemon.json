@@ -1,6 +1,4 @@
 {
-  "watch": ["src"],
-  "ignore": ["src/app"],
-  "ext": "ts",
-  "exec": "ts-node -P tsconfig.server.json -r tsconfig-paths/register -r dotenv/config --files ./src/index.ts"
+  "watch": ["webpack.*.js"],
+  "exec": "webpack-dev-server --config webpack.dev.js"
 }

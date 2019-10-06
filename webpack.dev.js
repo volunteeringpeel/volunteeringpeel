@@ -9,15 +9,20 @@ const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 
 
 // grab the common config and...
 module.exports = merge(common, {
-  // fix things by adding a bunch of middleware
-  // (stuff that makes it better, but slower so we don't include it in production)
-  entry: {
-    app: ['webpack-hot-middleware/client', './public/index.tsx'],
-    admin: ['webpack-hot-middleware/client', './admin/index.tsx'],
-  },
+  mode: 'development',
 
   // obviously need this for debugging
   devtool: 'source-map',
+
+  devServer: {
+    contentBase: './dist',
+    hot: true,
+    port: 19847,
+    historyApiFallback: {
+      verbose: true,
+      rewrites: [{ from: /^\/admin/, to: '/admin.html' }, { from: /.*/, to: '/index.html' }],
+    },
+  },
 
   module: {
     rules: [
@@ -51,13 +56,13 @@ module.exports = merge(common, {
           // load directly into the javascript
           { loader: 'style-loader' },
           // make into css with sourcemap
-          { loader: 'css-loader', options: { sourceMap: true } },
+          { loader: 'css-loader' /* options: { sourceMap: true } */ },
           // make less into css
           {
             loader: 'less-loader',
             options: {
               // cause i'm bad and debugging.
-              sourceMap: true,
+              // sourceMap: true,
               // support lotsa browsers
               plugins: [new LessPluginAutoPrefix({ browsers: autoprefixerBrowsers })],
             },
@@ -71,7 +76,7 @@ module.exports = merge(common, {
         use: [
           { loader: 'cache-loader' },
           { loader: 'style-loader' },
-          { loader: 'css-loader', options: { sourceMap: true } },
+          { loader: 'css-loader' /* options: { sourceMap: true } */ },
         ],
       },
     ],
@@ -85,9 +90,4 @@ module.exports = merge(common, {
     // everything is relative to /
     publicPath: '/',
   },
-
-  plugins: [
-    // enable hot-module thingies.
-    new webpack.HotModuleReplacementPlugin(),
-  ],
 });

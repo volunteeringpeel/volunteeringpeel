@@ -13,6 +13,8 @@ const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 
 
 // grab the common config and...
 module.exports = merge(common, {
+  mode: 'production',
+
   // devtool: 'source-map', // turn on sourcemap for debugging
 
   module: {
@@ -89,12 +91,6 @@ module.exports = merge(common, {
     new webpack.HashedModuleIdsPlugin(),
     new ExtractTextPlugin('style.css'), // make sure css is separate from js
     new OptimizeCssnanoPlugin(),
-    new webpack.DefinePlugin({
-      'process.env': {
-        // set environment
-        NODE_ENV: JSON.stringify('production'), // make sure that we think we're in prod
-      },
-    }),
     new MinifyPlugin({
       mangle: false,
     }),
