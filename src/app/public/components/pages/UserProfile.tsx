@@ -94,16 +94,14 @@ export default class UserProfile extends React.Component<UserProfileProps, UserP
       bio: this.state.bio,
     };
 
-    putAPI('me', data, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
-    })
+    putAPI('me')
       .then(res => {
         this.props.addMessage({ message: res.data.data, severity: 'positive' });
         this.props.loadUser();
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
-          message: error.response.data.error,
+          message: error.response.data.message,
           more: error.response.data.details,
           severity: 'negative',
         });

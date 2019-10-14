@@ -56,7 +56,7 @@ export default class SponsorModal extends React.Component<SponsorModalProps, Spo
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
-          message: error.response.data.error || error.name,
+          message: error.response.data.message || error.name,
           more: error.response.data.details || error.message,
           severity: 'negative',
         });

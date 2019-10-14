@@ -127,7 +127,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
             });
           } else {
             this.props.addMessage({
-              message: data.error,
+              message: data.message,
               more: data.details,
               severity: 'negative',
             });
@@ -166,7 +166,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       // global error, handle
       if (data.status === 'error') {
         return this.props.addMessage({
-          message: data.error,
+          message: data.message,
           more: data.details,
           severity: 'negative',
         });
@@ -237,7 +237,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     return this.recieveMessage({
       action: 'global',
       status: 'error',
-      error: 'Recieved response with no known request',
+      message: 'Recieved response with no known request',
       details: JSON.stringify(data),
     });
   }
@@ -271,7 +271,11 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
             execList: data.data.execList,
           });
         } else {
-          this.props.addMessage({ message: data.error, more: data.details, severity: 'negative' });
+          this.props.addMessage({
+            message: data.message,
+            more: data.details,
+            severity: 'negative',
+          });
         }
       },
     );
@@ -299,7 +303,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
           }
           if (data.status === 'error') {
             this.props.addMessage({
-              message: data.error,
+              message: data.message,
               more: data.details,
               severity: 'negative',
             });
@@ -445,7 +449,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         } else {
                           this.setState({ addState: 'negative' });
                           this.props.addMessage({
-                            message: data.error,
+                            message: data.message,
                             more: data.details,
                             severity: 'negative',
                           });
@@ -462,9 +466,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                     const pdf: pdfMake.TDocumentDefinitions = {
                       pageSize: pdfMake.PageSize.LETTER,
                       header: () => ({
-                        text: `\n${this.state.activeShift.name} | Shift ${
-                          this.state.activeShift.shift_num
-                        }`,
+                        text: `\n${this.state.activeShift.name} | Shift ${this.state.activeShift.shift_num}`,
                         alignment: 'center',
                       }),
                       footer: (currentPage: number, pageCount: number) => ({
@@ -512,9 +514,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                     };
                     // attendance Event Name # -> attendance-event-name-#
                     const filename = _.kebabCase(
-                      `attendance ${this.state.activeShift.name} ${
-                        this.state.activeShift.shift_num
-                      }`,
+                      `attendance ${this.state.activeShift.name} ${this.state.activeShift.shift_num}`,
                     );
                     pdfMake.createPdf(pdf).download(`${filename}.pdf`);
                   }}
@@ -530,9 +530,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         const link = document.createElement('a');
                         // attendance Event Name # -> attendance-event-name-#
                         const filename = _.kebabCase(
-                          `attendance ${this.state.activeShift.name} ${
-                            this.state.activeShift.shift_num
-                          }`,
+                          `attendance ${this.state.activeShift.name} ${this.state.activeShift.shift_num}`,
                         );
                         link.download = `${filename}.csv`;
                         link.href = `data:text/csv;charset=UTF-8,${encodeURIComponent(res.data)}`;
@@ -552,9 +550,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         value={_.join(
                           this.state.attendance.map(
                             entry =>
-                              `${entry.user.first_name} ${entry.user.last_name} <${
-                                entry.user.email
-                              }>`,
+                              `${entry.user.first_name} ${entry.user.last_name} <${entry.user.email}>`,
                           ),
                           ', ',
                         )}
@@ -598,7 +594,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         } else {
                           this.setState({ addState: 'negative' });
                           this.props.addMessage({
-                            message: data.error,
+                            message: data.message,
                             more: data.details,
                             severity: 'negative',
                           });
@@ -790,7 +786,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                                 } else {
                                   this.setState({ addState: 'negative' });
                                   this.props.addMessage({
-                                    message: data.error,
+                                    message: data.message,
                                     more: data.details,
                                     severity: 'negative',
                                   });

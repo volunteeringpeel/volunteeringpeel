@@ -62,7 +62,7 @@ export default class AdminFAQ extends React.Component<FAQProps, FAQState> {
     )
       .catch((error: AxiosError) => {
         this.props.addMessage({
-          message: error.response.data.error,
+          message: error.response.data.message,
           more: error.response.data.details,
           severity: 'negative',
         });

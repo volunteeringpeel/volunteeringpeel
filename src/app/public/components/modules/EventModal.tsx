@@ -21,7 +21,7 @@ import {
 } from 'semantic-ui-react';
 
 // App Imports
-import { listify, pluralize } from '@app/common/utilities';
+import { listify, pluralize, postAPI } from '@app/common/utilities';
 
 // Component Imports
 import ProgressColor from '@app/public/components/blocks/ProgressColor';
@@ -63,19 +63,13 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
   public submit(): PromiseLike<any> {
     return Promise.resolve(this.setState({ submitting: true }))
       .then(() =>
-        axios.post(
-          `/api/signup`,
-          {
-            shifts: _.map(
-              this.state.selectedShifts,
-              num => _.find(this.props.event.shifts, ['shift_num', num]).shift_id,
-            ),
-            add_info: this.state.add_info,
-          },
-          {
-            headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
-          },
-        ),
+        postAPI(`/api/signup`, {
+          shifts: _.map(
+            this.state.selectedShifts,
+            num => _.find(this.props.event.shifts, ['shift_num', num]).shift_id,
+          ),
+          add_info: this.state.add_info,
+        }),
       )
       .then(res => {
         if (res.data.status === 'success') {
@@ -85,7 +79,7 @@ export default class EventModal extends React.Component<EventModalProps, EventMo
           this.handleClose();
         } else {
           this.setState({
-            message: { message: res.data.error, more: res.data.details, severity: 'negative' },
+            message: { message: res.data.message, more: res.data.details, severity: 'negative' },
           });
         }
       })

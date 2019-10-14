@@ -177,7 +177,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
-          message: error.response.data.error,
+          message: error.response.data.message,
           more: error.response.data.details,
           severity: 'negative',
         });
@@ -200,7 +200,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
-          message: error.response.data.error,
+          message: error.response.data.message,
           more: error.response.data.details,
           severity: 'negative',
         });

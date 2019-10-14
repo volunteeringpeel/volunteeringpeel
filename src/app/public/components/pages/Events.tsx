@@ -41,16 +41,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
 
   public refresh() {
     return Promise.resolve(this.setState({ loading: true }))
-      .then(() =>
-        getAPI('event?filter=active', {
-          headers: {
-            // use authorization if it exists
-            Authorization: localStorage.getItem('id_token')
-              ? `Bearer ${localStorage.getItem('id_token')}`
-              : '',
-          },
-        }),
-      )
+      .then(() => getAPI('event?filter=active'))
       .then(res => {
         const sortedEvents = _.orderBy(res.data.data, ['shifts[0].start_time'], 'asc');
         this.setState({ events: sortedEvents, loading: false });

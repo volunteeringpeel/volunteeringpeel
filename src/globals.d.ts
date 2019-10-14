@@ -12,7 +12,7 @@ declare namespace VP {
 
   interface APIDataError {
     status: 'error';
-    error: string;
+    message: string;
     details: string;
   }
 

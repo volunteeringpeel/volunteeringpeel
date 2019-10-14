@@ -82,7 +82,7 @@ export default class UserModal extends React.Component<UserModalProps, UserModal
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
-          message: error.response.data.error || error.name,
+          message: error.response.data.message || error.name,
           more: error.response.data.details || error.message,
           severity: 'negative',
         });

@@ -37,7 +37,7 @@ export default class Images extends React.Component<ImagesProps, ImagesState> {
       .then(res => this.setState({ images: res.data.data }))
       .catch((error: AxiosError) => {
         this.props.addMessage({
-          message: error.response.data.error,
+          message: error.response.data.message,
           more: error.response.data.details,
           severity: 'negative',
         });
@@ -60,7 +60,7 @@ export default class Images extends React.Component<ImagesProps, ImagesState> {
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
-          message: error.response.data.error,
+          message: error.response.data.message,
           more: error.response.data.details,
           severity: 'negative',
         });
@@ -84,7 +84,7 @@ export default class Images extends React.Component<ImagesProps, ImagesState> {
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
-          message: error.response.data.error,
+          message: error.response.data.message,
           more: error.response.data.details,
           severity: 'negative',
         });
