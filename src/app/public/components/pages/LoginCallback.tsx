@@ -7,11 +7,13 @@ interface LoginCallbackProps {
 
 export default class LoginCallback extends React.Component<LoginCallbackProps> {
   public handleAuthentication() {
-    // TODO: IMPLEMENT
+    const hash = JSON.parse(decodeURIComponent(this.props.location.hash.substr(7)));
+    console.log(hash);
+    if (hash.authenticationToken) location.replace('/');
   }
 
   public componentDidMount() {
-    if (/access_token|id_token|error/.test(this.props.location.hash)) {
+    if (/authenticationToken|error/.test(this.props.location.hash)) {
       this.handleAuthentication();
     }
   }

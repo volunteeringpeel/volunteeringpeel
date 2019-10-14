@@ -12,6 +12,7 @@ import routes from '@app/public/routes';
 
 // Controller Imports
 import MessageBox from '@app/common/controllers/MessageBox';
+import { API_BASE } from '@app/common/utilities';
 
 interface HeaderComponentProps {
   user: VP.UserState;
@@ -62,7 +63,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
       );
     } else if (this.props.user.status === 'out') {
       userButton = (
-        <Menu.Item as="a" onClick={this.login}>
+        <Menu.Item as="a" href={`${API_BASE}/.auth/login/google?post_login_redirect_url=${document.location.origin}/callback`}>
           Login
         </Menu.Item>
       );
