@@ -20,14 +20,6 @@ interface HeaderComponentProps {
 }
 
 class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderComponentProps> {
-  public login() {
-    // TODO: IMPLEMENT
-  }
-
-  public logout() {
-    // TODO: IMPLEMENT
-  }
-
   public render() {
     let userButton;
 
@@ -53,7 +45,10 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                   </Dropdown.Item>
                 )}
                 <Dropdown.Divider />
-                <Dropdown.Item as="a" onClick={this.logout}>
+                <Dropdown.Item
+                  as="a"
+                  href={`${document.location.origin}/.auth/logout?post_logout_redirect_url=/`}
+                >
                   Logout
                 </Dropdown.Item>
               </Dropdown.Menu>
@@ -63,7 +58,10 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
       );
     } else if (this.props.user.status === 'out') {
       userButton = (
-        <Menu.Item as="a" href={`${API_BASE}/.auth/login/google?post_login_redirect_url=${document.location.origin}/callback`}>
+        <Menu.Item
+          as="a"
+          href={`${document.location.origin}/.auth/login/google?post_login_redirect_url=${document.location.origin}/callback`}
+        >
           Login
         </Menu.Item>
       );
