@@ -127,7 +127,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
             });
           } else {
             this.props.addMessage({
-              message: data.error,
+              message: data.message,
               more: data.details,
               severity: 'negative',
             });
@@ -166,7 +166,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
       // global error, handle
       if (data.status === 'error') {
         return this.props.addMessage({
-          message: data.error,
+          message: data.message,
           more: data.details,
           severity: 'negative',
         });
@@ -204,9 +204,6 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
         // flashy animate
         const color = '#276f86';
         const backgroundColor = '#f8ffff';
-        // note to self:
-        // once Microsoft/TSJS-lib-generator#567 is merged or Microsoft/TypeScript#26073
-        // is otherwise closed, remove @types/web-animations-js and upgrade to typescript@3
         document.querySelector(`.cell-${command[1]}-${command[2]}`).animate(
           [
             {
@@ -240,7 +237,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
     return this.recieveMessage({
       action: 'global',
       status: 'error',
-      error: 'Recieved response with no known request',
+      message: 'Recieved response with no known request',
       details: JSON.stringify(data),
     });
   }
@@ -274,7 +271,11 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
             execList: data.data.execList,
           });
         } else {
-          this.props.addMessage({ message: data.error, more: data.details, severity: 'negative' });
+          this.props.addMessage({
+            message: data.message,
+            more: data.details,
+            severity: 'negative',
+          });
         }
       },
     );
@@ -302,7 +303,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
           }
           if (data.status === 'error') {
             this.props.addMessage({
-              message: data.error,
+              message: data.message,
               more: data.details,
               severity: 'negative',
             });
@@ -448,7 +449,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         } else {
                           this.setState({ addState: 'negative' });
                           this.props.addMessage({
-                            message: data.error,
+                            message: data.message,
                             more: data.details,
                             severity: 'negative',
                           });
@@ -463,60 +464,57 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                   onClick={() => {
                     // use sample row to get shift/event data
                     const pdf: pdfMake.TDocumentDefinitions = {
-                      pageSize: 'LETTER',
-                      header: {
-                        text: `\n${this.state.activeShift.name} | Shift ${
-                          this.state.activeShift.shift_num
-                        }`,
-                        alignment: 'center',
-                      },
-                      footer: (currentPage: number, pageCount: number) => ({
-                        text: currentPage + ' of ' + pageCount,
+                      pageSize: pdfMake.PageSize.LETTER,
+                      header: () => ({
+                        text: `\n${this.state.activeShift.name} | Shift ${this.state.activeShift.shift_num}`,
                         alignment: 'center',
                       }),
-                      content: {
-                        table: {
-                          headerRows: 1,
-                          widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
-
-                          body: [
-                            // header row
-                            [
-                              'First',
-                              'Last',
-                              'Phone #1',
-                              'Phone #2',
-                              'Check-In Time',
-                              'Check-Out Time',
-                            ].map(text => ({
-                              text,
-                              bold: true,
-                              alignment: 'center',
-                              noWrap: true,
-                            })),
-                            // body rows
-                            ..._.map(
-                              _.sortBy(this.state.attendance, entry =>
-                                entry.user.first_name ? entry.user.first_name.toLowerCase() : '',
+                      footer: (currentPage: number, pageCount: number) => ({
+                        text: `${currentPage} of ${pageCount}`,
+                        alignment: 'center',
+                      }),
+                      content: [
+                        {
+                          table: {
+                            headerRows: 1,
+                            widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                            body: [
+                              // header row
+                              [
+                                'First',
+                                'Last',
+                                'Phone #1',
+                                'Phone #2',
+                                'Check-In Time',
+                                'Check-Out Time',
+                              ].map(text => ({
+                                text,
+                                bold: true,
+                                alignment: 'center',
+                                noWrap: true,
+                              })),
+                              // body rows
+                              ..._.map(
+                                _.sortBy(this.state.attendance, entry =>
+                                  entry.user.first_name ? entry.user.first_name.toLowerCase() : '',
+                                ),
+                                entry => [
+                                  entry.user.first_name,
+                                  entry.user.last_name,
+                                  entry.user.phone_1 || '',
+                                  entry.user.phone_2 || '',
+                                  '',
+                                  '',
+                                ],
                               ),
-                              entry => [
-                                entry.user.first_name,
-                                entry.user.last_name,
-                                entry.user.phone_1 || '',
-                                entry.user.phone_2 || '',
-                                '',
-                                '',
-                              ],
-                            ),
-                          ],
+                            ],
+                          },
                         },
-                      },
+                      ],
                     };
                     // attendance Event Name # -> attendance-event-name-#
                     const filename = _.kebabCase(
-                      `attendance ${this.state.activeShift.name} ${
-                        this.state.activeShift.shift_num
-                      }`,
+                      `attendance ${this.state.activeShift.name} ${this.state.activeShift.shift_num}`,
                     );
                     pdfMake.createPdf(pdf).download(`${filename}.pdf`);
                   }}
@@ -532,9 +530,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         const link = document.createElement('a');
                         // attendance Event Name # -> attendance-event-name-#
                         const filename = _.kebabCase(
-                          `attendance ${this.state.activeShift.name} ${
-                            this.state.activeShift.shift_num
-                          }`,
+                          `attendance ${this.state.activeShift.name} ${this.state.activeShift.shift_num}`,
                         );
                         link.download = `${filename}.csv`;
                         link.href = `data:text/csv;charset=UTF-8,${encodeURIComponent(res.data)}`;
@@ -554,9 +550,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         value={_.join(
                           this.state.attendance.map(
                             entry =>
-                              `${entry.user.first_name} ${entry.user.last_name} <${
-                                entry.user.email
-                              }>`,
+                              `${entry.user.first_name} ${entry.user.last_name} <${entry.user.email}>`,
                           ),
                           ', ',
                         )}
@@ -600,7 +594,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                         } else {
                           this.setState({ addState: 'negative' });
                           this.props.addMessage({
-                            message: data.error,
+                            message: data.message,
                             more: data.details,
                             severity: 'negative',
                           });
@@ -792,7 +786,7 @@ export default class Attendance extends React.Component<AttendanceProps, Attenda
                                 } else {
                                   this.setState({ addState: 'negative' });
                                   this.props.addMessage({
-                                    message: data.error,
+                                    message: data.message,
                                     more: data.details,
                                     severity: 'negative',
                                   });

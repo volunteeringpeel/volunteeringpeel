@@ -12,6 +12,7 @@
     "no-implicit-dependencies": false,
     "one-variable-per-declaration": false,
     "array-type": [true, "array"],
-    "no-namespace": [true, "allow-declarations"]
+    "no-namespace": [true, "allow-declarations"],
+    "prefer-template": { "options": "allow-single-concat" }
   }
 }

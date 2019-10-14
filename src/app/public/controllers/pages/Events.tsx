@@ -1,5 +1,6 @@
 // Library Imports
-import { connect, Dispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 
 // App Imports
 import { addMessage } from '@app/common/actions';
@@ -8,7 +9,7 @@ import { addMessage } from '@app/common/actions';
 import { loadUser } from '@app/common/utilities';
 import Events from '@app/public/components/pages/Events';
 
-const mapDispatchToProps = (dispatch: Dispatch<VP.State>) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
   loadUser: loadUser.bind(null, dispatch),
   addMessage: (message: VP.Message) => dispatch(addMessage(message)),
 });

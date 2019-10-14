@@ -2,16 +2,19 @@ const path = require('path');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const LessPluginAutoPrefix = require('less-plugin-autoprefix');
 const MinifyPlugin = require('babel-minify-webpack-plugin');
+const OptimizeCssnanoPlugin = require('@intervolga/optimize-cssnano-plugin');
 
 // this was copypasted from a faq should cover just about everybody ever
 const autoprefixerBrowsers = ['last 2 versions', '> 1%', 'opera 12.1', 'bb 10', 'android 4'];
 
 // grab the common config and...
 module.exports = merge(common, {
+  mode: 'production',
+
   // devtool: 'source-map', // turn on sourcemap for debugging
 
   module: {
@@ -39,35 +42,33 @@ module.exports = merge(common, {
       {
         // for less files (fancy css)...
         test: /\.less$/,
-        // make sure to put them in a separate file,
-        use: ExtractTextPlugin.extract({
-          // if something goes wrong don't put in separate file,
-          fallback: 'style-loader',
-          use: [
-            { loader: 'cache-loader' },
-            // use css. also sourcemap.
-            { loader: 'css-loader', options: { minimize: true } },
-            {
-              // parse less for css-loader
-              loader: 'less-loader',
-              options: {
-                // source map for debugging
-                sourceMap: true,
-                // support all the browsers in the list up there
-                plugins: [new LessPluginAutoPrefix({ browsers: autoprefixerBrowsers })],
-              },
+        use: [
+          // make sure to put them in a separate file,
+          { loader: MiniCssExtractPlugin.loader },
+          { loader: 'cache-loader' },
+          // use css. also sourcemap.
+          { loader: 'css-loader' },
+          {
+            // parse less for css-loader
+            loader: 'less-loader',
+            options: {
+              // source map for debugging
+              // sourceMap: true,
+              // support all the browsers in the list up there
+              plugins: [new LessPluginAutoPrefix({ browsers: autoprefixerBrowsers })],
             },
-          ],
-        }),
+          },
+        ],
       },
 
       {
         // library css files
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [{ loader: 'cache-loader' }, { loader: 'css-loader', options: { minimize: true } }],
-        }),
+        use: [
+          { loader: MiniCssExtractPlugin.loader },
+          { loader: 'cache-loader' },
+          { loader: 'css-loader' },
+        ],
       },
     ],
   },
@@ -80,18 +81,20 @@ module.exports = merge(common, {
     // everything is relative to /
     publicPath: '/',
   },
+
   plugins: [
     // delete old files
-    new CleanWebpackPlugin([path.resolve(__dirname, 'dist', 'app')], { exclude: ['upload'] }),
+    new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ['**/*', '!upload'] }),
     // use special module ids for caching
     new webpack.HashedModuleIdsPlugin(),
-    new ExtractTextPlugin('style.css'), // make sure css is separate from js
-    new webpack.DefinePlugin({
-      'process.env': {
-        // set environment
-        NODE_ENV: JSON.stringify('production'), // make sure that we think we're in prod
-      },
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // all options are optional
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+      ignoreOrder: false, // Enable to remove warnings about conflicting order
     }),
+    new OptimizeCssnanoPlugin(),
     new MinifyPlugin({
       mangle: false,
     }),

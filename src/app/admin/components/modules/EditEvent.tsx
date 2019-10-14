@@ -1,7 +1,7 @@
 // Library Imports
 import axios, { AxiosError } from 'axios';
 import * as Bluebird from 'bluebird';
-import update, { Query } from 'immutability-helper'; // tslint:disable-line:import-name
+import update, { Spec } from 'immutability-helper'; // tslint:disable-line:import-name
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
@@ -97,7 +97,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       'shift_num',
       this.state.selectedShiftNum,
     ]);
-    let newState: Query<any> = {
+    let newState: Spec<EditEventState, any> = {
       [name]: {
         $set: value,
       },
@@ -177,7 +177,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
-          message: error.response.data.error,
+          message: error.response.data.message,
           more: error.response.data.details,
           severity: 'negative',
         });
@@ -200,7 +200,7 @@ export default class EditEvent extends React.Component<EditEventProps, EditEvent
       })
       .catch((error: AxiosError) => {
         this.props.addMessage({
-          message: error.response.data.error,
+          message: error.response.data.message,
           more: error.response.data.details,
           severity: 'negative',
         });

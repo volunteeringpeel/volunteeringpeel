@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { Container, Form, Header, Segment, Statistic } from 'semantic-ui-react';
 
 // App Imports
-import { timeFormat } from '@app/common/utilities';
+import { blobSrc, timeFormat } from '@app/common/utilities';
 
 // Component Imports
 import FancyTable from '@app/common/components/FancyTable';
@@ -88,7 +88,7 @@ export default class UserDashboard extends React.Component<UserDashboardProps> {
                           key: 'letter',
                           content: (
                             <a
-                              href={`/upload/letter/${userShift.letter}`}
+                              href={blobSrc(`hours-letters/${userShift.letter}`)}
                               target="_blank"
                               rel="noopener noreferrer"
                             >

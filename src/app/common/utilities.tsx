@@ -1,12 +1,12 @@
 // Library Imports
-import { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import * as Promise from 'bluebird';
+import { connectRouter, push, routerMiddleware } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import * as moment from 'moment';
 import 'moment-timezone';
 import * as React from 'react';
 import * as ReactGA from 'react-ga';
-import { push, routerMiddleware, routerReducer } from 'react-router-redux';
 import { applyMiddleware, combineReducers, compose, createStore, Dispatch, Store } from 'redux';
 import reduxThunk from 'redux-thunk';
 
@@ -21,8 +21,26 @@ import {
 } from '@app/common/actions';
 import * as reducers from '@app/common/reducers';
 
+const PROD_API = process.env.NODE_ENV === 'production' || process.env.PROD_API !== null;
+
+export const API_BASE = PROD_API
+  ? 'https://beta.volunteeringpeel.org/api'
+  : 'http://localhost:7071';
+export const API_VERSION = 'v2';
+export const getAPI = (endpoint: string, config?: AxiosRequestConfig) =>
+  axios.get(`${API_BASE}/${API_VERSION}/${endpoint}`, config);
+export const putAPI = (endpoint: string, data?: any, config?: AxiosRequestConfig) =>
+  axios.put(`${API_BASE}/${API_VERSION}/${endpoint}`, data, config);
+export const postAPI = (endpoint: string, data?: any, config?: AxiosRequestConfig) =>
+  axios.post(`${API_BASE}/${API_VERSION}/${endpoint}`, data, config);
+
+export const BLOB_BASE = PROD_API
+  ? 'https://volunteeringpeel.blob.core.windows.net/website-upload'
+  : 'http://localhost:10000';
+export const blobSrc = (file: string) => `${BLOB_BASE}/${file}`;
+
 // take a number and pad it with one zero if it needs to be (i.e. 1 => 01, 11 => 11, 123 => 123)
-const pad = (number: number) => (number < 10 ? ('00' + number).slice(-2) : number.toString());
+const pad = (number: number) => number.toString().padStart(2, '0');
 
 // moment duration toString basically (hh:mm)
 export function timeFormat(time: moment.Duration) {
@@ -61,29 +79,12 @@ export function pluralize(noun: string, number: number): string {
  * @param dispatch Dispatch to base redux on
  * @returns Promise awaiting success (true) or failure (false)
  */
-export function loadUser(dispatch: Dispatch<VP.State>): Promise<boolean> {
-  // Check whether there's local storage
-  if (!localStorage.getItem('access_token')) return Promise.resolve(false);
+export function loadUser(dispatch: Dispatch): Promise<boolean> {
   dispatch(loading(true));
-  // Check whether the current time is past the token's expiry time
-  const expiresAt = +localStorage.getItem('expires_at');
-  const isValid = new Date().getTime() < expiresAt;
-  if (!isValid) {
-    dispatch(logout());
-    dispatch(
-      addMessage({
-        message: 'Session expired',
-        more: 'Please log back in',
-        severity: 'negative',
-      }),
-    );
-    dispatch(loading(false));
-    return Promise.resolve(false);
-  }
-
-  // fetch user from token (if server deems it's valid token)
-  return dispatch(getUser(localStorage.getItem('id_token')))
-    .payload.then(response => {
+  // check if we're logged in at all
+  return Promise.resolve(axios.get('https://beta.volunteeringpeel.org/.auth/me'))
+    .then(() => dispatch(getUser()).payload)
+    .then(response => {
       // success
       if (response.data.status === 'success') {
         dispatch(getUserSuccess(response as AxiosResponse<VP.APIDataSuccess<VP.User>>));
@@ -107,30 +108,36 @@ export function loadUser(dispatch: Dispatch<VP.State>): Promise<boolean> {
           dispatch(push('/user/profile'));
         }
         return true;
+      } else if (response.data.status === 'error') {
+        dispatch(logout());
+        dispatch(getUserFailure(response as AxiosResponse<VP.APIDataError>));
+        // failure
+        dispatch(
+          addMessage({
+            message: response.data.message,
+            more: response.data.details,
+            severity: 'negative',
+          }),
+        );
+        return false;
       }
-      // failure
-      dispatch(logout());
-      dispatch(getUserFailure(response as AxiosResponse<VP.APIDataError>));
-      dispatch(
-        addMessage({
-          message: response.data.error,
-          more: response.data.details,
-          severity: 'negative',
-        }),
-      );
-      return false;
     })
     .catch((error: AxiosError) => {
+      if (error === null) return;
       // big failure
       dispatch(logout());
       dispatch(getUserFailure(error.response));
-      dispatch(
-        addMessage({
-          message: error.response.data.error,
-          more: error.response.data.details,
-          severity: 'negative',
-        }),
-      );
+      // don't show the error if the error is "not logged in"
+      if (error.response && error.response.status !== 401) {
+        console.log(error.response.status);
+        dispatch(
+          addMessage({
+            message: error.response.data.message,
+            more: error.response.data.details,
+            severity: 'negative',
+          }),
+        );
+      }
       return false;
     })
     .finally(() => dispatch(loading(false)));
@@ -148,14 +155,14 @@ function configureStore(initialState?: VP.State) {
 
     const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-    newStore = createStore<VP.State>(
-      combineReducers({ ...reducers, router: routerReducer }),
+    newStore = createStore(
+      combineReducers({ ...reducers, router: connectRouter(history) }),
       initialState,
       composeEnhancers(applyMiddleware(...middleware)),
     );
   } else {
-    newStore = createStore<VP.State>(
-      combineReducers({ ...reducers, router: routerReducer }),
+    newStore = createStore(
+      combineReducers({ ...reducers, router: connectRouter(history) }),
       initialState,
       compose(applyMiddleware(...middleware)),
     );
@@ -165,7 +172,9 @@ function configureStore(initialState?: VP.State) {
     // Enable Webpack hot module replacement for reducers
     module.hot.accept('./reducers', () => {
       const nextRootReducer = require('./reducers');
-      newStore.replaceReducer(combineReducers({ ...nextRootReducer, router: routerReducer }));
+      newStore.replaceReducer(
+        combineReducers({ ...nextRootReducer, router: connectRouter(history) }),
+      );
     });
   }
 

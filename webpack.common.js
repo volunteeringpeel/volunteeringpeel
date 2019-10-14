@@ -71,34 +71,39 @@ module.exports = {
     ],
   },
 
-  plugins: [
-    // extract huge libraries out of main file
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'commons',
-      minChunks: function(module) {
-        // This prevents stylesheet resources with the .css or .scss extension
-        // from being moved from their original chunk to the vendor chunk
-        if (module.resource && /^.*\.(css|less)$/.test(module.resource)) {
-          return false;
-        }
-        return module.context && module.context.includes('node_modules');
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test(module) {
+            // This prevents stylesheet resources with the .css or .scss extension
+            // from being moved from their original chunk to the vendor chunk
+            if (module.resource && /^.*\.(css|less)$/.test(module.resource)) {
+              return false;
+            }
+            return module.context && module.context.includes('node_modules');
+          },
+          name: 'vendor',
+          chunks: 'all',
+        },
       },
-    }),
-    // extract webpack bootstrap out of main file
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'runtime',
-      minChunks: Infinity,
-    }),
+    },
+    runtimeChunk: {
+      name: entrypoint => `runtime~${entrypoint.name}`,
+    },
+  },
+
+  plugins: [
     // name the sites
     new HTMLWebpackPlugin({
       title: 'Volunteering Peel',
-      chunks: ['runtime', 'commons', 'app'],
+      chunks: ['runtime~app', 'vendor', 'app'],
       filename: 'index.html',
       template: 'index.ejs',
     }),
     new HTMLWebpackPlugin({
       title: 'Volunteering Peel Admin',
-      chunks: ['runtime', 'commons', 'admin'],
+      chunks: ['runtime~admin', 'vendor', 'admin'],
       filename: 'admin.html',
       template: 'index.ejs',
     }),

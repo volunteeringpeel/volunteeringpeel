@@ -12,7 +12,7 @@ declare namespace VP {
 
   interface APIDataError {
     status: 'error';
-    error: string;
+    message: string;
     details: string;
   }
 
@@ -100,7 +100,6 @@ declare namespace VP {
     shift_num: number;
     start_time: string;
     end_time: string;
-    date?: string;
     meals: Meal[];
     max_spots?: number;
     spots_taken?: number;

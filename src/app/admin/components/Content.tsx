@@ -30,7 +30,7 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                   <Menu vertical fluid pointing secondary>
                     {routes.map(route => (
                       <Route path={route.path} key={route.path}>
-                        {({ match }) => (
+                        {({ match }: any) => (
                           <Menu.Item active={!!match} onClick={() => this.props.push(route.path)}>
                             {route.title}
                           </Menu.Item>
@@ -42,7 +42,7 @@ export default class Content extends React.Component<RouteComponentProps<any> & 
                 <Grid.Column width={13}>
                   <Route
                     path="/admin/:page"
-                    render={({ match }) => {
+                    render={({ match }: any) => {
                       const page = _.find(routes, route => {
                         const regex = new RegExp(`^\/admin\/${match.params.page}`, 'gi');
                         return !!route.path.match(regex);

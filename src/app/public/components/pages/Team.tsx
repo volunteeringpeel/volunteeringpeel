@@ -1,5 +1,4 @@
 // Library Imports
-import axios from 'axios';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -7,6 +6,7 @@ import * as ReactMarkdown from 'react-markdown';
 import { Card, Container, Image, Segment } from 'semantic-ui-react';
 
 // Component Imports
+import { blobSrc, getAPI } from '@app/common/utilities';
 import CardColumns from '@app/public/components/blocks/CardColumns';
 
 interface TeamProps {
@@ -26,7 +26,7 @@ export default class Team extends React.Component<TeamProps, TeamState> {
 
   public componentDidMount() {
     Promise.resolve(() => this.props.loading(true))
-      .then(() => axios.get('/api/public/execs'))
+      .then(() => getAPI('execs'))
       .then(res => {
         this.props.loading(false);
         this.setState({ execs: res.data.data });
@@ -41,7 +41,7 @@ export default class Team extends React.Component<TeamProps, TeamState> {
             columns={3}
             cards={_.map(this.state.execs, exec => (
               <Card fluid key={exec.user_id}>
-                {exec.pic && <Image src={`/upload/user/${exec.pic}`} />}
+                {exec.pic && <Image src={blobSrc(`exec-images/${exec.pic}`)} />}
                 <Card.Content>
                   <Card.Header>
                     {exec.first_name} {exec.last_name}

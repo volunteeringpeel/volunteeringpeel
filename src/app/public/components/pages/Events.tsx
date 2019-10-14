@@ -1,5 +1,4 @@
 // Library Imports
-import axios from 'axios';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import * as moment from 'moment';
@@ -14,7 +13,7 @@ import HomepageMessage from '@app/public/components/modules/HomepageMessage';
 import SubscribeBox from '@app/public/components/modules/SubscribeBox';
 
 // Controller Imports
-import { pluralize } from '@app/common/utilities';
+import { getAPI, pluralize } from '@app/common/utilities';
 import EventModal from '@app/public/controllers/modules/EventModal';
 
 interface EventsProps {
@@ -42,18 +41,9 @@ export default class Events extends React.Component<EventsProps, EventsState> {
 
   public refresh() {
     return Promise.resolve(this.setState({ loading: true }))
-      .then(() => {
-        if (localStorage.getItem('id_token')) {
-          return axios.get('/api/event', {
-            headers: { Authorization: `Bearer ${localStorage.getItem('id_token')}` },
-          });
-        }
-        return axios.get('/api/public/event');
-      })
+      .then(() => getAPI('event?filter=active'))
       .then(res => {
-        // Only show events that are marked as active in admin console
-        const filteredEvents = _.filter(res.data.data, ['active', true]);
-        const sortedEvents = _.orderBy(filteredEvents, ['shifts[0].start_time'], 'asc');
+        const sortedEvents = _.orderBy(res.data.data, ['shifts[0].start_time'], 'asc');
         this.setState({ events: sortedEvents, loading: false });
         this.props.loadUser();
       });
@@ -152,10 +142,15 @@ export default class Events extends React.Component<EventsProps, EventsState> {
                                       <li>
                                         One week prior to the event, you will receive a CONFIRMATION
                                         EMAIL with more information regarding the event, please make
-                                        sure to REPLY to confirm your attendance. If you do not reply, you will also receive a PHONE CALL.
+                                        sure to REPLY to confirm your attendance. If you do not
+                                        reply, you will also receive a PHONE CALL.
                                       </li>
                                       <li>
-                                        Until then, you will not receive any emails from us unless it is urgent. We strongly encourage you to invite your friends along and mark the date of the event on your calendar! If for some reason you cannot go, please contact us as soon as possible. Cheers!
+                                        Until then, you will not receive any emails from us unless
+                                        it is urgent. We strongly encourage you to invite your
+                                        friends along and mark the date of the event on your
+                                        calendar! If for some reason you cannot go, please contact
+                                        us as soon as possible. Cheers!
                                       </li>
                                     </ul>
                                   </>

@@ -4,6 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import * as Promise from 'bluebird';
 import * as _ from 'lodash';
 import { createAction } from 'redux-actions';
+import { getAPI } from './utilities';
 
 // General Things
 export const LOADING = 'LOADING';
@@ -11,26 +12,11 @@ export const loading = createAction<boolean, boolean>(LOADING, (active: boolean)
 
 // VP.User Management
 export const LOGOUT = 'LOGOUT';
-export const logout = createAction<void>(LOGOUT, () => {
-  // Clear access token and ID token from local storage
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('id_token');
-  localStorage.removeItem('expires_at');
-});
+export const logout = createAction<void>(LOGOUT, _.noop);
 
 export const GET_USER = 'GET_USER';
-export const getUser = createAction<Promise<AxiosResponse<VP.APIData<VP.User>>>, string>(
-  GET_USER,
-  (token: string) =>
-    Promise.resolve(
-      axios({
-        method: 'get',
-        url: `/api/user/current`,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }),
-    ),
+export const getUser = createAction<Promise<AxiosResponse<VP.APIData<VP.User>>>>(GET_USER, () =>
+  Promise.resolve(getAPI('me')),
 );
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
 export const getUserSuccess = createAction<

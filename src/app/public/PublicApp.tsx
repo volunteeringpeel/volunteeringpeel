@@ -1,8 +1,8 @@
 // Library Imports
+import { ConnectedRouter } from 'connected-react-router';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import { Route } from 'react-router-dom';
-import { ConnectedRouter } from 'react-router-redux';
 
 // App Imports
 import { history, store } from '@app/common/utilities';

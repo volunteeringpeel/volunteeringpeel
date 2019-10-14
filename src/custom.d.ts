@@ -10,6 +10,11 @@ declare global {
       success(success?: any, status?: number): void;
     }
 
+    interface Request {
+      // TODO: get more specific typings
+      user: any;
+    }
+
     interface SessionData {
       userData: VP.User;
     }

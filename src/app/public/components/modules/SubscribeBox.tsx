@@ -3,6 +3,7 @@ import * as Promise from 'bluebird';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Form, Message } from 'semantic-ui-react';
+import { postAPI } from '@app/common/utilities';
 
 interface SubscribeBoxProps {
   listID: number;
@@ -33,16 +34,14 @@ export default class SubscribeBox extends React.Component<SubscribeBoxProps, Sub
 
   public handleSubmit = () => {
     Promise.resolve(this.setState({ loading: true }))
-      .then(() =>
-        axios.post(`/api/public/mailing-list/${this.props.listID}`, { email: this.state.email }),
-      )
+      .then(() => postAPI(`mail-list/signup/${this.props.listID}`, { email: this.state.email }))
       .then(res => {
         this.setState({ message: { message: res.data.data, severity: 'positive' } });
       })
       .catch((error: AxiosError) => {
         this.setState({
           message: {
-            message: error.response.data.error,
+            message: error.response.data.message,
             more: error.response.data.details,
             severity: 'negative',
           },

@@ -8,15 +8,15 @@ import { Container, Dropdown, Header, Icon, Menu, Segment } from 'semantic-ui-re
 
 // App Imports
 import logoPng from '@app/images/logo.png';
-import Auth from '@app/public/Auth';
 import routes from '@app/public/routes';
 
 // Controller Imports
 import MessageBox from '@app/common/controllers/MessageBox';
+import { API_BASE } from '@app/common/utilities';
 
 interface HeaderComponentProps {
   user: VP.UserState;
-  push: (path: LocationDescriptor) => void;
+  push: (path: string) => void;
 }
 
 class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderComponentProps> {
@@ -26,14 +26,12 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
     if (this.props.user.status === 'in') {
       userButton = (
         <Route path="/user">
-          {({ match }) => (
+          {({ match }: any) => (
             <Dropdown item text="Me" className={match ? 'active right' : 'right'}>
               <Dropdown.Menu>
                 <Dropdown.Header
                   icon="user"
-                  content={`${this.props.user.user.user.first_name} ${
-                    this.props.user.user.user.last_name
-                  }`}
+                  content={`${this.props.user.user.user.first_name} ${this.props.user.user.user.last_name}`}
                 />
                 <Dropdown.Item as="a" onClick={() => this.props.push('/user/profile')}>
                   Profile
@@ -47,7 +45,10 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                   </Dropdown.Item>
                 )}
                 <Dropdown.Divider />
-                <Dropdown.Item as="a" onClick={Auth.logout}>
+                <Dropdown.Item
+                  as="a"
+                  href={`${document.location.origin}/.auth/logout?post_logout_redirect_url=/`}
+                >
                   Logout
                 </Dropdown.Item>
               </Dropdown.Menu>
@@ -57,7 +58,10 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
       );
     } else if (this.props.user.status === 'out') {
       userButton = (
-        <Menu.Item as="a" onClick={Auth.login}>
+        <Menu.Item
+          as="a"
+          href={`${document.location.origin}/.auth/login/google?post_login_redirect_url=${document.location.origin}/callback`}
+        >
           Login
         </Menu.Item>
       );
@@ -73,7 +77,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
         <Menu stackable size="large" style={{ marginBottom: 0 }}>
           <Container>
             <Route path="/" exact>
-              {({ match }) => (
+              {({ match }: any) => (
                 <Menu.Item
                   active={!!match}
                   onClick={() => this.props.push('/')}
@@ -85,7 +89,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
             </Route>
             <Menu.Menu position="right">
               <Route path="/about">
-                {({ match }) => (
+                {({ match }: any) => (
                   <Dropdown item text="About" className={match ? 'active' : ''}>
                     <Dropdown.Menu>
                       <Dropdown.Item as="a" onClick={() => this.props.push('/about')}>
@@ -108,21 +112,21 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                 )}
               </Route>
               <Route path="/events">
-                {({ match }) => (
+                {({ match }: any) => (
                   <Menu.Item active={!!match} onClick={() => this.props.push('/events')}>
                     Events
                   </Menu.Item>
                 )}
               </Route>
               <Route path="/contact">
-                {({ match }) => (
+                {({ match }: any) => (
                   <Menu.Item active={!!match} onClick={() => this.props.push('/contact')}>
                     Contact
                   </Menu.Item>
                 )}
               </Route>
               <Route path="/apply">
-                {({ match }) => (
+                {({ match }: any) => (
                   <Menu.Item active={!!match} onClick={() => this.props.push('/apply')}>
                     Exec Applications
                   </Menu.Item>
@@ -135,7 +139,7 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
         <Segment inverted textAlign="center" vertical className="main-header">
           <Route
             path="/:page?/:subpage?"
-            render={({ match }) => {
+            render={({ match }: any) => {
               const page = _.find(routes, ['path', match.url]);
               if (!page) {
                 return <Redirect to="/" />;
