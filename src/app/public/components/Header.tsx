@@ -121,13 +121,13 @@ class HeaderComponent extends React.Component<RouteComponentProps<any> & HeaderC
                   </Menu.Item>
                 )}
               </Route>
-              <Route path="/apply">
+              {/* <Route path="/apply">
                 {({ match }) => (
                   <Menu.Item active={!!match} onClick={() => this.props.push('/apply')}>
                     Exec Applications
                   </Menu.Item>
                 )}
-              </Route>
+              </Route> */}
               {userButton}
             </Menu.Menu>
           </Container>
