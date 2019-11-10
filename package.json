@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@types/auth0-js": "^8.11.5",
-    "@types/bluebird": "3.5.18",
+    "@types/bluebird": "3.5.26",
     "@types/body-parser": "^1.16.7",
     "@types/dotenv": "^4.0.3",
     "@types/express": "^4.11.1",
@@ -126,8 +126,8 @@
     "reselect": "^3.0.1",
     "semantic-ui-less": "~2.3.3",
     "semantic-ui-react": "^0.82.2",
-    "sequelize": "^4.41.2",
-    "sequelize-typescript": "^0.6.6",
+    "sequelize": "^4.44.3",
+    "sequelize-typescript": "^0.6.11",
     "web-animations-js": "^2.3.1",
     "ws": "^5.1.1"
   },
