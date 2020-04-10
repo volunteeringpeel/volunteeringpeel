@@ -86,7 +86,7 @@
     "webpack-node-externals": "^1.6.0"
   },
   "dependencies": {
-    "auth0-js": "^9.3.0",
+    "auth0-js": "^9.13.2",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "bluebird": "^3.5.3",
