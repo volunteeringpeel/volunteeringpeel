@@ -62,7 +62,7 @@ export default class Events extends React.Component<EventsProps, EventsState> {
   public render() {
     return (
       <>
-        {/* <HomepageMessage /> */}
+        <HomepageMessage />
         <Segment style={{ padding: '4em 0em' }} vertical>
           <Container textAlign="center">
             <Header as="h3">Event Notification Sign Up</Header>
