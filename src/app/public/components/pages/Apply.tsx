@@ -63,7 +63,7 @@ export default class Apply extends React.Component {
               an in person interview.
             </li>
           </ul>
-          <a href="https://drive.google.com/file/d/1tNtcJ8uGT6Z3jRW8fW58esyhyyH9C3-k/view?usp=sharing">
+          <a href="https://docs.google.com/document/d/1KiOmqsE9PvpxRYEkDjceVM9pj7WO3PwXk_XBArR9d1I/edit?usp=sharing">
             <Button primary>View Application (must use personal email)</Button>
           </a>
         </Segment>
@@ -75,7 +75,7 @@ export default class Apply extends React.Component {
             Volunteer Web Developer, you will be maintaining our website as well as adding new
             enhancements and features. Here are the benefits of being a software developer:
           </p>
-          <ul>
+            <ul>
             <li>
               🍸Flexibility. Get volunteer hours for your service while working at home at any time
               during the day! Just simply log your hours and we will give you and sign an hours
