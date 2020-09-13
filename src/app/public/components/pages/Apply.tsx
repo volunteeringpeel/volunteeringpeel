@@ -75,7 +75,7 @@ export default class Apply extends React.Component {
             Volunteer Web Developer, you will be maintaining our website as well as adding new
             enhancements and features. Here are the benefits of being a software developer:
           </p>
-            <ul>
+          <ul>
             <li>
               🍸Flexibility. Get volunteer hours for your service while working at home at any time
               during the day! Just simply log your hours and we will give you and sign an hours
