@@ -63,7 +63,7 @@ export default class Apply extends React.Component {
               an in person interview.
             </li>
           </ul>
-          <a href="https://drive.google.com/file/d/1tNtcJ8uGT6Z3jRW8fW58esyhyyH9C3-k/view?usp=sharing">
+          <a href="https://docs.google.com/document/d/1KiOmqsE9PvpxRYEkDjceVM9pj7WO3PwXk_XBArR9d1I/edit?usp=drivesdk">
             <Button primary>View Application (must use personal email)</Button>
           </a>
         </Segment>
