@@ -14,7 +14,7 @@ export default class Homepage extends React.Component {
   public render() {
     return (
       <div className="large text">
-        {/* <HomepageMessage /> */}
+        { <HomepageMessage /> }
         <Segment style={{ padding: '8em 0em 4em' }} vertical>
           <Grid stackable container verticalAlign="middle">
             <Grid.Row>
