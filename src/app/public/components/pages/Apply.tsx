@@ -57,7 +57,7 @@ export default class Apply extends React.Component {
           <p>To apply, you must:</p>
           <ul>
             <li>Be grade 9 or 10 in or near the Peel Region</li>
-            <li>Fill out and email us the application below, before October 13th!</li>
+            <li>Fill out and email us the application below, before October 3rd 11:59!</li>
             <li>
               We will get back to everyone. However, only successful candidates will be invited for
               an in person interview.
